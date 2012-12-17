@@ -1,0 +1,42 @@
+/* 
+  Localizable.strings
+  AT PrYv
+
+  Created by Nicolas Manzini on 06.12.12.
+  Copyright (c) 2012 PrYv. All rights reserved.
+*/
+
+// GREEN STATUS BAR
+"statusBarRecording" = "Recorder Activated";
+
+// MAIN MAP VIEW BUTTONS TITLE
+"bRecordStart" = "Start";
+"bRecordStop" = "Stop";
+"bTakePicture" = "Picture";
+"bTakeNote" = "Note";
+"bNavBarCancelNote" = "Cancel";
+"bNavBarSendNote"   = "Send";
+"bAskTimePeriod" = "Look At A Custom Period";
+"bAsk24h" = "Last 24h";
+"bToDate" = "To Date";
+"bFromDate" = "From Date";
+"bConfirmTimePeriod" = "Ask This Period";
+"bCancelDatePickers" = "Cancel";
+
+"mapPointText" = "You Were Here!";
+
+
+// CAMERA ACTION SHEET PHOTO
+"actionSheetPhotoTitle" = "Select New Image";
+"actionSheetPhotoCancel" = "Cancel";
+"actionSheetPhotoCamera" = "Take New Photo";
+"actionSheetPhotoLibrary" = "Choose From Library";
+
+// SETTINGS
+"optionSection1Title" = "Minimal Distance Interval Between Locations";
+"optionSection2Title" = "Minimal Time Interval Between Locations";
+"optionSection3Title" = "Logged In As";
+"optionSection4Title" = "Current Folder's Name";
+"settingsTitle" = "Settings";
+"bSettingsReturn" = "Close";
+"bSettingsLogOut" = "Log Out";

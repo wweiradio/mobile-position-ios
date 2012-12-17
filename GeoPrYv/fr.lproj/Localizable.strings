@@ -1,0 +1,42 @@
+/* 
+  Localizable.strings
+  AT PrYv
+
+  Created by Nicolas Manzini on 06.12.12.
+  Copyright (c) 2012 PrYv. All rights reserved.
+*/
+
+// GREEN STATUS BAR
+"statusBarRecording" = "Enregistreur Activé";
+
+// MAIN MAP VIEW BUTTONS TITLE
+"bRecordStart" = "Start";
+"bRecordStop" = "Stop";
+"bTakePicture" = "Image";
+"bTakeNote" = "Note";
+"bNavBarCancelNote" = "Annuler";
+"bNavBarSendNote"   = "Envoyer";
+"bAskTimePeriod" = "Période De Temps";
+"bAsk24h" = "Dernières 24h";
+"bToDate" = "Jusqu'au";
+"bFromDate" = "Du";
+"bConfirmTimePeriod" = "Voir Période";
+"bCancelDatePickers" = "Annuler";
+
+"mapPointText" = "Vous êtiez ici!";
+
+
+// CAMERA ACTION SHEET PHOTO
+"actionSheetPhotoTitle" = "Prendre Une Photo";
+"actionSheetPhotoCancel" = "Annuler";
+"actionSheetPhotoCamera" = "Nouvelle Photo";
+"actionSheetPhotoLibrary" = "Photo De L'Appareil";
+
+// SETTINGS
+"optionSection1Title" = "Distance minimale entre les positions";
+"optionSection2Title" = "Interval de temps minimal entre les positions";
+"optionSection3Title" = "Utilisateur";
+"optionSection4Title" = "Nom du dossier actuel";
+"settingsTitle" = "Préférences";
+"bSettingsReturn" = "Fermer";
+"bSettingsLogOut" = "Log Out";
