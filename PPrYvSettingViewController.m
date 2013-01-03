@@ -9,6 +9,7 @@
 #import "PPrYvSettingViewController.h"
 #import "PPrYvLoginViewController.h"
 #import "PPrYvAppDelegate.h"
+#import "User.h"
 
 @interface PPrYvSettingViewController ()
 
@@ -20,11 +21,14 @@
 
 #pragma mark - Object Life Cycle
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil inContext:(NSManagedObjectContext *)context {
     
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    
     if (self) {
         
+        self.context = context;
+        currentUser = [User currentUserInContext:context];
     }
     return self;
 }
@@ -96,7 +100,8 @@
         
         return NSLocalizedString(@"optionSection4Title", );
     }
-    return @"";
+    else
+        return @"";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -120,7 +125,7 @@
         slider.maximumValue = powf(100.0f, 0.5f);
         slider.minimumValue = powf(10.0f, 0.5f);
         [slider addTarget:self action:@selector(changeLocationManagerDistanceFilter:) forControlEvents:UIControlEventValueChanged];
-        [slider setValue:powf([[[NSUserDefaults standardUserDefaults] objectForKey:kLocationDistanceInterval] doubleValue], .5f) animated:NO];
+        [slider setValue:powf([currentUser.locationDistanceInterval doubleValue], .5f) animated:NO];
         
         distanceFilterLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0, 80, 30)];
         distanceFilterLabel.textColor = [UIColor colorWithWhite:.3 alpha:1];
@@ -133,10 +138,10 @@
         
         if ([[[NSLocale currentLocale] objectForKey:NSLocaleUsesMetricSystem] boolValue]) {
             
-            distanceFilterLabel.text = [NSString stringWithFormat:@"%.0f m", [[[NSUserDefaults standardUserDefaults] objectForKey:kLocationDistanceInterval] doubleValue]];
+            distanceFilterLabel.text = [NSString stringWithFormat:@"%.0f m", [currentUser.locationDistanceInterval doubleValue]];
         }
         else {
-            distanceFilterLabel.text = [NSString stringWithFormat:@"%.0f ft", [[[NSUserDefaults standardUserDefaults] objectForKey:kLocationDistanceInterval] doubleValue]*3.2808399f];
+            distanceFilterLabel.text = [NSString stringWithFormat:@"%.0f ft", [currentUser.locationDistanceInterval doubleValue]*3.2808399f];
         }
     }
     else if (indexPath.section == 1 && indexPath.row == 0) {
@@ -145,7 +150,7 @@
         [slider addTarget:self action:@selector(changeLocationManagerTimeInterval:) forControlEvents:UIControlEventValueChanged];
         slider.maximumValue = powf(300.0f, 0.5f);
         slider.minimumValue = powf(10.0f, 0.5f);
-        [slider setValue:powf([[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue], .5f) animated:NO];
+        [slider setValue:powf([currentUser.locationTimeInterval doubleValue], .5f) animated:NO];
         
         timeFilterLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0, 80, 30)];
         timeFilterLabel.textColor = [UIColor colorWithWhite:.3 alpha:1];
@@ -156,24 +161,24 @@
         [cell.contentView addSubview:slider];
         [cell.contentView addSubview:timeFilterLabel];
         
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue] < 60) {
+        if ([currentUser.locationTimeInterval doubleValue] < 60) {
             
-            timeFilterLabel.text = [NSString stringWithFormat:@"%.0f sec", [[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue]];
+            timeFilterLabel.text = [NSString stringWithFormat:@"%.0f sec", [currentUser.locationTimeInterval doubleValue]];
         }
         else {
             
-            timeFilterLabel.text = [NSString stringWithFormat:@"%.0f min", [[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue]/60];
+            timeFilterLabel.text = [NSString stringWithFormat:@"%.0f min", [currentUser.locationTimeInterval doubleValue]/60];
         }
     }
     else if (indexPath.section == 2 && indexPath.row == 0) {
         
-        cell.textLabel.text = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsCurrentUser];
+        cell.textLabel.text = currentUser.userId;
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
         cell.textLabel.textAlignment = UITextAlignmentCenter;
     }
     else if (indexPath.section == 3 && indexPath.row == 0) {
         
-        cell.textLabel.text =[[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsCurrentUserFolder];
+        cell.textLabel.text = currentUser.folderName;
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
     }
     
@@ -183,7 +188,7 @@
 #pragma mark - Table View Delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-      
+      // do nothing here
 }
 
 #pragma mark - Settings Methods
@@ -193,9 +198,8 @@
     PPrYvAppDelegate * responder = (PPrYvAppDelegate *)[UIApplication sharedApplication].delegate;
     
     CLLocationAccuracy distanceFilter = round(pow(distanceIntervalSlider.value, 2.0));
-    [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:distanceFilter] forKey:kLocationDistanceInterval];
-    responder.locationManager.distanceFilter = distanceFilter;
-
+    currentUser.locationDistanceInterval = [NSNumber numberWithDouble:distanceFilter];
+    responder.mainLocationManager.distanceFilter = distanceFilter;
     
     if ([[[NSLocale currentLocale] objectForKey:NSLocaleUsesMetricSystem] boolValue]) {
         
@@ -212,23 +216,25 @@
     PPrYvAppDelegate * responder = (PPrYvAppDelegate *)[UIApplication sharedApplication].delegate;
     
     NSTimeInterval timeInterval = round(pow(timeIntervalSlider.value, 2.0));
-    [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:timeInterval] forKey:kLocationTimeInterval];
+    currentUser.locationTimeInterval = [NSNumber numberWithDouble:timeInterval];
     [responder.foregroundTimer invalidate];
     responder.foregroundTimer = [NSTimer scheduledTimerWithTimeInterval:timeInterval target:responder selector:@selector(allowUpdateNow) userInfo:nil repeats:YES];
     
-    if ([[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue] < 60) {
+    if ([currentUser.locationTimeInterval doubleValue] < 60) {
         
-        timeFilterLabel.text = [NSString stringWithFormat:@"%.0f sec", [[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue]];
+        timeFilterLabel.text = [NSString stringWithFormat:@"%.0f sec", [currentUser.locationTimeInterval doubleValue]];
     }
     else {
         
-        timeFilterLabel.text = [NSString stringWithFormat:@"%.0f min", [[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue]/60];
+        timeFilterLabel.text = [NSString stringWithFormat:@"%.0f min", [currentUser.locationTimeInterval doubleValue]/60];
     }
 }
 
 #pragma mark - Navigation Bar Button
 
 - (IBAction)dismissOptions:(id)sender {
+    
+    [self.context save:nil];
     
     if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
         
@@ -238,20 +244,9 @@
         
         [self dismissViewControllerAnimated:YES completion:nil];
     }
-    
 }
 
 - (IBAction)logOutCurrentUser:(id)sender {
-    
-    [[NSUserDefaults standardUserDefaults] setObject:nil
-                                              forKey:kUserDefaultsCurrentUser];
-    [[NSUserDefaults standardUserDefaults] setObject:nil
-                                              forKey:kUserDefaultsCurrentUserPassword];
-    [[NSUserDefaults standardUserDefaults] setObject:nil
-                                              forKey:kUserDefaultsCurrentUserFolder];
-    [[NSUserDefaults standardUserDefaults] setObject:nil
-                                              forKey:kUserDefaultsCurrentUserFolderId];
-    [[NSUserDefaults standardUserDefaults] synchronize];
     
     
     if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
@@ -262,7 +257,7 @@
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             
-            PPrYvLoginViewController * login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewControlleriPad" bundle:nil];
+            PPrYvLoginViewController * login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewControlleriPad" bundle:nil inContext:self.context];
             
             [self.iPadHoldingPopOverViewController presentViewController:login animated:YES completion:nil];
         });
@@ -273,7 +268,7 @@
 
         [controller dismissViewControllerAnimated:YES completion:^{
             
-            PPrYvLoginViewController * login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewControlleriPhone" bundle:nil];
+            PPrYvLoginViewController * login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewControlleriPhone" bundle:nil inContext:self.context];
             
             [controller presentViewController:login animated:YES completion:nil];
         }];

@@ -6,18 +6,13 @@
 //  Copyright (c) 2012 PrYv. All rights reserved.
 //
 
-#import "Position.h"
 #import "PPrYvAppDelegate.h"
 #import "PPrYvMapViewController.h"
-#import "PPrYvSettingViewController.h"
 #import "PPrYvLoginViewController.h"
+#import "User.h"
+#import "Location.h"
 
-@interface PPrYvAppDelegate ()
-
-- (CLLocationManager *)mainLocationManager;
-- (void)allowUpdateNow;
-
-@end
+#define applicationPrYvChannel @"VeA4Yv9RiM"
 
 @implementation PPrYvAppDelegate
 
@@ -25,26 +20,37 @@
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
-@synthesize locationManager, mapViewController, foregroundTimer, foregroundLocationUpdatesAllowed, backgroundDate;
+@synthesize mainLocationManager, mapViewController, foregroundTimer, foregroundLocationUpdatesAllowed, backgroundDate;
 
 #pragma mark - Application Life Cycle
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    // set default user settings for first launch
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] == nil) {
-        [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:30] forKey:kLocationTimeInterval];
-    }
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:kLocationDistanceInterval] == nil) {
-        [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:30] forKey:kLocationDistanceInterval];
-    }
-    // allow network activity indicator in status bar
-    [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
+    // get the current user if any available
+    User * user = [User currentUserInContext:self.managedObjectContext];
     
+    // set some defaults values
+    NSTimeInterval timeInterval = 30;
+    CLLocationDistance distanceInterval = 30;
+    
+    if (user != nil) {
+        
+        timeInterval = [user.locationTimeInterval doubleValue];
+        distanceInterval = [user.locationDistanceInterval doubleValue];
+    }
+    
+    // prepare the flag
     self.foregroundLocationUpdatesAllowed = YES;
-    self.locationManager = [self mainLocationManager];
-    self.foregroundTimer =[NSTimer scheduledTimerWithTimeInterval:[[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue] target:self selector:@selector(allowUpdateNow) userInfo:nil repeats:YES];
-
+    
+    // create our main location manager set the AppDelegate as the location manager delegate
+    self.mainLocationManager = [[CLLocationManager alloc] init];
+    self.mainLocationManager.distanceFilter = distanceInterval;
+    self.mainLocationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+    self.mainLocationManager.delegate = self;
+    
+    // start the foregroundTimer
+    self.foregroundTimer = [NSTimer scheduledTimerWithTimeInterval:[user.locationTimeInterval doubleValue] target:self selector:@selector(allowUpdateNow) userInfo:nil repeats:YES];
+    
     BOOL isIPad = NO;
     
     if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
@@ -54,42 +60,37 @@
     
     if (isIPad) {
         
-        self.mapViewController = [[PPrYvMapViewController alloc] initWithNibName:@"PPrYvMapViewControlleriPad" bundle:nil andContext:self.managedObjectContext andManager:self.locationManager];
+        self.mapViewController = [[PPrYvMapViewController alloc] initWithNibName:@"PPrYvMapViewControlleriPad" bundle:nil inContext:self.managedObjectContext mainLocationManager:self.mainLocationManager];
     }
     else {
         
-        self.mapViewController = [[PPrYvMapViewController alloc] initWithNibName:@"PPrYvMapViewControlleriPhone" bundle:nil andContext:self.managedObjectContext andManager:self.locationManager];
+        self.mapViewController = [[PPrYvMapViewController alloc] initWithNibName:@"PPrYvMapViewControlleriPhone" bundle:nil inContext:self.managedObjectContext mainLocationManager:self.mainLocationManager];
     }
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = self.mapViewController;
     [self.window makeKeyAndVisible];
     
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsCurrentUser] == nil) {
+    if (user == nil) {
         
-        // show user login
+        // no user available show the login form
         PPrYvLoginViewController * login = nil;
         
         if (isIPad) {
             
-            login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewControlleriPad" bundle:nil];
+            login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewControlleriPad" bundle:nil inContext:self.managedObjectContext];
         }
         else {
             
-            login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewControlleriPhone" bundle:nil];
+            login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewControlleriPhone" bundle:nil inContext:self.managedObjectContext];
         }
         
         [self.window.rootViewController presentViewController:login animated:YES completion:nil];
     }
-    else if ([[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsCurrentUserFolder] == nil) {
-        
-        // Try to create a main folder
-        [PPrYvServerManager checkOrCreateServerMainFolder:@"PrYvMainFolder" delegate:nil];
-    }
     else {
         
-        // check for pending uploads if any
-        [self checkForPendingEventsToUpload];
+        // a user exist. Thus maybe some events are waiting to be uploaded
+        [[PPrYvDefaultManager sharedManager] startManagerWithUserId:user.userId oAuthToken:user.userToken channelId:applicationPrYvChannel delegate:self];
     }
     
     return YES;
@@ -104,15 +105,28 @@
     // invalidate NSTimer and switch to NSDate
     [self.foregroundTimer invalidate];
     self.foregroundTimer = nil;
+    
+    // start background date with now
     self.backgroundDate = [NSDate date];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     
-    [self checkForPendingEventsToUpload];
+    [[PPrYvDefaultManager sharedManager] synchronizeTimeWithServerDelegate:self];
+    
     // switch back from NSDate to NSTimer for location updates
     self.foregroundLocationUpdatesAllowed = YES;
-    self.foregroundTimer =[NSTimer scheduledTimerWithTimeInterval:[[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue] target:self selector:@selector(allowUpdateNow) userInfo:nil repeats:YES];
+    
+    User * user = [User currentUserInContext:self.managedObjectContext];
+    
+    NSTimeInterval timeInterval = 30;
+    
+    if (user != nil) {
+        
+        timeInterval = [user.locationTimeInterval doubleValue];
+    }
+    
+    self.foregroundTimer = [NSTimer scheduledTimerWithTimeInterval:timeInterval target:self selector:@selector(allowUpdateNow) userInfo:nil repeats:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -162,7 +176,7 @@
         return _managedObjectModel;
     }
     
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"GeoPrYv" withExtension:@"momd"];
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"ATPrYv" withExtension:@"momd"];
     _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     
     return _managedObjectModel;
@@ -175,7 +189,7 @@
         return _persistentStoreCoordinator;
     }
     
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"GeoPrYv.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ATPrYv.sqlite"];
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
@@ -200,21 +214,9 @@
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
-#pragma mark - Location Manager
-
-- (CLLocationManager *)mainLocationManager {
-    // start a main location manager that can be passed to the entire app
-    // this location manager is responsible for providing the data to be uploaded
-    CLLocationManager * aManager = [[CLLocationManager alloc] init];
-    aManager.distanceFilter = [[[NSUserDefaults standardUserDefaults] objectForKey:kLocationDistanceInterval] doubleValue];
-    aManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
-    aManager.delegate = self;
-
-    return aManager;
-}
-
 #pragma mark - Location Manager Delegate
 
+// called by the the foreground timer to allow new location to be accepted
 - (void)allowUpdateNow {
     
     self.foregroundLocationUpdatesAllowed = YES;
@@ -225,6 +227,13 @@
     
     CLLocation * location = [locations lastObject];
     
+    User * user = [User currentUserInContext:self.managedObjectContext];
+    
+    if (user == nil) {
+        
+        return;
+    }
+    
     if(location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
         
         return;
@@ -232,7 +241,7 @@
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
         
-        if([self.backgroundDate timeIntervalSinceNow] > -[[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue]) {
+        if([self.backgroundDate timeIntervalSinceNow] > -[user.locationTimeInterval doubleValue]) {
             
             return;
         }
@@ -245,17 +254,15 @@
         
         return;
     }
+    // add the location on the map
+    [self.mapViewController addNewLocation:location];
     
-    [self.mapViewController didAddNewLocation:location];
-    
-    UIBackgroundTaskIdentifier __block backgroundTask = 0;
     
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         
-        // Ask the phone an extra time to perfom the server connection while in background
-        backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             
-            backgroundTask = UIBackgroundTaskInvalid;
+            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
         }];
     }
     else {
@@ -263,20 +270,31 @@
         self.foregroundLocationUpdatesAllowed = NO;
     }
     
-    [PPrYvServerManager uploadNewEventOfTypeLocation:location onFailSaveInContext:self.managedObjectContext isBackgroundTask:backgroundTask];
+    Location * aLocation = [Location newLocation:location withMessage:nil attachment:nil folder:user.folderId inContext:self.managedObjectContext];
+    
+    [aLocation sendToPrYvAPI];
 }
 
 // iOS <= 5.1
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
         
-    if(newLocation.horizontalAccuracy > 100.0f || newLocation.horizontalAccuracy < 0.0f){
+    CLLocation * location = newLocation;
+    
+    User * user = [User currentUserInContext:self.managedObjectContext];
+    
+    if (user == nil) {
         
         return;
     }
-
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+    
+    if(location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
         
-        if([self.backgroundDate timeIntervalSinceNow] > -[[[NSUserDefaults standardUserDefaults] objectForKey:kLocationTimeInterval] doubleValue]) {
+        return;
+    }
+    
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
+        
+        if([self.backgroundDate timeIntervalSinceNow] > -[user.locationTimeInterval doubleValue]) {
             
             return;
         }
@@ -289,17 +307,15 @@
         
         return;
     }
-        
-    [self.mapViewController didAddNewLocation:newLocation];
+    // add the location on the map
+    [self.mapViewController addNewLocation:location];
     
-    UIBackgroundTaskIdentifier __block backgroundTask = 0;
     
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         
-        // Ask the phone an extra time to perfom the server connection while in background
-        backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             
-            backgroundTask = UIBackgroundTaskInvalid;
+            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
         }];
     }
     else {
@@ -307,32 +323,26 @@
         self.foregroundLocationUpdatesAllowed = NO;
     }
     
-    [PPrYvServerManager uploadNewEventOfTypeLocation:newLocation onFailSaveInContext:self.managedObjectContext isBackgroundTask:backgroundTask];
+    Location * aLocation = [Location newLocation:location withMessage:nil attachment:nil folder:user.folderId inContext:self.managedObjectContext];
+    
+    [aLocation sendToPrYvAPI];
 }
 
-#pragma mark - Application Will Enter Foreground Tasks
+#pragma mark - PPrYvDefaultManager delegate
 
-- (void)checkForPendingEventsToUpload {
+- (void)PPrYvDefaultManagerDidSynchronize {
     
-    NSMutableArray * allPositions = [Position allPositionsInFormatReadyToUploadInContext:self.managedObjectContext];
-    
-    if (allPositions == nil || [allPositions count] == 0) {
-        
-        return;
-    }
-    
-    [PPrYvServerManager uploadBatchEventsOfTypeLocations:allPositions successDelegate:self];
+    [Location sendAllPendingEventsToPrYvAPIInContext:self.managedObjectContext];
 }
 
-#pragma mark - Server Manager Batch Upload Delegate
-
-- (void)PPrYvServerManagerDidFinishUploadBatchSuccessfully:(BOOL)success {
+- (void)PPrYvDefaultManagerDidFail:(PPrYvFailedAction)failedAction withError:(NSError *)error {
     
-    if (success) {
+    if (failedAction == PPrYvFailedSynchronize) {
         
-        [Position clearAllPositionsInContext:self.managedObjectContext];
+        // handle the error here
     }
 }
+
 
 
 @end

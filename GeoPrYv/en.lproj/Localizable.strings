@@ -25,7 +25,6 @@
 
 "mapPointText" = "You Were Here!";
 
-
 // CAMERA ACTION SHEET PHOTO
 "actionSheetPhotoTitle" = "Select New Image";
 "actionSheetPhotoCancel" = "Cancel";
@@ -40,3 +39,8 @@
 "settingsTitle" = "Settings";
 "bSettingsReturn" = "Close";
 "bSettingsLogOut" = "Log Out";
+
+// LOGIN VIEW
+
+"alertCantCreateUser" = "Cannot Create Folder";
+"cancelButton" = "OK";

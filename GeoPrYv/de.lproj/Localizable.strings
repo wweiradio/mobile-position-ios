@@ -40,3 +40,8 @@
 "settingsTitle" = "Settings";
 "bSettingsReturn" = "Retour";
 "bSettingsLogOut" = "Log Out";
+
+// LOGIN VIEW
+
+"alertCantCreateUser" = "Cannot Create Folder";
+"cancelButton" = "OK";

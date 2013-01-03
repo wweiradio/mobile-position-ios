@@ -40,3 +40,8 @@
 "settingsTitle" = "Préférences";
 "bSettingsReturn" = "Fermer";
 "bSettingsLogOut" = "Log Out";
+
+// LOGIN
+
+"alertCantCreateUser" = "Impossible de créer le dossier";
+"cancelButton" = "OK";

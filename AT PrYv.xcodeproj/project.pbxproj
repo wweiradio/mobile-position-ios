@@ -16,30 +16,31 @@
 		562C01EA167F8BCA00706EE3 /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 562C01DF167F8BCA00706EE3 /* AFURLConnectionOperation.m */; };
 		562C01EB167F8BCA00706EE3 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 562C01E1167F8BCA00706EE3 /* AFXMLRequestOperation.m */; };
 		562C01EC167F8BCA00706EE3 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 562C01E3167F8BCA00706EE3 /* UIImageView+AFNetworking.m */; };
+		563A4AAF1684EC3F004B0DE6 /* PPrYvDefaultManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 563A4AAE1684EC3F004B0DE6 /* PPrYvDefaultManager.m */; };
+		563A4ABC168BBCBA004B0DE6 /* Location.m in Sources */ = {isa = PBXBuildFile; fileRef = 563A4ABB168BBCBA004B0DE6 /* Location.m */; };
 		5655188C167E7463006FE2A2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5655188B167E7463006FE2A2 /* MobileCoreServices.framework */; };
 		5656972616723CA600A49B18 /* PPrYvLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5656972416723CA500A49B18 /* PPrYvLoginViewController.m */; };
 		5656972716723CA600A49B18 /* PPrYvLoginViewControlleriPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5656972516723CA500A49B18 /* PPrYvLoginViewControlleriPad.xib */; };
 		5656972916723CC200A49B18 /* PPrYvLoginViewControlleriPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5656972816723CC200A49B18 /* PPrYvLoginViewControlleriPhone.xib */; };
-		565697931676538500A49B18 /* PPrYvServerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 565697921676538400A49B18 /* PPrYvServerManager.m */; };
+		5661E077168F042000687046 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 5661E076168F042000687046 /* User.m */; };
 		568242E91670AAD90032489E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568242E81670AAD90032489E /* UIKit.framework */; };
 		568242EB1670AAD90032489E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568242EA1670AAD90032489E /* Foundation.framework */; };
 		568242ED1670AAD90032489E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568242EC1670AAD90032489E /* CoreGraphics.framework */; };
 		568242EF1670AAD90032489E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568242EE1670AAD90032489E /* CoreData.framework */; };
 		568242F51670AAD90032489E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 568242F31670AAD90032489E /* InfoPlist.strings */; };
-		568242F71670AAD90032489E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 568242F61670AAD90032489E /* main.m */; };
-		568242FB1670AAD90032489E /* PPrYvAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 568242FA1670AAD90032489E /* PPrYvAppDelegate.m */; };
 		568242FD1670AAD90032489E /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 568242FC1670AAD90032489E /* Default.png */; };
 		568242FF1670AAD90032489E /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 568242FE1670AAD90032489E /* Default@2x.png */; };
 		568243011670AAD90032489E /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 568243001670AAD90032489E /* Default-568h@2x.png */; };
-		568243041670AAD90032489E /* GeoPrYv.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 568243021670AAD90032489E /* GeoPrYv.xcdatamodeld */; };
+		568243041670AAD90032489E /* ATPrYv.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 568243021670AAD90032489E /* ATPrYv.xcdatamodeld */; };
 		568243131670B1200032489E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568243121670B1200032489E /* CoreLocation.framework */; };
 		568243171670B2490032489E /* PPrYvMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 568243151670B2490032489E /* PPrYvMapViewController.m */; };
 		568243181670B2490032489E /* PPrYvMapViewControlleriPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 568243161670B2490032489E /* PPrYvMapViewControlleriPad.xib */; };
 		5682431A1670B2840032489E /* PPrYvMapViewControlleriPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 568243191670B2840032489E /* PPrYvMapViewControlleriPhone.xib */; };
 		568243211670C8880032489E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 568243231670C8880032489E /* Localizable.strings */; };
 		568243341670DAD40032489E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568243331670DAD40032489E /* MapKit.framework */; };
-		568243371670DDD50032489E /* Position.m in Sources */ = {isa = PBXBuildFile; fileRef = 568243361670DDD50032489E /* Position.m */; };
 		5682434B1670FAB00032489E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5682434A1670FAAF0032489E /* SystemConfiguration.framework */; };
+		56B4813F1694DD3E006529EB /* PPrYvAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B4813E1694DD3E006529EB /* PPrYvAppDelegate.m */; };
+		56B481411694F56D006529EB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B481401694F56D006529EB /* main.m */; };
 		56F665501679D46C00E85921 /* PPrYvOpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = 56F6654F1679D46C00E85921 /* PPrYvOpenUDID.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		56F6655C167A464100E85921 /* PPrYvSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 56F6655A167A464100E85921 /* PPrYvSettingViewController.m */; };
 		56F6655D167A464100E85921 /* PPrYvSettingViewControlleriPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 56F6655B167A464100E85921 /* PPrYvSettingViewControlleriPad.xib */; };
@@ -68,14 +69,17 @@
 		562C01E1167F8BCA00706EE3 /* AFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFXMLRequestOperation.m; sourceTree = "<group>"; };
 		562C01E2167F8BCA00706EE3 /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		562C01E3167F8BCA00706EE3 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
-		5655187D167B6775006FE2A2 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Constants.h; path = ../Constants.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		563A4AAD1684EC3F004B0DE6 /* PPrYvDefaultManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvDefaultManager.h; sourceTree = "<group>"; };
+		563A4AAE1684EC3F004B0DE6 /* PPrYvDefaultManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvDefaultManager.m; sourceTree = "<group>"; };
+		563A4ABA168BBCBA004B0DE6 /* Location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Location.h; sourceTree = "<group>"; };
+		563A4ABB168BBCBA004B0DE6 /* Location.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Location.m; sourceTree = "<group>"; };
 		5655188B167E7463006FE2A2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		5656972316723CA500A49B18 /* PPrYvLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PPrYvLoginViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		5656972416723CA500A49B18 /* PPrYvLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PPrYvLoginViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		5656972516723CA500A49B18 /* PPrYvLoginViewControlleriPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PPrYvLoginViewControlleriPad.xib; sourceTree = "<group>"; };
 		5656972816723CC200A49B18 /* PPrYvLoginViewControlleriPhone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PPrYvLoginViewControlleriPhone.xib; sourceTree = "<group>"; };
-		565697911676538300A49B18 /* PPrYvServerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PPrYvServerManager.h; path = ../PPrYvServerManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		565697921676538400A49B18 /* PPrYvServerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = PPrYvServerManager.m; path = ../PPrYvServerManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		5661E075168F042000687046 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		5661E076168F042000687046 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		568242E41670AAD90032489E /* AT PrYv.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AT PrYv.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		568242E81670AAD90032489E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		568242EA1670AAD90032489E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -83,14 +87,11 @@
 		568242EE1670AAD90032489E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		568242F21670AAD90032489E /* AT PrYv-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AT PrYv-Info.plist"; sourceTree = "<group>"; };
 		568242F41670AAD90032489E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		568242F61670AAD90032489E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = main.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		568242F81670AAD90032489E /* AT PrYv-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "AT PrYv-Prefix.pch"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		568242F91670AAD90032489E /* PPrYvAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PPrYvAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		568242FA1670AAD90032489E /* PPrYvAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PPrYvAppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		568242FC1670AAD90032489E /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		568242FE1670AAD90032489E /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		568243001670AAD90032489E /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		568243031670AAD90032489E /* GeoPrYv.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = GeoPrYv.xcdatamodel; sourceTree = "<group>"; };
+		568243031670AAD90032489E /* ATPrYv.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ATPrYv.xcdatamodel; sourceTree = "<group>"; };
 		568243121670B1200032489E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		568243141670B2490032489E /* PPrYvMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PPrYvMapViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		568243151670B2490032489E /* PPrYvMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PPrYvMapViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -100,9 +101,10 @@
 		568243241670C8D20032489E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		568243251670C8D20032489E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		568243331670DAD40032489E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
-		568243351670DDD50032489E /* Position.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Position.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		568243361670DDD50032489E /* Position.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = Position.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		5682434A1670FAAF0032489E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		56B4813D1694DD1C006529EB /* PPrYvAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvAppDelegate.h; sourceTree = "<group>"; };
+		56B4813E1694DD3E006529EB /* PPrYvAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvAppDelegate.m; sourceTree = "<group>"; };
+		56B481401694F56D006529EB /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		56F6654F1679D46C00E85921 /* PPrYvOpenUDID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvOpenUDID.m; sourceTree = "<group>"; };
 		56F66556167A32B400E85921 /* PPrYvOpenUDID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvOpenUDID.h; sourceTree = "<group>"; };
 		56F66557167A45C900E85921 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
@@ -173,8 +175,8 @@
 		56551880167B67C0006FE2A2 /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				568242F91670AAD90032489E /* PPrYvAppDelegate.h */,
-				568242FA1670AAD90032489E /* PPrYvAppDelegate.m */,
+				56B4813D1694DD1C006529EB /* PPrYvAppDelegate.h */,
+				56B4813E1694DD3E006529EB /* PPrYvAppDelegate.m */,
 				568242F11670AAD90032489E /* Supporting Files */,
 			);
 			name = Application;
@@ -206,11 +208,10 @@
 		565697621675F6F600A49B18 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				5655187D167B6775006FE2A2 /* Constants.h */,
-				565697911676538300A49B18 /* PPrYvServerManager.h */,
-				565697921676538400A49B18 /* PPrYvServerManager.m */,
 				56F66556167A32B400E85921 /* PPrYvOpenUDID.h */,
 				56F6654F1679D46C00E85921 /* PPrYvOpenUDID.m */,
+				563A4AAD1684EC3F004B0DE6 /* PPrYvDefaultManager.h */,
+				563A4AAE1684EC3F004B0DE6 /* PPrYvDefaultManager.m */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -268,7 +269,7 @@
 			children = (
 				568242F21670AAD90032489E /* AT PrYv-Info.plist */,
 				568242F31670AAD90032489E /* InfoPlist.strings */,
-				568242F61670AAD90032489E /* main.m */,
+				56B481401694F56D006529EB /* main.m */,
 				568242F81670AAD90032489E /* AT PrYv-Prefix.pch */,
 				568242FC1670AAD90032489E /* Default.png */,
 				568242FE1670AAD90032489E /* Default@2x.png */,
@@ -300,9 +301,11 @@
 		568243381670DE080032489E /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				568243021670AAD90032489E /* GeoPrYv.xcdatamodeld */,
-				568243351670DDD50032489E /* Position.h */,
-				568243361670DDD50032489E /* Position.m */,
+				568243021670AAD90032489E /* ATPrYv.xcdatamodeld */,
+				5661E075168F042000687046 /* User.h */,
+				5661E076168F042000687046 /* User.m */,
+				563A4ABA168BBCBA004B0DE6 /* Location.h */,
+				563A4ABB168BBCBA004B0DE6 /* Location.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -382,13 +385,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				568242F71670AAD90032489E /* main.m in Sources */,
-				568242FB1670AAD90032489E /* PPrYvAppDelegate.m in Sources */,
-				568243041670AAD90032489E /* GeoPrYv.xcdatamodeld in Sources */,
+				568243041670AAD90032489E /* ATPrYv.xcdatamodeld in Sources */,
 				568243171670B2490032489E /* PPrYvMapViewController.m in Sources */,
-				568243371670DDD50032489E /* Position.m in Sources */,
 				5656972616723CA600A49B18 /* PPrYvLoginViewController.m in Sources */,
-				565697931676538500A49B18 /* PPrYvServerManager.m in Sources */,
 				56F665501679D46C00E85921 /* PPrYvOpenUDID.m in Sources */,
 				56F6655C167A464100E85921 /* PPrYvSettingViewController.m in Sources */,
 				562C01E4167F8BCA00706EE3 /* AFHTTPClient.m in Sources */,
@@ -400,6 +399,11 @@
 				562C01EA167F8BCA00706EE3 /* AFURLConnectionOperation.m in Sources */,
 				562C01EB167F8BCA00706EE3 /* AFXMLRequestOperation.m in Sources */,
 				562C01EC167F8BCA00706EE3 /* UIImageView+AFNetworking.m in Sources */,
+				563A4AAF1684EC3F004B0DE6 /* PPrYvDefaultManager.m in Sources */,
+				563A4ABC168BBCBA004B0DE6 /* Location.m in Sources */,
+				5661E077168F042000687046 /* User.m in Sources */,
+				56B4813F1694DD3E006529EB /* PPrYvAppDelegate.m in Sources */,
+				56B481411694F56D006529EB /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -488,12 +492,13 @@
 		568243081670AAD90032489E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Nicolas Manzini (9B66NCCATQ)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GeoPrYv/AT PrYv-Prefix.pch";
 				INFOPLIST_FILE = "GeoPrYv/AT PrYv-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				PRODUCT_NAME = "AT PrYv";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -501,12 +506,13 @@
 		568243091670AAD90032489E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Nicolas Manzini (9B66NCCATQ)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GeoPrYv/AT PrYv-Prefix.pch";
 				INFOPLIST_FILE = "GeoPrYv/AT PrYv-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				PRODUCT_NAME = "AT PrYv";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -535,13 +541,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		568243021670AAD90032489E /* GeoPrYv.xcdatamodeld */ = {
+		568243021670AAD90032489E /* ATPrYv.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				568243031670AAD90032489E /* GeoPrYv.xcdatamodel */,
+				568243031670AAD90032489E /* ATPrYv.xcdatamodel */,
 			);
-			currentVersion = 568243031670AAD90032489E /* GeoPrYv.xcdatamodel */;
-			path = GeoPrYv.xcdatamodeld;
+			currentVersion = 568243031670AAD90032489E /* ATPrYv.xcdatamodel */;
+			path = ATPrYv.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
