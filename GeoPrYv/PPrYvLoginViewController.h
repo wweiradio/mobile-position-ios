@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PPrYvDefaultManager.h"
 
 
-@interface PPrYvLoginViewController : UIViewController <UITextFieldDelegate, PPrYvDefaultManagerDelegate>
+@interface PPrYvLoginViewController : UIViewController <UITextFieldDelegate>
 
 // user login
 @property (weak, nonatomic) IBOutlet UITextField * userField;
@@ -18,9 +17,6 @@
 // password or token for the prYv API
 @property (weak, nonatomic) IBOutlet UITextField * userPassword;
 
-// application unique context started in the app delegate
-@property (strong, nonatomic) NSManagedObjectContext * context;
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil inContext:(NSManagedObjectContext *)context;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 
 @end

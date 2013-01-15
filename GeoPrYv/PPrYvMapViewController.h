@@ -8,23 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
-#import <CoreLocation/CoreLocation.h>
-#import "PPrYvDefaultManager.h"
 
 
-@interface PPrYvMapViewController : UIViewController <MKMapViewDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate, PPrYvDefaultManagerDelegate>
-
-// our mainLocationManager intialized in the AppDelegate that is passed to this class via the custom initalizer method for this class. see bottom
-@property (strong, nonatomic) CLLocationManager * mainLocationManager;
-
-// our unique context passed by The AppDelegate on initialization
-@property (strong, nonatomic) NSManagedObjectContext * context;
+@interface PPrYvMapViewController : UIViewController <MKMapViewDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate>
 
 // a flag to help us know if we are recording locations with the mainLocationManager
 @property (assign, nonatomic, getter = isRecording) BOOL recording;
 
 // our user interface outlets
-@property (weak, nonatomic) IBOutlet UILabel * statusBarRecorder;
+@property (weak, nonatomic) IBOutlet UILabel *statusBarRecorder;
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 @property (weak, nonatomic) IBOutlet UIButton *bRecorder;
 @property (weak, nonatomic) IBOutlet UIButton *bTakePicture;
@@ -42,10 +34,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *bFromDate;
 @property (weak, nonatomic) IBOutlet UIButton *bConfirmTimePeriod;
 @property (weak, nonatomic) IBOutlet UIButton *bCancelDatePickers;
-@property (strong, nonatomic) UIPopoverController * iPadPopover;
+@property (strong, nonatomic) UIPopoverController *iPadPopover;
 
 // our user interface linked methods
-- (IBAction)canceNote:(id)sender;
+- (IBAction)cancelNote:(id)sender;
 - (IBAction)askServerForTimePeriodData;
 - (IBAction)pushSettingsViewController;
 - (IBAction)takeNote:(UIButton *)sender;
@@ -58,12 +50,7 @@
 - (IBAction)sendNoteWithCurrentLocation:(id)sender;
 - (IBAction)startStopLocationRecording:(UIButton *)sender;
 
-/** 
- This methood will add a new point on the map
- */
-- (void)addNewLocation:(CLLocation *)newLocation;
-
 // our custom initializer. We pass the mainLocationManager and the unique application managedObjectContext
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil inContext:(NSManagedObjectContext *)currentContext mainLocationManager:(CLLocationManager *)manager;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 
 @end

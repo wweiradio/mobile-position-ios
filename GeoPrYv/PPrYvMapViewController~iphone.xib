@@ -703,7 +703,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA</b
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">canceNote:</string>
+						<string key="label">cancelNote:</string>
 						<reference key="source" ref="728455754"/>
 						<reference key="destination" ref="372490531"/>
 					</object>

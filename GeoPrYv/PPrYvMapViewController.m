@@ -9,38 +9,39 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "PPrYvMapViewController.h"
 #import "PPrYvSettingViewController.h"
-#import "PPrYvLoginViewController.h"
-#import "Location.h"
-#import "User.h"
+#import "PositionEvent+Extras.h"
+#import "User+Extras.h"
+#import "PPrYvCoreDataManager.h"
+#import "PPrYvLocationManager.h"
+#import "PPrYvPositionEventSender.h"
+#import "PPrYvApiClient.h"
 
 @interface PPrYvMapViewController ()
-
 @end
 
 @implementation PPrYvMapViewController
 
-@synthesize recording;
+@synthesize recording = _recording;
 
 #pragma mark - Object Life Cycle
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil inContext:(NSManagedObjectContext *)currentContext mainLocationManager:(CLLocationManager *)manager {
-    
+- (id)initWithNibName:(NSString *)nibNameOrNil
+               bundle:(NSBundle *)nibBundleOrNil
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
     if (self) {
-        
-        self.context = currentContext;
-        self.recording = NO;
+        _recording = NO;
     }
     return self;
 }
 
 #pragma mark - View LifeCycle
 
-- (void)viewDidLoad {
-    
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-
+    
     // rename all the buttons according to the current local en,fr,de...
     [self.bNextDate setTitle:NSLocalizedString(@"bToDate", ) forState:UIControlStateNormal];
     [self.bAskLast24h setTitle:NSLocalizedString(@"bAsk24h", ) forState:UIControlStateNormal];
@@ -61,8 +62,8 @@
     self.datePickerFrom.date = [NSDate dateWithTimeIntervalSinceNow:-60*60*24*7];   
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     
     // if we are not tracking our position at the moment the view appeared
@@ -72,8 +73,8 @@
         self.mapView.showsUserLocation = YES;
         [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
         
-        // after 5 seconds we stop tracking the user's location within the map to save the phone battery
-        double delayInSeconds = 3;
+        // after 3 seconds we stop tracking the user's location within the map to save the phone battery
+        int64_t delayInSeconds = 3;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
@@ -84,8 +85,8 @@
     }
 }
 
-- (void)viewDidUnload {
-    
+- (void)viewDidUnload
+{
     [self setMapView:nil];
     [self setBRecorder:nil];
     [self setBTakePicture:nil];
@@ -108,25 +109,25 @@
     [super viewDidUnload];
 }
 
-- (void)didReceiveMemoryWarning {
-    
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
     return YES;
 }
 
-#pragma mark - Interface
+#pragma mark - Actions
 
-- (IBAction)startStopLocationRecording:(UIButton *)sender {
-    
+- (IBAction)startStopLocationRecording:(UIButton *)sender
+{
     // if we are not tracking the user location when the button is pressed
     if (self.isRecording == NO) {
         
         // start tracking the user using the mainLocationManager
-        [self.mainLocationManager startUpdatingLocation];
+        [[[PPrYvLocationManager sharedInstance] locationManager] startUpdatingLocation];
         
         // set flag
         self.recording = YES;
@@ -171,20 +172,20 @@
         [self.mapView setUserTrackingMode:MKUserTrackingModeNone animated:YES];
         
         // stop tracking the user
-        [self.mainLocationManager stopUpdatingLocation];        
+        [[[PPrYvLocationManager sharedInstance] locationManager] stopUpdatingLocation];
     }
 }
 
-- (IBAction)takePicture:(id)sender {
-    
+- (IBAction)takePicture:(id)sender
+{
     // show an action sheet to allow the user to chose picture from library or from camera
     UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"actionSheetPhotoTitle", ) delegate:self cancelButtonTitle:NSLocalizedString(@"actionSheetPhotoCancel", ) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"actionSheetPhotoCamera", ),NSLocalizedString(@"actionSheetPhotoLibrary", ), nil];
     
     [actionSheet showInView:self.view];
 }
 
-- (IBAction)takeNote:(UIButton *)sender {
-    
+- (IBAction)takeNote:(UIButton *)sender
+{
     // reinitialize the note composer text
     self.noteComposer.text = @"";
     
@@ -214,8 +215,8 @@
     }
 }
 
-- (IBAction)canceNote:(id)sender {
-    
+- (IBAction)cancelNote:(id)sender
+{
     // dimiss the keyboard
     [self.noteComposer resignFirstResponder];
 
@@ -241,39 +242,41 @@
     }
 }
 
-- (IBAction)sendNoteWithCurrentLocation:(id)sender {
-    
+- (IBAction)sendNoteWithCurrentLocation:(id)sender
+{
     // get the message
     NSString * message = self.noteComposer.text;
     
     // get the current location from the map
     CLLocation * messageLocation = self.mapView.userLocation.location;
     
-    User * user = [User currentUserInContext:self.context];
+    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+
     // create a new event and send to PrYv API
-    [[Location newLocation:messageLocation withMessage:message attachment:nil folder:user.folderId inContext:self.context] sendToPrYvAPI];
+    PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:messageLocation
+                                                                    withMessage:message
+                                                                     attachment:nil folder:user.folderId
+                                                                      inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+
     
     // dimiss the note composer
-    [self canceNote:nil];
+    [self cancelNote:nil];
 }
 
-#pragma mark - Location Manager 
-
-- (void)addNewLocation:(CLLocation *)newLocation {
-    
-    // add a new point on the map
-    MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
-    aPosition.title = NSLocalizedString(@"You were here", );
-    aPosition.coordinate = newLocation.coordinate;
-    
-    
-    [self.mapView addAnnotation:aPosition];
-}
+//- (void)addNewLocation:(CLLocation *)newLocation {
+//    // add a new point on the map
+//    MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
+//    aPosition.title = NSLocalizedString(@"You were here", );
+//    aPosition.coordinate = newLocation.coordinate;
+//
+//    [self.mapView addAnnotation:aPosition];
+//}
 
 #pragma mark - Action Sheet Delegate
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
     switch (buttonIndex) {
         case 0:
             // Camera
@@ -289,7 +292,7 @@
                 picker.allowsEditing = NO;
                 picker.delegate = self;
                 
-                if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
+                if (IS_IPAD) {
                     
                     // we are on ipad need to use a popover
                     self.iPadPopover = [[UIPopoverController alloc] initWithContentViewController:picker];
@@ -319,7 +322,7 @@
                 picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
                 picker.delegate = self;
                 
-                if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
+                if (IS_IPAD) {
                     // we are on ipad need to use a popover
                     
                     self.iPadPopover = [[UIPopoverController alloc] initWithContentViewController:picker];
@@ -342,15 +345,10 @@
 
 #pragma mark - Image Picker Delegate
 
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-    
-    if(!self.isRecording) {
-        
-        self.mapView.showsUserLocation = NO;
-    }
-    
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
     // current folder
-    NSString * folderId = [[User currentUserInContext:self.context] folderId];
+    NSString * folderId = [[User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]] folderId];
 
     // detach a thread to perform some action on the picture data
     dispatch_queue_t queue1 = dispatch_queue_create("com.PrYv.loadImage",NULL);
@@ -368,7 +366,12 @@
                            [asset writeImageToSavedPhotosAlbum:image.CGImage metadata:[info objectForKey: UIImagePickerControllerMediaMetadata] completionBlock:^(NSURL *assetURL, NSError *error) {
                                                               
                                // store the location with attachment url here and send it
-                               [[Location newLocation:self.mapView.userLocation.location withMessage:nil attachment:assetURL folder:folderId inContext:self.context] sendToPrYvAPI];
+                               PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:self.mapView.userLocation.location
+                                                                                               withMessage:nil
+                                                                                                attachment:assetURL
+                                                                                                    folder:folderId
+                                                                                                 inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+                               [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
                            }];
                        }
                        // else the image was picked from the library
@@ -376,15 +379,24 @@
                            
                            // get the image asset URL
                            NSURL * assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
-                           
-                           NSLog(@"image url is: %@", assetURL);
-                           
-                           [[Location newLocation:self.mapView.userLocation.location withMessage:nil attachment:assetURL folder:folderId inContext:self.context] sendToPrYvAPI];
+
+                           PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:self.mapView.userLocation.location
+                                                                                           withMessage:nil
+                                                                                            attachment:assetURL
+                                                                                                folder:folderId
+                                                                                             inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+                           [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
                        }
+
+                       dispatch_async(dispatch_get_main_queue(), ^{
+                           if (!self.isRecording) {
+                               self.mapView.showsUserLocation = NO;
+                           }
+                       });
                    });
     
     // if we are on iPad we remove the picker popover
-    if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
+    if (IS_IPAD) {
         
         [self.iPadPopover dismissPopoverAnimated:YES];
     }
@@ -395,14 +407,14 @@
     }
 }
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-    
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
     if(!self.isRecording) {
         
         self.mapView.showsUserLocation = NO;
     }
     // if on iPad remove the popover
-    if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
+    if (IS_IPAD) {
         
         [self.iPadPopover dismissPopoverAnimated:YES];
     }
@@ -415,15 +427,15 @@
 
 #pragma mark - User Interface Periods Actions
 
-- (IBAction)askForTimePeriod:(UIButton *)sender {
-    
+- (IBAction)askForTimePeriod:(UIButton *)sender
+{
     // if we are already selecting a time period, do nothing
     if (!self.bCancelDatePickers.hidden) {
         
         return;
     }
     
-    if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
+    if (IS_IPAD) {
         // we are on ipad animate user interface
 
         self.datePickerTo.transform = CGAffineTransformMakeTranslation(0,self.datePickerTo.frame.size.height+200);
@@ -471,8 +483,8 @@
     }];
 }
 
-- (IBAction)showDatePickerFrom:(UIButton *)sender {
-    
+- (IBAction)showDatePickerFrom:(UIButton *)sender
+{
     // this button is for iPhone only
     self.bNextDate.alpha = 0;
     self.bNextDate.hidden = NO;
@@ -496,8 +508,8 @@
     }];
 }
 
-- (IBAction)showDatePickerTo:(UIButton *)sender {
-    
+- (IBAction)showDatePickerTo:(UIButton *)sender
+{
     // button only on iPhone
     self.bFromDate.alpha = 0;
     self.bFromDate.hidden = NO;
@@ -523,8 +535,8 @@
     }];
 }
 
-- (IBAction)cancelDatePickers:(UIButton *)sender {
-    
+- (IBAction)cancelDatePickers:(UIButton *)sender
+{
     // only for iPhone
     [UIView animateWithDuration:.5 animations:^{
         
@@ -548,46 +560,69 @@
     }];
 }
 
-- (IBAction)askServerForTimePeriodData {
-    
+- (IBAction)askServerForTimePeriodData
+{
     // dismiss the date pickers
     [self cancelDatePickers:nil];
     
     // get user
-    User * user = [User currentUserInContext:self.context];
+    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     // clean the map from all annotations
     [self.mapView removeAnnotations:self.mapView.annotations];
     
     // ask for events in the chosen time period with the current user channel
-    [[PPrYvDefaultManager sharedManager] getEventsFromStartDate:self.datePickerFrom.date toEndDate:self.datePickerTo.date inFolderId:user.folderId delegate:self];
+    [[PPrYvApiClient sharedClient] getEventsFromStartDate:self.datePickerFrom.date
+                                                 toEndDate:self.datePickerTo.date
+                                                inFolderId:user.folderId
+                                            successHandler:^(NSArray *positionEventList) {
+        [self didReceiveEvents:positionEventList];
+    } errorHandler:^(NSError *error) {
+        [[[UIAlertView alloc] initWithTitle:nil
+                                    message:NSLocalizedString(@"alertCantReceiveEvents", )
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"cancelButton", )
+                          otherButtonTitles:nil] show];
+    }];
 }
 
-- (IBAction)askForLast24h:(UIButton *)sender {
-    
+- (IBAction)askForLast24h:(UIButton *)sender
+{
     // dimiss the date pickers
     [self cancelDatePickers:nil];
     
     // get user
-    User * user = [User currentUserInContext:self.context];
+    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     // clean the map from all annotations
     [self.mapView removeAnnotations:self.mapView.annotations];
     
     // ask the PrYv API for events in the last 24h with the current user channel
-    [[PPrYvDefaultManager sharedManager] getEventsFromStartDate:nil toEndDate:nil inFolderId:user.folderId delegate:self];
+    [[PPrYvApiClient sharedClient] getEventsFromStartDate:nil
+                                                toEndDate:nil
+                                               inFolderId:user.folderId
+                                           successHandler:^(NSArray *positionEventList) {
+        [self didReceiveEvents:positionEventList];
+    } errorHandler:^(NSError *error) {
+        [[[UIAlertView alloc] initWithTitle:nil
+                                    message:NSLocalizedString(@"alertCantReceiveEvents", )
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"cancelButton", )
+                          otherButtonTitles:nil] show];
+    }];
 }
 
-- (IBAction)pushSettingsViewController {
-    
+#pragma mark - Settings Actions
+
+- (IBAction)pushSettingsViewController
+{
     // show the settings menu
-    
-    PPrYvSettingViewController * settings = nil;
-    
-    if ([[[UIDevice currentDevice] model] rangeOfString:@"iPad"].location != NSNotFound) {
-        
-        settings = [[PPrYvSettingViewController alloc] initWithNibName:@"PPrYvSettingViewControlleriPad" bundle:nil inContext:self.context];
-        
+    PPrYvSettingViewController * settings =
+       [[PPrYvSettingViewController alloc] initWithNibName:@"PPrYvSettingViewController"
+                                                    bundle:nil];
+
+    if (IS_IPAD) {
+
         // we are on ipad need to use a popover
         self.iPadPopover = [[UIPopoverController alloc] initWithContentViewController:settings];        
         
@@ -602,25 +637,26 @@
     }
     else {
         
-        settings = [[PPrYvSettingViewController alloc] initWithNibName:@"PPrYvSettingViewControlleriPhone" bundle:nil inContext:self.context];
         [self presentViewController:settings animated:YES completion:nil];
     }
 }
 
-#pragma mark - PPrYvServerManagerDelegate
+#pragma mark
 
-- (void)PPrYvDefaultManagerDidReceiveEvents:(id)JSON {
-    
-    // we know we have received a list of locations
-    NSArray * locationsList = JSON;
-    
-    if (![locationsList count]) {
-        
+- (void)didReceiveEvents:(NSArray *)positionEventList
+{
+    // we have received a list of positionEvents
+
+    if (![positionEventList count]) {
+        NSLog(@"no events found");
+
         return;
     }
-    
+
+    NSLog(@"fetched events: %d", [positionEventList count]);
+
     // Calculate the region to show on map according to all the received points
-    u_int locationsCount = [locationsList count];
+    u_int locationsCount = [positionEventList count];
     double latitudeSum = 0;
     double longitudeSum = 0;
     double latitudeMax = 0;
@@ -628,11 +664,11 @@
     double longitudeMax = 0;
     double longitudeMin = 0;
     
-    for (NSDictionary * dico in locationsList) {
-        
-        double latitude = [[[[dico objectForKey:@"value"] objectForKey:@"location"] objectForKey:@"lat"] doubleValue];
-        double longitude = [[[[dico objectForKey:@"value"] objectForKey:@"location"] objectForKey:@"long"] doubleValue];
-        
+    for (PositionEvent *positionEvent in positionEventList) {
+
+        double latitude = [positionEvent.latitude doubleValue];
+        double longitude = [positionEvent.longitude doubleValue];
+
         latitudeSum += latitude;
         longitudeSum += longitude;
         
@@ -659,7 +695,7 @@
         else {
             longitudeMin = longitude;
         }
-        
+
         MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
         aPosition.title = NSLocalizedString(@"mapPointText", );
         aPosition.coordinate = CLLocationCoordinate2DMake(latitude, longitude);
@@ -670,7 +706,7 @@
     double latitudeMean = latitudeSum/ locationsCount;
     double longitudeMean = longitudeSum / locationsCount;
     double latitudeDelta = MAX(fabs(latitudeMax-latitudeMin), 0.03);
-    double longitudeDelta = MAX(fabs(longitudeMax-longitudeMin),0.03);
+    double longitudeDelta = MAX(fabs(longitudeMax-longitudeMin), 0.03);
 
     MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(latitudeMean, longitudeMean), MKCoordinateSpanMake(latitudeDelta, longitudeDelta));
     

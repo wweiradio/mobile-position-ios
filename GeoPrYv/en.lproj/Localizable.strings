@@ -32,15 +32,22 @@
 "actionSheetPhotoLibrary" = "Choose From Library";
 
 // SETTINGS
-"optionSection1Title" = "Minimal Distance Interval Between Locations";
-"optionSection2Title" = "Minimal Time Interval Between Locations";
+"optionSection1Title" = "Minimal Distance Interval Between Position Events";
+"optionSection2Title" = "Minimal Time Interval Between Position Events";
 "optionSection3Title" = "Logged In As";
-"optionSection4Title" = "Current Folder's Name";
+"optionSection4Title" = "Current Folder";
 "settingsTitle" = "Settings";
-"bSettingsReturn" = "Close";
+"bSettingsReturn" = "Retour";
 "bSettingsLogOut" = "Log Out";
 
 // LOGIN VIEW
 
-"alertCantCreateUser" = "Cannot Create Folder";
+"alertCantCreateFolder" = "Cannot Create Folder";
+"alertCantSynchronize" = "Cannot Synchronize";
 "cancelButton" = "OK";
+
+"You were here" = "You were here";
+
+"alertDidNotFindImage" = "Could not find the image %@";
+"alertCantReceiveEvents" = "Error receiving Position Events";
+"alertCantGetFolderList" = "Error receiving Folders";

@@ -43,5 +43,11 @@
 
 // LOGIN
 
-"alertCantCreateUser" = "Impossible de créer le dossier";
+"alertCantCreateFolder" = "Impossible de créer le dossier";
+"alertCantSynchronize" = "Impossible de synchroniser";
 "cancelButton" = "OK";
+
+"You were here" = "You were here";
+"alertDidNotFindImage" = "Impossible de trouver l'image: %@";
+"alertCantReceiveEvents" = "Impossible d'obtenir les positions";
+"alertCantGetFolderList" = "Impossible d'obtenir les dossiers";

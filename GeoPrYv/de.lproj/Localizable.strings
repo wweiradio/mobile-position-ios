@@ -27,21 +27,29 @@
 
 
 // CAMERA ACTION SHEET PHOTO
-"actionSheetPhotoTitle" = "Select New Image";
+"actionSheetPhotoTitle" = "Select a New Image";
 "actionSheetPhotoCancel" = "Cancel";
-"actionSheetPhotoCamera" = "Take New Photo";
+"actionSheetPhotoCamera" = "Take a New Photo";
 "actionSheetPhotoLibrary" = "Choose From Library";
 
 // SETTINGS
-"optionSection1Title" = "Minimal Distance Interval Between Locations";
-"optionSection2Title" = "Minimal Time Interval Between Locations";
+"optionSection1Title" = "Minimal Distance Interval Between Position Events";
+"optionSection2Title" = "Minimal Time Interval Between Position Events";
 "optionSection3Title" = "Logged In As";
 "optionSection4Title" = "Current Folder";
 "settingsTitle" = "Settings";
-"bSettingsReturn" = "Retour";
+"bSettingsReturn" = "Return";
 "bSettingsLogOut" = "Log Out";
 
 // LOGIN VIEW
 
-"alertCantCreateUser" = "Cannot Create Folder";
+"alertCantCreateFolder" = "Cannot Create Folder";
+"alertCantSynchronize" = "Cannot Synchronize";
+
 "cancelButton" = "OK";
+
+"You were here" = "You were here";
+
+"alertDidNotFindImage" = "Could not Find the Image %@";
+"alertCantReceiveEvents" = "Error receiving Position Events";
+"alertCantGetFolderList" = "Error receiving Folders";
