@@ -76,13 +76,11 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Return the number of sections.
     return 4;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
-    // Return the number of rows in the section.
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{    
     return 1;
 }
 
@@ -100,9 +98,14 @@
         
         return NSLocalizedString(@"optionSection3Title", );
     }
+    /*
     else if (section == 3) {
         
         return NSLocalizedString(@"optionSection4Title", );
+    }
+     */
+    else if (section == 3) {
+        return NSLocalizedString(@"optionSection5Title", );
     }
     else
         return @"";
@@ -167,12 +170,18 @@
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
         cell.textLabel.textAlignment = UITextAlignmentCenter;
     }
-    else if (indexPath.section == 3 && indexPath.row == 0) {
+    /*
+    else if (indexPath.section == 3) {
         
-        cell.textLabel.text = self.currentUser.folderName;
+        cell.textLabel.text = self.currentUser.folderId;
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
     }
-    
+     */
+    else if (indexPath.section == 3) {
+        
+        cell.textLabel.adjustsFontSizeToFitWidth = YES;
+        cell.textLabel.text = self.currentUser.folderName;
+    }
     return cell;
 }
 

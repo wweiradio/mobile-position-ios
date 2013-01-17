@@ -25,6 +25,9 @@
 
 "mapPointText" = "Vous êtiez ici!";
 
+"currentPeriod" = "Session Actuelle";
+"last24hSession" = "Les dernières 24 heures";
+"sessionCustom" = "Periode du %@ au %@";
 
 // CAMERA ACTION SHEET PHOTO
 "actionSheetPhotoTitle" = "Prendre Une Photo";
@@ -36,7 +39,9 @@
 "optionSection1Title" = "Distance minimale entre les positions";
 "optionSection2Title" = "Interval de temps minimal entre les positions";
 "optionSection3Title" = "Utilisateur";
-"optionSection4Title" = "Nom du dossier actuel";
+"optionSection4Title" = "Identifiant du dossier actuel";
+"optionSection5Title" = "Nom du dossier actuelle";
+
 "settingsTitle" = "Préférences";
 "bSettingsReturn" = "Fermer";
 "bSettingsLogOut" = "Log Out";

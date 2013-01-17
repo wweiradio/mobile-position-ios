@@ -109,11 +109,13 @@
 
 - (void)reportSyncError:(NSError *)error
 {
-    [[[UIAlertView alloc] initWithTitle:nil
+    /*
+     [[[UIAlertView alloc] initWithTitle:nil
                                 message:NSLocalizedString(@"alertCantSynchronize", )
                                delegate:nil
                       cancelButtonTitle:NSLocalizedString(@"cancelButton", )
                       otherButtonTitles:nil] show];
+     */
 }
 
 @end

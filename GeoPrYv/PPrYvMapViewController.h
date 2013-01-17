@@ -35,6 +35,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *bConfirmTimePeriod;
 @property (weak, nonatomic) IBOutlet UIButton *bCancelDatePickers;
 @property (strong, nonatomic) UIPopoverController *iPadPopover;
+@property (weak, nonatomic) IBOutlet UILabel *currentPeriodLabel;
 
 // our user interface linked methods
 - (IBAction)cancelNote:(id)sender;

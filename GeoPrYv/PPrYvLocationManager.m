@@ -64,7 +64,7 @@
                                                    object:nil];
 
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(sendingLocaionDidFihish:)
+                                                 selector:@selector(sendingLocationDidFinish:)
                                                      name:kPrYvFinishedSendingLocationNotification
                                                    object:nil];
 
@@ -116,9 +116,9 @@
     }
 }
 
-- (void)locationTimeIntervalDidChange:(NSNotification *)aNotificition
+- (void)locationTimeIntervalDidChange:(NSNotification *)aNotification
 {
-    NSDictionary *userInfo = aNotificition.userInfo;
+    NSDictionary *userInfo = aNotification.userInfo;
     if ([userInfo objectForKey:kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey]) {
         [self.foregroundTimer invalidate];
         NSTimeInterval timeInterval = [[userInfo objectForKey:kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey] doubleValue];
@@ -130,7 +130,7 @@
     }
 }
 
-- (void)sendingLocaionDidFihish:(NSNotification *)aNotificition
+- (void)sendingLocationDidFinish:(NSNotification *)aNotification
 {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         [[UIApplication sharedApplication] endBackgroundTask:[self backgroundTaskIdentifier]];
@@ -185,7 +185,8 @@
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
-}
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocation object:nil userInfo:@{kPrYvLocationManagerDidAcceptNewLocation : location}];}
 
 // iOS <= 5.1
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
@@ -225,7 +226,8 @@
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
-
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocation object:nil userInfo:@{kPrYvLocationManagerDidAcceptNewLocation : location}];
 }
 
 @end

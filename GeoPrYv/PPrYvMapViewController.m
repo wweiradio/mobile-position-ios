@@ -59,7 +59,19 @@
     
     // Set default datepickers period from a week ago to now
     self.datePickerTo.date = [NSDate date];
-    self.datePickerFrom.date = [NSDate dateWithTimeIntervalSinceNow:-60*60*24*7];   
+    self.datePickerFrom.date = [NSDate dateWithTimeIntervalSinceNow:-60*60*24*7];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:kPrYvLocationManagerDidAcceptNewLocation object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        
+        CLLocation * newLocation = [note.userInfo objectForKey:kPrYvLocationManagerDidAcceptNewLocation];
+        
+        // add a new point on the map
+        MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
+        aPosition.title = NSLocalizedString(@"You were here", );
+        aPosition.coordinate = newLocation.coordinate;
+        
+        [self.mapView addAnnotation:aPosition];
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -106,6 +118,8 @@
     [self setBSettings:nil];
     [self setBCancelDatePickers:nil];
     
+    [self setCurrentPeriodLabel:nil];
+    [self setCurrentPeriodLabel:nil];
     [super viewDidUnload];
 }
 
@@ -135,9 +149,13 @@
         // also activate the user location on the map
         self.mapView.showsUserLocation = YES;
         [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+        [self.mapView removeAnnotations:self.mapView.annotations];
         
         // change the button title accroding to the situation
         [self.bRecorder setTitle:NSLocalizedString(@"bRecordStop", ) forState:UIControlStateNormal];
+        
+        // prompt the information
+        self.currentPeriodLabel.text = NSLocalizedString(@"currentPeriod", );
         
         // animate the interface for the user experience and
         // show a status bar to inform the location recording is enabled
@@ -264,14 +282,23 @@
     [self cancelNote:nil];
 }
 
-//- (void)addNewLocation:(CLLocation *)newLocation {
-//    // add a new point on the map
-//    MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
-//    aPosition.title = NSLocalizedString(@"You were here", );
-//    aPosition.coordinate = newLocation.coordinate;
-//
-//    [self.mapView addAnnotation:aPosition];
-//}
+#pragma mark MapView Delegate
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+    
+    if (annotation == mapView.userLocation) {
+        return nil;
+    }
+    static NSString * annotationIdentifier = @"annotationIdentifier";
+    MKPinAnnotationView * annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
+                                                                           reuseIdentifier:annotationIdentifier];
+    annotationView.animatesDrop = YES;
+    annotationView.pinColor = MKPinAnnotationColorGreen;
+    annotationView.enabled = YES;
+    annotationView.canShowCallout = YES;
+    
+    return annotationView;
+}
 
 #pragma mark - Action Sheet Delegate
 
@@ -570,20 +597,29 @@
     
     // clean the map from all annotations
     [self.mapView removeAnnotations:self.mapView.annotations];
-    
+    NSTimeInterval interval = 60.*60.*24.;
+    NSDate * dateTo = [self.datePickerTo.date dateByAddingTimeInterval:interval];
     // ask for events in the chosen time period with the current user channel
     [[PPrYvApiClient sharedClient] getEventsFromStartDate:self.datePickerFrom.date
-                                                 toEndDate:self.datePickerTo.date
-                                                inFolderId:user.folderId
-                                            successHandler:^(NSArray *positionEventList) {
-        [self didReceiveEvents:positionEventList];
-    } errorHandler:^(NSError *error) {
-        [[[UIAlertView alloc] initWithTitle:nil
-                                    message:NSLocalizedString(@"alertCantReceiveEvents", )
-                                   delegate:nil
-                          cancelButtonTitle:NSLocalizedString(@"cancelButton", )
-                          otherButtonTitles:nil] show];
-    }];
+                                                toEndDate:dateTo
+                                               inFolderId:user.folderId
+                                           successHandler:^(NSArray *positionEventList) {
+                                                
+                                                [self didReceiveEvents:positionEventList];
+                                                
+                                                NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+                                                formatter.dateFormat = @"EEE, MMM d, yyyy";
+                                                formatter.locale = [NSLocale currentLocale];
+                                                
+                                                NSString * dateFrom = [formatter stringFromDate:self.datePickerFrom.date];
+                                                NSString * dateTo = [formatter stringFromDate:self.datePickerTo.date];
+                                                
+                                                self.currentPeriodLabel.text =
+                                                [NSString stringWithFormat:NSLocalizedString(@"sessionCustom", ), dateFrom, dateTo];
+                                            
+                                            } errorHandler:^(NSError *error) {
+                                                
+                                            }];
 }
 
 - (IBAction)askForLast24h:(UIButton *)sender
@@ -596,20 +632,25 @@
     
     // clean the map from all annotations
     [self.mapView removeAnnotations:self.mapView.annotations];
-    
+    NSLog(@"%@",user.folderId);
     // ask the PrYv API for events in the last 24h with the current user channel
     [[PPrYvApiClient sharedClient] getEventsFromStartDate:nil
                                                 toEndDate:nil
                                                inFolderId:user.folderId
                                            successHandler:^(NSArray *positionEventList) {
-        [self didReceiveEvents:positionEventList];
-    } errorHandler:^(NSError *error) {
-        [[[UIAlertView alloc] initWithTitle:nil
-                                    message:NSLocalizedString(@"alertCantReceiveEvents", )
-                                   delegate:nil
-                          cancelButtonTitle:NSLocalizedString(@"cancelButton", )
-                          otherButtonTitles:nil] show];
-    }];
+                                               
+                                               [self didReceiveEvents:positionEventList];
+                                               self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
+                                           
+                                           } errorHandler:^(NSError *error) {
+                                                /*
+                                                [[[UIAlertView alloc] initWithTitle:nil
+                                                                            message:NSLocalizedString(@"alertCantReceiveEvents", )
+                                                                           delegate:nil
+                                                                  cancelButtonTitle:NSLocalizedString(@"cancelButton", )
+                                                                  otherButtonTitles:nil] show];
+                                                 */
+                                           }];
 }
 
 #pragma mark - Settings Actions
@@ -641,7 +682,7 @@
     }
 }
 
-#pragma mark
+#pragma mark -  Events Received
 
 - (void)didReceiveEvents:(NSArray *)positionEventList
 {
@@ -652,7 +693,6 @@
 
         return;
     }
-
     NSLog(@"fetched events: %d", [positionEventList count]);
 
     // Calculate the region to show on map according to all the received points
@@ -711,6 +751,12 @@
     MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(latitudeMean, longitudeMean), MKCoordinateSpanMake(latitudeDelta, longitudeDelta));
     
     [self.mapView setRegion:region animated:YES];
+}
+#pragma mark - dealloc
+
+- (void)dealloc {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

@@ -22,8 +22,10 @@
     newUser.locationDistanceInterval = [NSNumber numberWithDouble:30];
     newUser.locationTimeInterval = [NSNumber numberWithDouble:30];
     newUser.folderId = [PPrYvOpenUDID value];
-    newUser.folderName = @"userMainFolder";
-
+    newUser.folderName = [[UIDevice currentDevice] name];
+    
+    [context save:nil];
+    
     return newUser;
 }
 

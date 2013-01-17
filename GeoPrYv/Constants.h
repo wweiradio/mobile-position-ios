@@ -9,6 +9,7 @@
 
 #define kPrYvLocationDistanceIntervalDidChangeNotification @"PrYvLocationDistanceIntervalDidChangeNotification"
 #define kPrYvLocationTimeIntervalDidChangeNotification @"PrYvLocationTimeIntervalDidChangeNotification"
+#define kPrYvLocationManagerDidAcceptNewLocation @"kPrYvLocationManagerDidAcceptNewLocation"
 
 // notification keys in userInfo dictionary
 

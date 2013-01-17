@@ -25,6 +25,9 @@
 
 "mapPointText" = "You Were Here!";
 
+"currentPeriod" = "Current Recording Session";
+"last24hSession" = "The Last 24 Hours";
+"sessionCustom" = "Period From %@ To %@";
 
 // CAMERA ACTION SHEET PHOTO
 "actionSheetPhotoTitle" = "Select a New Image";
@@ -36,7 +39,8 @@
 "optionSection1Title" = "Minimal Distance Interval Between Position Events";
 "optionSection2Title" = "Minimal Time Interval Between Position Events";
 "optionSection3Title" = "Logged In As";
-"optionSection4Title" = "Current Folder";
+"optionSection4Title" = "Current Folder ID";
+"optionSection5Title" = "Current Folder Name";
 "settingsTitle" = "Settings";
 "bSettingsReturn" = "Return";
 "bSettingsLogOut" = "Log Out";

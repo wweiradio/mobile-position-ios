@@ -28,7 +28,7 @@
 {
     NSDictionary *jsonDictionary = JSON;
     Folder *folder = [[Folder alloc] init];
-    folder.id = [jsonDictionary objectForKey:@"id"];
+    folder.folderId = [jsonDictionary objectForKey:@"id"];
     folder.name = [jsonDictionary objectForKey:@"name"];
     folder.parentId = [jsonDictionary objectForKey:@"parentId"];
     folder.hidden = [[jsonDictionary objectForKey:@"hidden"] boolValue];
@@ -449,8 +449,8 @@
             successHandler(positionEventList);
         }
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
-        NSLog(@"failed to receive events");
-
+        NSLog(@"failed to receive events: %@", error);
+        
         NSDictionary *userInfo = @{
                 @"connectionError": [self nonNil:error],
                 @"NSHTTPURLResponse" : [self nonNil:response],
@@ -538,6 +538,7 @@
                                                          error:nil];
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        
         NSLog(@"successfully created folderName: %@ folderId: %@", folderName, folderId);
 
         if (successHandler)

@@ -99,12 +99,13 @@
             [self sendEvent];
         } failureBlock:^(NSError *error) {
             NSLog(@"failed to get image from photo library by url: %@, thus not sending this image", attachmentUrl);
-
+            /*
             [[[UIAlertView alloc] initWithTitle:nil
                                         message:[NSString stringWithFormat:NSLocalizedString(@"alertDidNotFindImage", ), attachmentUrl]
                                        delegate:nil
                               cancelButtonTitle:NSLocalizedString(@"cancelButton", )
                               otherButtonTitles:nil] show];
+             */
         }];
     } else {
         [self sendEvent];
