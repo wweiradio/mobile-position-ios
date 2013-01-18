@@ -3,7 +3,7 @@ AT PrYv
 
 AT PrYv is an iPhone and iPad application that allows you to store or retrieve your location online using the [**PrYv API**](http://dev.pryv.com/), and see past locations according to the desired period of time on a map.
 
-Mainly, This application is a location tracker that will also run in the background and regularly send update of your location to the PrYv API or store them locally until the network become available again. This application is an exemple of what PrYv allows you to do. At PrYv sends and retrieves what is known on PrYv as `Events` . PrYv allows you to store events of any type. They basically are JSON dictionaries with id's.
+Mainly, This application is a location tracker that will also run in the background and regularly send update of your location to the PrYv API or store them locally until the network become available again. This application is an exemple of what PrYv allows you to do. AT PrYv sends and retrieves what is known on PrYv as `Events` . PrYv allows you to store events of any type. They basically are JSON dictionaries with id's.
 
 We have built into AT PrYv a `PrYvApiClient` class to simplify the storing and retrieving of events of type location. It's block based and very easy to use. 
 `PrYvApiClient` class operate with the [AFNetworking](https://github.com/AFNetworking/AFNetworking) library to manage all the HTTP protocol. We invite you to fork it in order to build upon the `PrYvAPIClient` Class.
