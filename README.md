@@ -1,24 +1,6 @@
 AT PrYv
 =======
 
-<<<<<<< HEAD
-AT PrYv is an iPhone and iPad application that allows you to store and retrieve locations online using the [**PrYv API**](http://dev.pryv.com/), 
-
-Mainly, This application is a location tracker that will also run in the background and regularly send update of your location to the PrYv API or store them locally until the network become available again. 
-It also lets you see past locations according to the desired period of time on a map.
-
-
-AT PrYv is an exemple of what PrYv allows you to do. This application sends and retrieves what is known on PrYv as `Events`. PrYv allows you to store events of any type. They basically are JSON dictionaries containing an id and a timestamp.
-
-We have built into AT PrYv an `PPrYvApiClient` class to ease the storing and retrieving of events of type location. It's block based and very easy to use. 
-`PPrYvApiClient` class operate with the [AFNetworking](https://github.com/AFNetworking/AFNetworking) library to manage all the HTTP protocol. We invite you to fork it if you wish to build upon and extend `PPrYvAPIClient`.
-
-To use the **PPrYvApiClient.h** Singleton Class you simply import the `PPrYvApiClient.h` in your `AppDelegate.m` and in the method:
-
-`- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions`
-
-**You initialize the `PPrYvApiClient` by calling:**
-=======
 AT PrYv is an iPhone and iPad application that allows you to store or retrieve your location online using the [**PrYv API**](http://dev.pryv.com/), and see past locations according to the desired period of time on a map.
 
 Mainly, This application is a location tracker that will also run in the background and regularly send update of your location to the PrYv API or store them locally until the network become available again. This application is an exemple of what PrYv allows you to do. At PrYv sends and retrieves what is known on PrYv as `Events` . PrYv allows you to store events of any type. They basically are JSON dictionaries with id's.
@@ -31,7 +13,7 @@ To use the **PrYvApiClient.h** Singleton Class you simply import the `PrYvApiCli
 `- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions`
 
 **You initialize the `PrYvApiClient` by calling:**
->>>>>>> Corrections and enhancements
+
 
 
     PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
@@ -40,7 +22,7 @@ To use the **PrYvApiClient.h** Singleton Class you simply import the `PrYvApiCli
                               oAuthToken:@"{userToken}"
                                channelId:@"{applicationChannel}" successHandler:^(NSTimeInterval serverTime)
         {
-<<<<<<< HEAD
+
             // your success code here
         }                   errorHandler:^(NSError *error)
         {
@@ -101,18 +83,3 @@ If you pass nil to both start and end date you will get event from the last 24h.
 For more informations, you can visit the [**PrYv API**](http://dev.pryv.com/) reference website.
 
 Feel free to fork and improve this API!
-=======
-
-            // your code here
-        }                   errorHandler:^(NSError *error)
-        {
-            // your code here
-        }];
-Where `{userId}`,`{userToken}`,`{applicationChannel}` are your credentials.
-
-The `sucessHandler` will return an `NSTimerInterval serverTime` variable. This allows you to synchronize your application with the server. **You should always use `serverTime` to synchronize your app with the server.** `serverTime` contain the server Unix Timestamp which you can turn into an NSDate using the `timeIntervalSince1970:` method.
-
-
-
-    
->>>>>>> Corrections and enhancements
