@@ -48,13 +48,13 @@ You can re-synchronize your client using the method
     }];
     
 
-The PrYvApiClient which is used by the `PPrYvPositionEventSender` has one method to send a new event
+The PrYvApiClient has one method to send a new event:
 
     - (void)sendEvent:(PositionEvent *)event
         withSuccessHandler:(void(^)(void))successHandler
               errorHandler:(void(^)(NSError *error))errorHandler;
               
-and one method to retrieve events from a time period
+and one method to retrieve events from a time period:
 
     - (void)getEventsFromStartDate:(NSDate *)startDate
                      toEndDate:(NSDate *)endDate
@@ -63,11 +63,6 @@ and one method to retrieve events from a time period
                   errorHandler:(void(^)(NSError *error))errorHandler;
                   
 If you pass nil to both start and end date you will get event from the last 24h. If you pass nil to folderId you will get events from all folders.
-
-You should call the method `sendAllPendingEventsToPrYvApi` upon synchronization with the server to update the data on the server.
-    
-    [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi]
-
 
 **Location Events**
 -------
@@ -87,12 +82,19 @@ You then initialize a `PPrYvPositionEventSender` by passing it a position by cal
 
 You can then send your position event by calling the method `sendToPrYvApi` on your `PPrYvPositionEventSender` object. 
 
+`PPrYvPositionEventSender` communicate with the `PPrYvApiClient` and manage the request.
+
 **Example on how to send a position event**
 
     PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:location
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:context
     [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+
+You need to call the method `sendAllPendingEventsToPrYvApi` right after synchronization with the server to send all events that couldn't be uploaded before.
+    
+    [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi]
+
 
 _____
 For more informations, you can visit the [**PrYv API**](http://dev.pryv.com/) reference website.
