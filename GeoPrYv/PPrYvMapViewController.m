@@ -77,7 +77,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+    /*
     // if we are not tracking our position at the moment the view appeared
     if (!self.isRecording) {
         
@@ -95,6 +95,10 @@
             [self.mapView setUserTrackingMode:MKUserTrackingModeNone animated:YES];
         });
     }
+     */
+    self.mapView.showsUserLocation = YES;
+    [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+
 }
 
 - (void)viewDidUnload
@@ -145,10 +149,11 @@
         
         // set flag
         self.recording = YES;
-        
+        /*
         // also activate the user location on the map
         self.mapView.showsUserLocation = YES;
         [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+         */
         [self.mapView removeAnnotations:self.mapView.annotations];
         
         // change the button title accroding to the situation
@@ -184,11 +189,11 @@
         
         // set flag
         self.recording = NO;
-        
+        /*
         // stop showing the user's location on the map
         self.mapView.showsUserLocation = NO;
         [self.mapView setUserTrackingMode:MKUserTrackingModeNone animated:YES];
-        
+        */
         // stop tracking the user
         [[[PPrYvLocationManager sharedInstance] locationManager] stopUpdatingLocation];
     }
@@ -224,13 +229,14 @@
     
     // this will show the keyboard and associated its input to our note composer
     [self.noteComposer becomeFirstResponder];
-    
+    /*
     // if the app is not currently tracking the user's location
     if (!self.isRecording) {
         
         // start the gps with the map
         self.mapView.showsUserLocation = YES;
     }
+     */
 }
 
 - (IBAction)cancelNote:(id)sender
@@ -251,13 +257,14 @@
                          self.navBarNote.hidden = YES;
                          self.noteComposer.hidden = YES;
                      }];
-    
+    /*
     // if the app was not tracking the user location
     if(!self.isRecording) {
         
         // stop the gps by stopping the map showing the user location
         self.mapView.showsUserLocation = NO;
     }
+     */
 }
 
 - (IBAction)sendNoteWithCurrentLocation:(id)sender
@@ -337,11 +344,12 @@
         case 1:
             // Photo Library
             if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-                
+                /*
                 if (!self.isRecording) {
                     
                     self.mapView.showsUserLocation = YES;
                 }
+                 */
 
                 UIImagePickerController * picker = [[UIImagePickerController alloc] init];
                 picker.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:
@@ -414,12 +422,14 @@
                                                                                              inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
                            [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
                        }
+                       /*
 
                        dispatch_async(dispatch_get_main_queue(), ^{
                            if (!self.isRecording) {
                                self.mapView.showsUserLocation = NO;
                            }
                        });
+                        */
                    });
     
     // if we are on iPad we remove the picker popover
@@ -436,10 +446,12 @@
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
+    /*
     if(!self.isRecording) {
         
         self.mapView.showsUserLocation = NO;
     }
+     */
     // if on iPad remove the popover
     if (IS_IPAD) {
         
