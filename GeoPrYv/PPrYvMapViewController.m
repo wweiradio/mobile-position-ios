@@ -320,14 +320,24 @@
         return nil;
     }
     static NSString * annotationIdentifier = @"annotationIdentifier";
-    MKPinAnnotationView * annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
+    MKAnnotationView * annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
                                                                            reuseIdentifier:annotationIdentifier];
-    annotationView.animatesDrop = YES;
-    annotationView.pinColor = MKPinAnnotationColorGreen;
+    annotationView.image = [UIImage imageNamed:@"mapPoint.png"];
     annotationView.enabled = YES;
     annotationView.canShowCallout = YES;
     
     return annotationView;
+}
+
+- (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
+{
+    for (MKAnnotationView *annView in views)
+    {
+        CGRect endFrame = annView.frame;
+        annView.frame = CGRectOffset(endFrame, 0, -500);
+        [UIView animateWithDuration:0.5
+                         animations:^{ annView.frame = endFrame; }];
+    }
 }
 
 #pragma mark - Action Sheet Delegate
