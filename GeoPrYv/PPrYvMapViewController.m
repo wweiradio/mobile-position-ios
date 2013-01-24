@@ -72,6 +72,30 @@
         
         [self.mapView addAnnotation:aPosition];
     }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification
+                                                      object:nil
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification *note) {
+                                                      
+        User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+        
+        // clean the map from all annotations
+        [self.mapView removeAnnotations:self.mapView.annotations];
+        // ask the PrYv API for events in the last 24h with the current user channel
+        [[PPrYvApiClient sharedClient] getEventsFromStartDate:nil
+                                                    toEndDate:nil
+                                                   inFolderId:user.folderId
+                                               successHandler:^(NSArray *positionEventList) {
+                                                   
+                                                   [self didReceiveEvents:positionEventList];
+                                                   self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
+                                                   
+                                               } errorHandler:^(NSError *error) {
+                                                   
+                                               }];
+
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -98,7 +122,6 @@
      */
     self.mapView.showsUserLocation = YES;
     [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
-
 }
 
 - (void)viewDidUnload
