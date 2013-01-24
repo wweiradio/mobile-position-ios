@@ -17,6 +17,8 @@
 #import "PPrYvApiClient.h"
 
 @interface PPrYvMapViewController ()
+
+- (void)createMKPolyLine;
 @end
 
 @implementation PPrYvMapViewController
@@ -81,7 +83,6 @@
         User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
         
         // clean the map from all annotations
-        [self.mapView removeAnnotations:self.mapView.annotations];
         // ask the PrYv API for events in the last 24h with the current user channel
         [[PPrYvApiClient sharedClient] getEventsFromStartDate:nil
                                                     toEndDate:nil
@@ -177,7 +178,13 @@
         self.mapView.showsUserLocation = YES;
         [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
          */
-        [self.mapView removeAnnotations:self.mapView.annotations];
+        for (MKPointAnnotation * annot in self.mapView.annotations) {
+            if (annot != (MKPointAnnotation *)self.mapView.userLocation) {
+                [self.mapView removeAnnotation:annot];
+            }
+        }
+        
+        [self.mapView removeOverlays:self.mapView.overlays];
         
         // change the button title accroding to the situation
         [self.bRecorder setTitle:NSLocalizedString(@"bRecordStop", ) forState:UIControlStateNormal];
@@ -331,13 +338,46 @@
 
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
 {
-    for (MKAnnotationView *annView in views)
-    {
+    for (int i = 0; i< [views count]; i++) {
+        
+        MKAnnotationView * annView = [views objectAtIndex:i];
         CGRect endFrame = annView.frame;
         annView.frame = CGRectOffset(endFrame, 0, -500);
-        [UIView animateWithDuration:0.5
-                         animations:^{ annView.frame = endFrame; }];
+        NSTimeInterval interval = 0.03 * i;
+        
+        [UIView animateWithDuration:0.5 delay:interval options:UIViewAnimationCurveEaseOut animations:^{
+            annView.frame = endFrame;
+        } completion:^(BOOL finished) {
+            
+            if (i == [views count]-1) {
+                UIView * view = [mapView viewForAnnotation:mapView.userLocation];
+                [[view superview] bringSubviewToFront:view];
+            }
+        }];
     }
+    }
+
+- (void)createMKPolyLine
+{
+    CLLocationCoordinate2D *coords = malloc(sizeof(CLLocationCoordinate2D) * [self.mapView.annotations count]);
+    
+    for (int i = 0; i < [self.mapView.annotations count]; i++) {
+        coords[i] = [(MKPointAnnotation *)[self.mapView.annotations objectAtIndex:i] coordinate];
+        NSLog(@"did add coordinate");
+    }
+    
+    MKPolyline * polyLine = [MKPolyline polylineWithCoordinates:coords count:[self.mapView.annotations count]];
+    
+    [self.mapView addOverlay:polyLine];
+}
+
+- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay
+{
+    MKPolylineView * polylineView =[[MKPolylineView alloc] initWithPolyline:(MKPolyline *)overlay];
+    polylineView.strokeColor = [UIColor colorWithWhite:.7 alpha:.9];
+    polylineView.lineWidth = 5.f;
+    
+    return polylineView;
 }
 
 #pragma mark - Action Sheet Delegate
@@ -641,7 +681,6 @@
     User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     // clean the map from all annotations
-    [self.mapView removeAnnotations:self.mapView.annotations];
     NSTimeInterval interval = 60.*60.*24.;
     NSDate * dateTo = [self.datePickerTo.date dateByAddingTimeInterval:interval];
     // ask for events in the chosen time period with the current user channel
@@ -676,7 +715,6 @@
     User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     // clean the map from all annotations
-    [self.mapView removeAnnotations:self.mapView.annotations];
     NSLog(@"%@",user.folderId);
     // ask the PrYv API for events in the last 24h with the current user channel
     [[PPrYvApiClient sharedClient] getEventsFromStartDate:nil
@@ -739,7 +777,34 @@
         return;
     }
     NSLog(@"fetched events: %d", [positionEventList count]);
+    
+    positionEventList = [positionEventList sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        
+        PositionEvent * event1 = (PositionEvent *)obj1;
+        PositionEvent * event2 = (PositionEvent *)obj2;
+        
+        if ([[event1.date earlierDate:event2.date] isEqualToDate:event1.date]) {
+            NSLog(@"ascending budy!");
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        else if([[event1.date earlierDate:event2.date] isEqualToDate:event2.date]){
+            NSLog(@"descending budy! event1 = %@ event2 = %@", event1.date,event2.date);
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+    
+    for (MKPointAnnotation * annot in self.mapView.annotations) {
+        if (annot != (MKPointAnnotation *)self.mapView.userLocation) {
+            [self.mapView removeAnnotation:annot];
+        }
+    }
+    
+    [self.mapView removeOverlays:self.mapView.overlays];
 
+    NSMutableArray * annotations = [NSMutableArray array];
+    
     // Calculate the region to show on map according to all the received points
     u_int locationsCount = [positionEventList count];
     double latitudeSum = 0;
@@ -784,18 +849,22 @@
         MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
         aPosition.title = NSLocalizedString(@"mapPointText", );
         aPosition.coordinate = CLLocationCoordinate2DMake(latitude, longitude);
-        
-        [self.mapView addAnnotation:aPosition];
+        [annotations addObject:aPosition];
     }
 
-    double latitudeMean = latitudeSum/ locationsCount;
-    double longitudeMean = longitudeSum / locationsCount;
+    double latitudeAvg = latitudeSum/ locationsCount;
+    double longitudeAvg = longitudeSum / locationsCount;
     double latitudeDelta = MAX(fabs(latitudeMax-latitudeMin), 0.03);
     double longitudeDelta = MAX(fabs(longitudeMax-longitudeMin), 0.03);
 
-    MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(latitudeMean, longitudeMean), MKCoordinateSpanMake(latitudeDelta, longitudeDelta));
+    
+    MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(latitudeAvg, longitudeAvg), MKCoordinateSpanMake(latitudeDelta, longitudeDelta));
     
     [self.mapView setRegion:region animated:YES];
+    
+    [self.mapView addAnnotations:annotations];
+    
+    [self createMKPolyLine];
 }
 #pragma mark - dealloc
 
