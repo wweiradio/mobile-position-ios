@@ -38,6 +38,9 @@
 		568243211670C8880032489E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 568243231670C8880032489E /* Localizable.strings */; };
 		568243341670DAD40032489E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568243331670DAD40032489E /* MapKit.framework */; };
 		5682434B1670FAB00032489E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5682434A1670FAAF0032489E /* SystemConfiguration.framework */; };
+		56B1651516B132D700C0530D /* mapPoint.png in Resources */ = {isa = PBXBuildFile; fileRef = 56B1651316B132D700C0530D /* mapPoint.png */; };
+		56B1651616B132D700C0530D /* mapPoint@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 56B1651416B132D700C0530D /* mapPoint@2x.png */; };
+		56B1652616B1809000C0530D /* PPrYvPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B1652516B1809000C0530D /* PPrYvPointAnnotation.m */; };
 		56B4813F1694DD3E006529EB /* PPrYvAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B4813E1694DD3E006529EB /* PPrYvAppDelegate.m */; };
 		56B481411694F56D006529EB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B481401694F56D006529EB /* main.m */; };
 		56F665501679D46C00E85921 /* PPrYvOpenUDID.m in Sources */ = {isa = PBXBuildFile; fileRef = 56F6654F1679D46C00E85921 /* PPrYvOpenUDID.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -46,6 +49,9 @@
 		56F6655F167A467F00E85921 /* PPrYvSettingViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 56F6655E167A467F00E85921 /* PPrYvSettingViewController~iphone.xib */; };
 		56F66561167B1F3000E85921 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56F66560167B1F2F00E85921 /* AssetsLibrary.framework */; };
 		56F6656A167B223F00E85921 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56F66569167B223F00E85921 /* QuartzCore.framework */; };
+		56FEF97116B2A858008A5948 /* pinPryv.png in Resources */ = {isa = PBXBuildFile; fileRef = 56FEF97016B2A858008A5948 /* pinPryv.png */; };
+		56FEF97316B2A85D008A5948 /* pinPryv@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 56FEF97216B2A85D008A5948 /* pinPryv@2x.png */; };
+		56FEF97A16B2D651008A5948 /* UIView+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 56FEF97916B2D651008A5948 /* UIView+Helpers.m */; };
 		B0BC944E83AD3B9686C8D0E6 /* PPrYvCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B0BC9EFF2D2FC7B9083F96DE /* PPrYvCoreDataManager.m */; };
 		B0BC984BAE50FB9689136891 /* Folder.m in Sources */ = {isa = PBXBuildFile; fileRef = B0BC9658EA8BCF1AFA48E480 /* Folder.m */; };
 		B0BC9A3D4A42964FA67D3509 /* User+Extras.m in Sources */ = {isa = PBXBuildFile; fileRef = B0BC92B64FF7716BCD041ABA /* User+Extras.m */; };
@@ -107,6 +113,10 @@
 		568243251670C8D20032489E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		568243331670DAD40032489E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		5682434A1670FAAF0032489E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		56B1651316B132D700C0530D /* mapPoint.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mapPoint.png; sourceTree = "<group>"; };
+		56B1651416B132D700C0530D /* mapPoint@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mapPoint@2x.png"; sourceTree = "<group>"; };
+		56B1652416B1809000C0530D /* PPrYvPointAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvPointAnnotation.h; sourceTree = "<group>"; };
+		56B1652516B1809000C0530D /* PPrYvPointAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvPointAnnotation.m; sourceTree = "<group>"; };
 		56B4813D1694DD1C006529EB /* PPrYvAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvAppDelegate.h; sourceTree = "<group>"; };
 		56B4813E1694DD3E006529EB /* PPrYvAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvAppDelegate.m; sourceTree = "<group>"; };
 		56B481401694F56D006529EB /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -120,6 +130,10 @@
 		56F6655E167A467F00E85921 /* PPrYvSettingViewController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PPrYvSettingViewController~iphone.xib"; sourceTree = "<group>"; };
 		56F66560167B1F2F00E85921 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		56F66569167B223F00E85921 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		56FEF97016B2A858008A5948 /* pinPryv.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pinPryv.png; sourceTree = "<group>"; };
+		56FEF97216B2A85D008A5948 /* pinPryv@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pinPryv@2x.png"; sourceTree = "<group>"; };
+		56FEF97816B2D651008A5948 /* UIView+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Helpers.h"; sourceTree = "<group>"; };
+		56FEF97916B2D651008A5948 /* UIView+Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Helpers.m"; sourceTree = "<group>"; };
 		B0BC906476D7AE6665E844DB /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		B0BC90B3350DCFDA7A78E71D /* PPrYvPositionEventSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvPositionEventSender.m; sourceTree = "<group>"; };
 		B0BC92A5B43C7E7696A35103 /* User+Extras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "User+Extras.h"; sourceTree = "<group>"; };
@@ -238,10 +252,14 @@
 		565697621675F6F600A49B18 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				56FEF97816B2D651008A5948 /* UIView+Helpers.h */,
+				56FEF97916B2D651008A5948 /* UIView+Helpers.m */,
 				56F66556167A32B400E85921 /* PPrYvOpenUDID.h */,
 				56F6654F1679D46C00E85921 /* PPrYvOpenUDID.m */,
 				563A4AAD1684EC3F004B0DE6 /* PPrYvApiClient.h */,
 				563A4AAE1684EC3F004B0DE6 /* PPrYvApiClient.m */,
+				56B1652416B1809000C0530D /* PPrYvPointAnnotation.h */,
+				56B1652516B1809000C0530D /* PPrYvPointAnnotation.m */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -325,6 +343,10 @@
 		568243321670C99D0032489E /* images */ = {
 			isa = PBXGroup;
 			children = (
+				56FEF97016B2A858008A5948 /* pinPryv.png */,
+				56FEF97216B2A85D008A5948 /* pinPryv@2x.png */,
+				56B1651316B132D700C0530D /* mapPoint.png */,
+				56B1651416B132D700C0530D /* mapPoint@2x.png */,
 			);
 			name = images;
 			sourceTree = "<group>";
@@ -414,6 +436,10 @@
 				5656972916723CC200A49B18 /* PPrYvLoginViewController~iphone.xib in Resources */,
 				56F6655D167A464100E85921 /* PPrYvSettingViewController~ipad.xib in Resources */,
 				56F6655F167A467F00E85921 /* PPrYvSettingViewController~iphone.xib in Resources */,
+				56B1651516B132D700C0530D /* mapPoint.png in Resources */,
+				56B1651616B132D700C0530D /* mapPoint@2x.png in Resources */,
+				56FEF97116B2A858008A5948 /* pinPryv.png in Resources */,
+				56FEF97316B2A85D008A5948 /* pinPryv@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,6 +476,8 @@
 				B0BC9FFECB2A58D811E6DD32 /* EventAttachment.m in Sources */,
 				B0BC984BAE50FB9689136891 /* Folder.m in Sources */,
 				FB2BC95D169E3A1D007649F5 /* PositionEvent.m in Sources */,
+				56B1652616B1809000C0530D /* PPrYvPointAnnotation.m in Sources */,
+				56FEF97A16B2D651008A5948 /* UIView+Helpers.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

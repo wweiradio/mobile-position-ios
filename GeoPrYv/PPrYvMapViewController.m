@@ -15,6 +15,8 @@
 #import "PPrYvLocationManager.h"
 #import "PPrYvPositionEventSender.h"
 #import "PPrYvApiClient.h"
+#import "PPrYvPointAnnotation.h"
+#import "UIView+Helpers.h"
 
 @interface PPrYvMapViewController ()
 
@@ -102,25 +104,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    /*
-    // if we are not tracking our position at the moment the view appeared
-    if (!self.isRecording) {
-        
-        // Show rapidly the user location and leave until the user start tracking himself or until the view appears again.
-        self.mapView.showsUserLocation = YES;
-        [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
-        
-        // after 3 seconds we stop tracking the user's location within the map to save the phone battery
-        int64_t delayInSeconds = 3;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-        
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            
-            self.mapView.showsUserLocation = NO;
-            [self.mapView setUserTrackingMode:MKUserTrackingModeNone animated:YES];
-        });
-    }
-     */
+    
     self.mapView.showsUserLocation = YES;
     [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
 }
@@ -148,6 +132,8 @@
     
     [self setCurrentPeriodLabel:nil];
     [self setCurrentPeriodLabel:nil];
+    [self setDeckHolder:nil];
+    [self setShadowView:nil];
     [super viewDidUnload];
 }
 
@@ -173,11 +159,7 @@
         
         // set flag
         self.recording = YES;
-        /*
-        // also activate the user location on the map
-        self.mapView.showsUserLocation = YES;
-        [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
-         */
+        
         for (MKPointAnnotation * annot in self.mapView.annotations) {
             if (annot != (MKPointAnnotation *)self.mapView.userLocation) {
                 [self.mapView removeAnnotation:annot];
@@ -219,11 +201,7 @@
         
         // set flag
         self.recording = NO;
-        /*
-        // stop showing the user's location on the map
-        self.mapView.showsUserLocation = NO;
-        [self.mapView setUserTrackingMode:MKUserTrackingModeNone animated:YES];
-        */
+        
         // stop tracking the user
         [[[PPrYvLocationManager sharedInstance] locationManager] stopUpdatingLocation];
     }
@@ -258,15 +236,7 @@
                     }];
     
     // this will show the keyboard and associated its input to our note composer
-    [self.noteComposer becomeFirstResponder];
-    /*
-    // if the app is not currently tracking the user's location
-    if (!self.isRecording) {
-        
-        // start the gps with the map
-        self.mapView.showsUserLocation = YES;
-    }
-     */
+    [self.noteComposer becomeFirstResponder];    
 }
 
 - (IBAction)cancelNote:(id)sender
@@ -286,15 +256,7 @@
                          
                          self.navBarNote.hidden = YES;
                          self.noteComposer.hidden = YES;
-                     }];
-    /*
-    // if the app was not tracking the user location
-    if(!self.isRecording) {
-        
-        // stop the gps by stopping the map showing the user location
-        self.mapView.showsUserLocation = NO;
-    }
-     */
+                     }];    
 }
 
 - (IBAction)sendNoteWithCurrentLocation:(id)sender
@@ -329,7 +291,7 @@
     static NSString * annotationIdentifier = @"annotationIdentifier";
     MKAnnotationView * annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
                                                                            reuseIdentifier:annotationIdentifier];
-    annotationView.image = [UIImage imageNamed:@"mapPoint.png"];
+    annotationView.image = [UIImage imageNamed:@"pinPryv.png"];
     annotationView.enabled = YES;
     annotationView.canShowCallout = YES;
     
@@ -355,18 +317,43 @@
             }
         }];
     }
-    }
+}
 
 - (void)createMKPolyLine
 {
-    CLLocationCoordinate2D *coords = malloc(sizeof(CLLocationCoordinate2D) * [self.mapView.annotations count]);
     
-    for (int i = 0; i < [self.mapView.annotations count]; i++) {
-        coords[i] = [(MKPointAnnotation *)[self.mapView.annotations objectAtIndex:i] coordinate];
+    NSMutableArray * mapPoints = [NSMutableArray arrayWithArray:self.mapView.annotations];
+    
+    [mapPoints removeObject:self.mapView.userLocation];
+
+    
+    CLLocationCoordinate2D *coords = malloc(sizeof(CLLocationCoordinate2D) * [mapPoints count]);
+    
+    NSMutableArray * sortedPoint = [NSMutableArray arrayWithArray:[mapPoints sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        
+        PPrYvPointAnnotation * point1 = obj1;
+        PPrYvPointAnnotation * point2 = obj2;
+        
+        if ([[point1.date earlierDate:point2.date] isEqualToDate:point1.date]) {
+            NSLog(@"ascending budy!");
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        else if([[point1.date earlierDate:point2.date] isEqualToDate:point2.date]){
+            NSLog(@"descending budy! event1 = %@ event2 = %@", point1.date,point2.date);
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        
+        return (NSComparisonResult)NSOrderedSame;
+
+    }]];
+        
+    for (int i = 0; i < [sortedPoint count]; i++) {
+        
+        coords[i] = [(MKPointAnnotation *)[sortedPoint objectAtIndex:i] coordinate];
         NSLog(@"did add coordinate");
     }
     
-    MKPolyline * polyLine = [MKPolyline polylineWithCoordinates:coords count:[self.mapView.annotations count]];
+    MKPolyline * polyLine = [MKPolyline polylineWithCoordinates:coords count:[sortedPoint count]];
     
     [self.mapView addOverlay:polyLine];
 }
@@ -376,6 +363,7 @@
     MKPolylineView * polylineView =[[MKPolylineView alloc] initWithPolyline:(MKPolyline *)overlay];
     polylineView.strokeColor = [UIColor colorWithWhite:.7 alpha:.9];
     polylineView.lineWidth = 5.f;
+    polylineView.lineJoin = kCGLineJoinRound;
     
     return polylineView;
 }
@@ -495,14 +483,7 @@
                                                                                              inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
                            [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
                        }
-                       /*
-
-                       dispatch_async(dispatch_get_main_queue(), ^{
-                           if (!self.isRecording) {
-                               self.mapView.showsUserLocation = NO;
-                           }
-                       });
-                        */
+                   
                    });
     
     // if we are on iPad we remove the picker popover
@@ -519,12 +500,6 @@
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    /*
-    if(!self.isRecording) {
-        
-        self.mapView.showsUserLocation = NO;
-    }
-     */
     // if on iPad remove the popover
     if (IS_IPAD) {
         
@@ -541,141 +516,54 @@
 
 - (IBAction)askForTimePeriod:(UIButton *)sender
 {
-    // if we are already selecting a time period, do nothing
-    if (!self.bCancelDatePickers.hidden) {
-        
-        return;
-    }
-    
-    if (IS_IPAD) {
-        // we are on ipad animate user interface
-
-        self.datePickerTo.transform = CGAffineTransformMakeTranslation(0,self.datePickerTo.frame.size.height+200);
-        self.datePickerFrom.transform = CGAffineTransformMakeTranslation(0,self.datePickerFrom.frame.size.height+200);
-        
-        self.datePickerFrom.alpha = 0;
-        self.datePickerTo.alpha = 0;
-        self.datePickerFrom.hidden = NO;
-        self.datePickerTo.hidden = NO;
-        self.bCancelDatePickers.alpha = 1;
-        self.bCancelDatePickers.hidden = NO;
-        self.bConfirmTimePeriod.alpha = 0;
-        self.bConfirmTimePeriod.hidden = NO;
-        
-        [UIView animateWithDuration:.5 animations:^{
-            
-            self.datePickerTo.transform = CGAffineTransformIdentity;
-            self.datePickerFrom.transform = CGAffineTransformIdentity;
-            self.datePickerTo.alpha = 1;
-            self.datePickerFrom.alpha = 1;
-            self.bCancelDatePickers.alpha = 1;
-            self.bCancelDatePickers.alpha = 1;
-            self.bConfirmTimePeriod.alpha = 1;
-            
-        }];
-        
-        return;
-    }
-    
-    // if we are on iPhone animate for the iPhone
-    self.bNextDate.alpha = 0;
-    self.bNextDate.hidden = NO;
-    self.datePickerFrom.hidden = NO;
-    self.bCancelDatePickers.alpha = 0;
-    self.bCancelDatePickers.hidden = NO;
-    self.datePickerTo.transform = CGAffineTransformMakeTranslation(0,self.datePickerTo.frame.size.height+52);
-    self.datePickerFrom.transform = CGAffineTransformMakeTranslation(0,self.datePickerFrom.frame.size.height+52);
-    
+    self.shadowView.hidden = NO;
+    NSLog(@"everything I called");
     [UIView animateWithDuration:.5 animations:^{
-        
-        self.datePickerFrom.transform = CGAffineTransformIdentity;
-        self.bNextDate.alpha = 1;
-        self.bCancelDatePickers.alpha = 1;
-        
+
+        self.deckHolder.top = self.view.height-self.deckHolder.height;
+        self.shadowView.alpha = .3f;
     }];
+    
+    if (!IS_IPAD) {
+        
+        self.bFromDate.selected = YES;
+        self.bNextDate.selected = NO;
+        self.datePickerFrom.hidden = NO;
+        self.datePickerTo.hidden = YES;
+    }
 }
 
 - (IBAction)showDatePickerFrom:(UIButton *)sender
 {
-    // this button is for iPhone only
-    self.bNextDate.alpha = 0;
-    self.bNextDate.hidden = NO;
-    
-    [UIView animateWithDuration:.5 animations:^{
-        
-        self.bFromDate.alpha = 0;
-        self.bConfirmTimePeriod.alpha = 0;
-        self.datePickerTo.transform = CGAffineTransformMakeTranslation(0,self.datePickerTo.frame.size.height+52);
-
-    } completion:^(BOOL finished) {
-        
-        self.bFromDate.hidden = YES;
-        self.bConfirmTimePeriod.hidden = YES;
-
-        [UIView animateWithDuration:.5 animations:^{
-            
-            self.bNextDate.alpha = 1;
-            self.datePickerFrom.transform = CGAffineTransformIdentity;
-        }];
-    }];
+    sender.selected = YES;
+    self.datePickerFrom.hidden = NO;
+    self.datePickerTo.hidden = YES;
+    self.bNextDate.selected = NO;
 }
 
 - (IBAction)showDatePickerTo:(UIButton *)sender
 {
-    // button only on iPhone
-    self.bFromDate.alpha = 0;
-    self.bFromDate.hidden = NO;
+    sender.selected = YES;
+    self.datePickerFrom.hidden = YES;
     self.datePickerTo.hidden = NO;
-    self.bConfirmTimePeriod.alpha = 0;
-    self.bConfirmTimePeriod.hidden = NO;
-    
-    [UIView animateWithDuration:.5 animations:^{
-        
-        self.bNextDate.alpha = 0;
-        self.datePickerFrom.transform = CGAffineTransformMakeTranslation(0,self.datePickerFrom.frame.size.height+52);
-        
-    } completion:^(BOOL finished) {
-        
-        self.bNextDate.hidden = YES;
-        
-        [UIView animateWithDuration:.5 animations:^{
-            
-            self.datePickerTo.transform = CGAffineTransformIdentity;
-            self.bConfirmTimePeriod.alpha = 1;
-            self.bFromDate.alpha = 1;
-        }];
-    }];
+    self.bFromDate.selected = NO;
+
 }
 
 - (IBAction)cancelDatePickers:(UIButton *)sender
 {
-    // only for iPhone
-    [UIView animateWithDuration:.5 animations:^{
-        
-        self.bFromDate.alpha = 0;
-        self.bNextDate.alpha = 0;
-        self.bConfirmTimePeriod.alpha = 0;
-        self.bCancelDatePickers.alpha = 0;
-        self.datePickerFrom.transform = CGAffineTransformMakeTranslation(0,self.datePickerFrom.frame.size.height);
-        self.datePickerTo.transform = CGAffineTransformMakeTranslation(0,self.datePickerTo.frame.size.height);
-        
-    } completion:^(BOOL finished) {
-        
-        self.datePickerTo.hidden = YES;
-        self.datePickerTo.transform = CGAffineTransformIdentity;
-        self.datePickerFrom.hidden = YES;
-        self.datePickerFrom.transform = CGAffineTransformIdentity;
-        self.bConfirmTimePeriod.hidden = YES;
-        self.bCancelDatePickers.hidden = YES;
-        self.bFromDate.hidden = YES;
-        self.bNextDate.hidden = YES;
+    [UIView animateWithDuration:.3 animations:^{
+        self.deckHolder.top = self.view.height;
+        self.shadowView.alpha = 0.f;
     }];
+    self.shadowView.hidden = YES;
+    
+    //self.deckHolder.top = 460;
 }
 
 - (IBAction)askServerForTimePeriodData
 {
     // dismiss the date pickers
-    [self cancelDatePickers:nil];
     
     // get user
     User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
@@ -697,7 +585,8 @@
                                                 
                                                 NSString * dateFrom = [formatter stringFromDate:self.datePickerFrom.date];
                                                 NSString * dateTo = [formatter stringFromDate:self.datePickerTo.date];
-                                                
+                                               [self cancelDatePickers:nil];
+                                               
                                                 self.currentPeriodLabel.text =
                                                 [NSString stringWithFormat:NSLocalizedString(@"sessionCustom", ), dateFrom, dateTo];
                                             
@@ -726,13 +615,8 @@
                                                self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
                                            
                                            } errorHandler:^(NSError *error) {
-                                                /*
-                                                [[[UIAlertView alloc] initWithTitle:nil
-                                                                            message:NSLocalizedString(@"alertCantReceiveEvents", )
-                                                                           delegate:nil
-                                                                  cancelButtonTitle:NSLocalizedString(@"cancelButton", )
-                                                                  otherButtonTitles:nil] show];
-                                                 */
+                                           
+                                               // do some code here
                                            }];
 }
 
@@ -776,24 +660,8 @@
 
         return;
     }
-    NSLog(@"fetched events: %d", [positionEventList count]);
     
-    positionEventList = [positionEventList sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        
-        PositionEvent * event1 = (PositionEvent *)obj1;
-        PositionEvent * event2 = (PositionEvent *)obj2;
-        
-        if ([[event1.date earlierDate:event2.date] isEqualToDate:event1.date]) {
-            NSLog(@"ascending budy!");
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        else if([[event1.date earlierDate:event2.date] isEqualToDate:event2.date]){
-            NSLog(@"descending budy! event1 = %@ event2 = %@", event1.date,event2.date);
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        
-        return (NSComparisonResult)NSOrderedSame;
-    }];
+    NSLog(@"fetched events: %d", [positionEventList count]);
     
     for (MKPointAnnotation * annot in self.mapView.annotations) {
         if (annot != (MKPointAnnotation *)self.mapView.userLocation) {
@@ -846,9 +714,10 @@
             longitudeMin = longitude;
         }
 
-        MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
+        PPrYvPointAnnotation * aPosition = [[PPrYvPointAnnotation alloc] init];
         aPosition.title = NSLocalizedString(@"mapPointText", );
         aPosition.coordinate = CLLocationCoordinate2DMake(latitude, longitude);
+        aPosition.date = positionEvent.date;
         [annotations addObject:aPosition];
     }
 
