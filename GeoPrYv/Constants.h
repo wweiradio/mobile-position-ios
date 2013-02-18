@@ -19,7 +19,7 @@
 
 // hardcoded credentials for example purpose only
 
-#define kPrYvApplicationChannel @"VeA4Yv9RiM"
-#define kPrYvAuthToken @"VVEQmJD5T5"
-#define kPrYvUser @"jonmaim"
+#define kPrYvApplicationChannel @"Tei0Z9jNoX5"
+#define kPrYvAuthToken @"PPDRo7meKM"
+#define kPrYvUser @"biberli"
 
