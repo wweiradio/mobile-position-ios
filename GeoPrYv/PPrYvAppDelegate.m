@@ -8,7 +8,8 @@
 
 #import "PPrYvAppDelegate.h"
 #import "PPrYvMapViewController.h"
-#import "PPrYvLoginViewController.h"
+//#import "PPrYvLoginViewController.h"
+#import "PPrYvWebLoginViewController.h"
 #import "User+Extras.h"
 #import "PPrYvCoreDataManager.h"
 #import "PPrYvLocationManager.h"
@@ -47,9 +48,9 @@
     if (user == nil) {
         
         // no user available - show the login form
-        PPrYvLoginViewController * login = nil;
+        PPrYvWebLoginViewController * login = nil;
         
-        login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewController"
+        login = [[PPrYvWebLoginViewController alloc] initWithNibName:@"PPrYvWebLoginViewController"
                                                            bundle:nil];
 
         [self.window.rootViewController presentViewController:login animated:YES completion:nil];
