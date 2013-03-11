@@ -81,22 +81,13 @@
                              @"requestingAppId": @"pryv-mobile-position-ios",
                              @"returnURL": @"false",
                              
-                             // should store somewhere the folderId and folderName
-                             // TODO: permissions has to be fixed to be more appropriate
                              @"requestedPermissions": @[
                                      @{
                                          @"channelId" : @"position",
-                                         @"level" : @"read",
+                                         @"level" : @"manage",
                                          @"defaultName" : @"Position",
-                                         @"folderPermissions" : @[
-                                                 @{
-                                                     @"folderId": @"mobile",
-                                                     @"level": @"manage",
-                                                     @"defaultName": @"Mobile"
-                                                   }]
-                                         }
-                                     ]
-                             };
+                                       }
+                             ]};
 
     [self.loadingActivityIndicatorView startAnimating];
     
@@ -147,7 +138,7 @@
     AFJSONRequestOperation *pollRequestOperation = [AFJSONRequestOperation JSONRequestOperationWithRequest:pollRequest
     success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         assert(JSON);
-        NSLog(@"request success : %@", [request URL]);
+        NSLog(@"poll request success : %@", [request URL]);
         
         NSDictionary *jsonDictionary = (NSDictionary *)JSON;
         
@@ -185,7 +176,8 @@
                 [self successfulLoginWithUsername:username token:token];
                 
             } else {
-                NSLog(@"unknown status: %@", statusString);
+                // TODO add status handling
+                NSLog(@"poll request unknown status: %@", statusString);
             }
 //            } else if ([@"REFUSED" isEqualToString:statusString]) {
 //                
@@ -200,7 +192,7 @@
         
     }
     failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-        NSLog(@"request %@ failed %@ ", request, error);
+        NSLog(@"poll request %@ has failed %@ ", request, error);
         if (JSON) {
             NSLog(@"error contained a JSON: %@", JSON);
         }
@@ -260,13 +252,14 @@
 
 - (IBAction)close:(id)sender
 {
+    [self.pollTimer invalidate];
     // TODO
     [self dismissViewControllerAnimated:YES completion:^{
         //
     }];
 }
 
-#pragma mark - UIWebViewDelegate 
+#pragma mark - UIWebViewDelegate
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
@@ -313,7 +306,6 @@
         BOOL foundFolder = NO;
         for (Folder *folder in folderList) {
             if ([folder.folderId isEqualToString:newUser.folderId]) {
-            //if (folder.name isEqualToString:<#(NSString *)#>)
                 NSLog(@"Found user's folder: %@", folder.name);
                 newUser.folderName = folder.name;
                 [[[PPrYvCoreDataManager sharedInstance] managedObjectContext] save:nil];
@@ -327,6 +319,7 @@
             [self createFolder];
         } else {
             
+            [self.pollTimer invalidate];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     } errorHandler:^(NSError *error) {
@@ -349,10 +342,10 @@
         
         NSLog(@"error cannot create folder despite new name");
         
-        // Really ?
-        // maybe should warn first?
+        // FIXME add an alert with failure
+        [self.pollTimer invalidate];
         
-        //[self dismissViewControllerAnimated:YES completion:nil];
+        [self dismissViewControllerAnimated:YES completion:nil];
         
         return;
     }
@@ -374,6 +367,7 @@
                                        
                                        [[[PPrYvCoreDataManager sharedInstance] managedObjectContext] save:nil];
                                        
+                                       [self.pollTimer invalidate];
                                        [self dismissViewControllerAnimated:YES completion:nil];
                                        
                                    } errorHandler:^(NSError *error) {

@@ -17,11 +17,9 @@
 #define kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey @"PrYvLocationTimeIntervalDidChangeNotificationUserInfoKey"
 
 
-// hardcoded credentials for example purpose only
-
-//#define kPrYvApplicationChannel @"Tei0Z9jNoX5"
 #define kPrYvApplicationChannel @"position"
 
+// hardcoded credentials for example purpose only
 #define kPrYvAuthToken @"PPDRo7meKM"
 #define kPrYvUser @"biberli"
 

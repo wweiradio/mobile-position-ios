@@ -21,12 +21,8 @@
     newUser.userToken = token;
     newUser.locationDistanceInterval = [NSNumber numberWithDouble:30];
     newUser.locationTimeInterval = [NSNumber numberWithDouble:30];
-    
-    newUser.folderId = @"mobile";
-    newUser.folderName = @"Mobile";
-    
-//    newUser.folderId = [PPrYvOpenUDID value];
-//    newUser.folderName = [[UIDevice currentDevice] name];
+    newUser.folderId = [PPrYvOpenUDID value];
+    newUser.folderName = [[UIDevice currentDevice] name];
     
     [context save:nil];
     
