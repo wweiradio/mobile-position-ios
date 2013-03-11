@@ -7,7 +7,8 @@
 //
 
 #import "PPrYvSettingViewController.h"
-#import "PPrYvLoginViewController.h"
+//#import "PPrYvLoginViewController.h"
+#import "PPrYvWebLoginViewController.h"
 #import "User+Extras.h"
 #import "PPrYvCoreDataManager.h"
 
@@ -271,7 +272,7 @@
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             
-            PPrYvLoginViewController * login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewController" bundle:nil];
+            PPrYvWebLoginViewController * login = [[PPrYvWebLoginViewController alloc] initWithNibName:@"PPrYvWebLoginViewController" bundle:nil];
             
             [self.iPadHoldingPopOverViewController presentViewController:login animated:YES completion:nil];
         });
@@ -282,7 +283,7 @@
 
         [controller dismissViewControllerAnimated:YES completion:^{
             
-            PPrYvLoginViewController * login = [[PPrYvLoginViewController alloc] initWithNibName:@"PPrYvLoginViewController" bundle:nil];
+            PPrYvWebLoginViewController * login = [[PPrYvWebLoginViewController alloc] initWithNibName:@"PPrYvWebLoginViewController" bundle:nil];
 
             [controller presentViewController:login animated:YES completion:nil];
         }];
