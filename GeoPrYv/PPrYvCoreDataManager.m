@@ -84,16 +84,23 @@ NSString * const kDataManagerSQLiteName = @"ATPrYv.sqlite";
 
     // Define the Core Data version migration options
     NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES};
-
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
-                                                   configuration:nil
-                                                             URL:storeURL
-                                                         options:options
-                                                           error:&error]) {
+    
+    NSPersistentStore *persistentStore = [_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                                                   configuration:nil
+                                                                                             URL:storeURL
+                                                                                         options:options
+                                                                                           error:&error];
+    if (!persistentStore) {
         /*
          * Simply deleting the existing store:
          [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil]
          */
+        
+        NSLog(@"===============================================================================");
+        NSLog(@"ATTENTION! The core data model is different from your current persistent store");
+        NSLog(@"           Please delete current application on the iDevice       ");
+        NSLog(@"           or the iOS Simulator. This would delete the outdated persistent store too. ");
+        NSLog(@"===============================================================================");
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
@@ -125,6 +132,39 @@ NSString * const kDataManagerSQLiteName = @"ATPrYv.sqlite";
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
+
+#pragma mark - 
+
+- (void)deleteManagedObjectsWithName:(NSString *)entityName
+{
+    NSFetchRequest *allEntitiesFetchRequest = [[NSFetchRequest alloc] init];
+    [allEntitiesFetchRequest setEntity:[NSEntityDescription entityForName:entityName
+                                                   inManagedObjectContext:self.managedObjectContext]];
+    [allEntitiesFetchRequest setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError *error = nil;
+    NSArray *allEntities = [self.managedObjectContext executeFetchRequest:allEntitiesFetchRequest error:&error];
+    if (!allEntities) {
+        //error handling goes here
+        NSLog(@"failed fetch all entities of type %@ with error: %@ ", entityName, error);
+        return;
+    }
+    for (NSManagedObject *entity in allEntities) {
+        [self.managedObjectContext deleteObject:entity];
+    }
+    NSError *saveError = nil;
+    if (![self.managedObjectContext save:&saveError]) {
+        //more error handling here
+        NSLog(@"failed to save the context %@", saveError);
+    }
+}
+
+- (void)destroyAllData
+{
+    [self deleteManagedObjectsWithName:@"PositionEvent"];
+    [self deleteManagedObjectsWithName:@"User"];
+}
+
 
 
 @end

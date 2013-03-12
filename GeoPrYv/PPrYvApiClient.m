@@ -56,15 +56,20 @@
                                                                  inManagedObjectContext:scratchManagedObjectContext];
 
     double latitude = [[[[positionEventDictionary objectForKey:@"value"] objectForKey:@"location"] objectForKey:@"lat"] doubleValue];
-    double longitude = [[[[positionEventDictionary objectForKey:@"value"] objectForKey:@"location"] objectForKey:@"long"] doubleValue];
+    double longitude = [[[[positionEventDictionary objectForKey:@"value"] objectForKey:@"location"] objectForKey:@"lng"] doubleValue];
     NSString *folderId = [positionEventDictionary objectForKey:@"folderId"];
     double time = [[positionEventDictionary objectForKey:@"time"] doubleValue];
+    
+    if ([positionEventDictionary[@"value"] objectForKey:@"altitude"]) {
+        double elevation = [positionEventDictionary[@"value"][@"altitude"] doubleValue];
+        positionEvent.elevation = [NSNumber numberWithDouble:elevation];
+    }
 
     positionEvent.latitude = [NSNumber numberWithDouble:latitude];
     positionEvent.longitude = [NSNumber numberWithDouble:longitude];
     positionEvent.folderId = folderId;
     positionEvent.uploaded = @YES; // do not try to upload it
-    positionEvent.message = [[positionEventDictionary objectForKey:@"value"] objectForKey:@"message"];
+    positionEvent.message = [positionEventDictionary objectForKey:@"description"];
     positionEvent.date = [NSDate dateWithTimeIntervalSince1970:time];
 
     return positionEvent;
@@ -90,10 +95,11 @@
                                          @"location" :
                                          @{
                                                  @"lat" : self.latitude,
-                                                 @"long" : self.longitude
+                                                 @"lng" : self.longitude
                                          },
-                                         @"message" : message
+                                         @"elevation" : self.elevation
                                  },
+                                 @"description" : message,
                                  @"folderId" : self.folderId,
                                  @"time" : time
                          };

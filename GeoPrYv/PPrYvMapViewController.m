@@ -283,14 +283,14 @@
 
 #pragma mark MapView Delegate
 
-- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
-    
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
     if (annotation == mapView.userLocation) {
         return nil;
     }
-    static NSString * annotationIdentifier = @"annotationIdentifier";
-    MKAnnotationView * annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
-                                                                           reuseIdentifier:annotationIdentifier];
+    static NSString *annotationIdentifier = @"annotationIdentifier";
+    MKAnnotationView *annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
+                                                                    reuseIdentifier:annotationIdentifier];
     annotationView.image = [UIImage imageNamed:@"pinPryv.png"];
     annotationView.enabled = YES;
     annotationView.canShowCallout = YES;
@@ -298,24 +298,43 @@
     return annotationView;
 }
 
-- (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
+// TODO rethink animating all the views because the amount of points/view can be pretty big
+- (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)annotationViews
 {
-    for (int i = 0; i< [views count]; i++) {
+    for (int i = 0; i< [annotationViews count]; i++) {
         
-        MKAnnotationView * annView = [views objectAtIndex:i];
-        CGRect endFrame = annView.frame;
-        annView.frame = CGRectOffset(endFrame, 0, -500);
+        MKAnnotationView *annotationView = [annotationViews objectAtIndex:i];
+        CGRect endFrame = annotationView.frame;
+        annotationView.frame = CGRectOffset(endFrame, 0, -500);
         NSTimeInterval interval = 0.03 * i;
         
+        if (![[annotationView annotation] isKindOfClass:[MKUserLocation class]]) {
+            // send annotaion view to back if it is not current user location
+            [[annotationView superview] sendSubviewToBack:annotationView];
+        }
+        
         [UIView animateWithDuration:0.5 delay:interval options:UIViewAnimationCurveEaseOut animations:^{
-            annView.frame = endFrame;
+            annotationView.frame = endFrame;
         } completion:^(BOOL finished) {
             
-            if (i == [views count]-1) {
-                UIView * view = [mapView viewForAnnotation:mapView.userLocation];
+            // attempt to bring the current userLocation in front
+            if (i == [annotationViews count] - 1) {
+                UIView *view = [mapView viewForAnnotation:mapView.userLocation];
                 [[view superview] bringSubviewToFront:view];
-            }
+            } 
         }];
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+{
+    for (NSObject *annotation in [mapView annotations])
+    {
+        if ([annotation isKindOfClass:[MKUserLocation class]])
+        {
+            MKAnnotationView *view = [mapView viewForAnnotation:(MKUserLocation *)annotation];
+            [[view superview] bringSubviewToFront:view];
+        }
     }
 }
 

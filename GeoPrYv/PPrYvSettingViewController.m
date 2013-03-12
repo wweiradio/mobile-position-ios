@@ -258,11 +258,13 @@
     }
 }
 
-// FIXME logout does actually nothing: it is not enough to open the loginViewController:
-// has to remove the data from the map and affect somehow the global user state - reset or something
+// FIXME has to remove the data from the map and other global user state - reset or something
 
 - (IBAction)logOutCurrentUser:(id)sender
 {
+    // destroy all cached user data
+    [[PPrYvCoreDataManager sharedInstance] destroyAllData];
+    
     if (IS_IPAD) {
         
         [self.iPadHoldingPopOver dismissPopoverAnimated:YES];

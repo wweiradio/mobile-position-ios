@@ -18,6 +18,7 @@
     PositionEvent *positionEvent = [NSEntityDescription insertNewObjectForEntityForName:@"PositionEvent" inManagedObjectContext:context];
     positionEvent.latitude = [NSNumber numberWithDouble:location.coordinate.latitude];
     positionEvent.longitude = [NSNumber numberWithDouble:location.coordinate.longitude];
+    positionEvent.elevation = [NSNumber numberWithDouble:location.altitude];
     positionEvent.message = message;
     positionEvent.folderId = folderId;
     positionEvent.attachment = [fileURL absoluteString];
@@ -38,6 +39,7 @@
     [description appendFormat:@", self.attachment=%@", self.attachment];
     [description appendFormat:@", self.latitude=%@", self.latitude];
     [description appendFormat:@", self.longitude=%@", self.longitude];
+    [description appendFormat:@", self.elevation=%@", self.elevation];
     [description appendFormat:@", self.uploaded=%@", self.uploaded];
     [description appendFormat:@", self.date=%@", self.date];
     [description appendString:@">"];

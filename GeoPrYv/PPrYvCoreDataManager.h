@@ -20,4 +20,6 @@
 
 - (NSManagedObjectContext *)scratchManagedObjectContext;
 
+- (void)destroyAllData;
+
 @end

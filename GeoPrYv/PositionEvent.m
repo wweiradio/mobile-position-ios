@@ -16,6 +16,7 @@
 @dynamic folderId;
 @dynamic latitude;
 @dynamic longitude;
+@dynamic elevation;
 @dynamic message;
 @dynamic uploaded;
 @dynamic attachmentList;

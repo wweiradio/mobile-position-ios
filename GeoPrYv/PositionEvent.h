@@ -17,6 +17,7 @@
 @property (nonatomic, retain) NSString *folderId;
 @property (nonatomic, retain) NSNumber *latitude;
 @property (nonatomic, retain) NSNumber *longitude;
+@property (nonatomic, retain) NSNumber *elevation;
 @property (nonatomic, retain) NSString *message;
 @property (nonatomic, retain) NSNumber *uploaded;
 
