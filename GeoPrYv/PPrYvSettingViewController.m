@@ -7,7 +7,6 @@
 //
 
 #import "PPrYvSettingViewController.h"
-//#import "PPrYvLoginViewController.h"
 #import "PPrYvWebLoginViewController.h"
 #import "User+Extras.h"
 #import "PPrYvCoreDataManager.h"

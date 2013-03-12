@@ -18,9 +18,6 @@
 		562C01EC167F8BCA00706EE3 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 562C01E3167F8BCA00706EE3 /* UIImageView+AFNetworking.m */; };
 		563A4AAF1684EC3F004B0DE6 /* PPrYvApiClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 563A4AAE1684EC3F004B0DE6 /* PPrYvApiClient.m */; };
 		5655188C167E7463006FE2A2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5655188B167E7463006FE2A2 /* MobileCoreServices.framework */; };
-		5656972616723CA600A49B18 /* PPrYvLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5656972416723CA500A49B18 /* PPrYvLoginViewController.m */; };
-		5656972716723CA600A49B18 /* PPrYvLoginViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5656972516723CA500A49B18 /* PPrYvLoginViewController~ipad.xib */; };
-		5656972916723CC200A49B18 /* PPrYvLoginViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5656972816723CC200A49B18 /* PPrYvLoginViewController~iphone.xib */; };
 		5661E077168F042000687046 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 5661E076168F042000687046 /* User.m */; };
 		568242E91670AAD90032489E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568242E81670AAD90032489E /* UIKit.framework */; };
 		568242EB1670AAD90032489E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 568242EA1670AAD90032489E /* Foundation.framework */; };
@@ -88,10 +85,6 @@
 		563A4AAD1684EC3F004B0DE6 /* PPrYvApiClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvApiClient.h; sourceTree = "<group>"; };
 		563A4AAE1684EC3F004B0DE6 /* PPrYvApiClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvApiClient.m; sourceTree = "<group>"; };
 		5655188B167E7463006FE2A2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		5656972316723CA500A49B18 /* PPrYvLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PPrYvLoginViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		5656972416723CA500A49B18 /* PPrYvLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PPrYvLoginViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		5656972516723CA500A49B18 /* PPrYvLoginViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PPrYvLoginViewController~ipad.xib"; sourceTree = "<group>"; };
-		5656972816723CC200A49B18 /* PPrYvLoginViewController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PPrYvLoginViewController~iphone.xib"; sourceTree = "<group>"; };
 		5661E075168F042000687046 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		5661E076168F042000687046 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		568242E41670AAD90032489E /* AT PrYv.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AT PrYv.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -240,8 +233,6 @@
 				568243151670B2490032489E /* PPrYvMapViewController.m */,
 				56F66559167A464100E85921 /* PPrYvSettingViewController.h */,
 				56F6655A167A464100E85921 /* PPrYvSettingViewController.m */,
-				5656972316723CA500A49B18 /* PPrYvLoginViewController.h */,
-				5656972416723CA500A49B18 /* PPrYvLoginViewController.m */,
 				FB6D93CC16EE2353008F4D35 /* PPrYvWebLoginViewController.h */,
 				FB6D93CD16EE2353008F4D35 /* PPrYvWebLoginViewController.m */,
 			);
@@ -339,8 +330,6 @@
 		568243111670AE450032489E /* xibs */ = {
 			isa = PBXGroup;
 			children = (
-				5656972516723CA500A49B18 /* PPrYvLoginViewController~ipad.xib */,
-				5656972816723CC200A49B18 /* PPrYvLoginViewController~iphone.xib */,
 				56F6655B167A464100E85921 /* PPrYvSettingViewController~ipad.xib */,
 				56F6655E167A467F00E85921 /* PPrYvSettingViewController~iphone.xib */,
 				568243161670B2490032489E /* PPrYvMapViewController~ipad.xib */,
@@ -443,8 +432,6 @@
 				568243181670B2490032489E /* PPrYvMapViewController~ipad.xib in Resources */,
 				5682431A1670B2840032489E /* PPrYvMapViewController~iphone.xib in Resources */,
 				568243211670C8880032489E /* Localizable.strings in Resources */,
-				5656972716723CA600A49B18 /* PPrYvLoginViewController~ipad.xib in Resources */,
-				5656972916723CC200A49B18 /* PPrYvLoginViewController~iphone.xib in Resources */,
 				56F6655D167A464100E85921 /* PPrYvSettingViewController~ipad.xib in Resources */,
 				56F6655F167A467F00E85921 /* PPrYvSettingViewController~iphone.xib in Resources */,
 				56B1651516B132D700C0530D /* mapPoint.png in Resources */,
@@ -465,7 +452,6 @@
 			files = (
 				568243041670AAD90032489E /* ATPrYv.xcdatamodeld in Sources */,
 				568243171670B2490032489E /* PPrYvMapViewController.m in Sources */,
-				5656972616723CA600A49B18 /* PPrYvLoginViewController.m in Sources */,
 				56F665501679D46C00E85921 /* PPrYvOpenUDID.m in Sources */,
 				56F6655C167A464100E85921 /* PPrYvSettingViewController.m in Sources */,
 				562C01E4167F8BCA00706EE3 /* AFHTTPClient.m in Sources */,
