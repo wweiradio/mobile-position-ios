@@ -201,12 +201,12 @@
     // reset previous timer if one existed
     [self.pollTimer invalidate];
     
-    // create a GET reqest in seconds amount stored in pollTimeInterval
+    // schedule a GET reqest in seconds amount stored in pollTimeInterval
     self.pollTimer = [NSTimer scheduledTimerWithTimeInterval:pollTimeInterval
-                                                       target:[NSBlockOperation blockOperationWithBlock:^{ [pollRequestOperation start]; NSLog(@"timer fired");}]
-                                            selector:@selector(main) // send message main to NSBLockOperation
-                                            userInfo:nil
-                                             repeats:NO
+                                                      target:[NSBlockOperation blockOperationWithBlock:^{ [pollRequestOperation start]; NSLog(@"timer fired");}]
+                                                    selector:@selector(main) // send message main to NSBLockOperation
+                                                    userInfo:nil
+                                                     repeats:NO
     ];
 }
 

@@ -62,6 +62,7 @@
 		FB5F77BF169AE2DE00585D11 /* PPrYvLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB5F77BE169AE2DE00585D11 /* PPrYvLocationManager.m */; };
 		FB6D93CF16EE2353008F4D35 /* PPrYvWebLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6D93CD16EE2353008F4D35 /* PPrYvWebLoginViewController.m */; };
 		FB6D93D016EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB6D93CE16EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib */; };
+		FB6D93D216EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB6D93D116EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -156,6 +157,7 @@
 		FB6D93CC16EE2353008F4D35 /* PPrYvWebLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvWebLoginViewController.h; sourceTree = "<group>"; };
 		FB6D93CD16EE2353008F4D35 /* PPrYvWebLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvWebLoginViewController.m; sourceTree = "<group>"; };
 		FB6D93CE16EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PPrYvWebLoginViewController~iphone.xib"; sourceTree = "<group>"; };
+		FB6D93D116EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PPrYvWebLoginViewController~ipad.xib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -343,6 +345,7 @@
 				56F6655E167A467F00E85921 /* PPrYvSettingViewController~iphone.xib */,
 				568243161670B2490032489E /* PPrYvMapViewController~ipad.xib */,
 				568243191670B2840032489E /* PPrYvMapViewController~iphone.xib */,
+				FB6D93D116EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib */,
 				FB6D93CE16EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib */,
 			);
 			name = xibs;
@@ -449,6 +452,7 @@
 				56FEF97116B2A858008A5948 /* pinPryv.png in Resources */,
 				56FEF97316B2A85D008A5948 /* pinPryv@2x.png in Resources */,
 				FB6D93D016EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib in Resources */,
+				FB6D93D216EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
