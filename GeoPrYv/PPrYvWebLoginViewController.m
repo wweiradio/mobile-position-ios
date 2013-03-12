@@ -104,7 +104,6 @@
         NSURL *loginPageURL = [NSURL URLWithString:loginPageUrlString];
         assert(loginPageURL);
 
-        // TODO activate a poll loop with repeating timer
         NSString *pollUrlString = jsonDictionary[@"poll"];
         assert(pollUrlString);
         
@@ -123,10 +122,9 @@
         
         [self.loadingActivityIndicatorView stopAnimating];
         
-        // TODO create an alert to notify a user about the problem
-        //  like the network not being present
-        
         NSLog(@"[HTTPClient Error]: %@", error);
+        
+        [self displayLoginErrorWithMessage:[error localizedDescription] errorCode:nil];
     }];
 }
 
@@ -175,27 +173,45 @@
                 
                 [self successfulLoginWithUsername:username token:token];
                 
+            } else if ([@"REFUSED" isEqualToString:statusString]) {
+                
+                NSString *message = jsonDictionary[@"message"];
+                assert(message);
+                
+                [self displayLoginErrorWithMessage:message errorCode:nil];
+                
+            } else if ([@"ERROR" isEqualToString:statusString]) {
+                
+                NSString *message = jsonDictionary[@"message"];
+                assert(message);
+                
+                NSString *errorCode = nil;
+                if ([jsonDictionary objectForKey:@"id"]) {
+                    errorCode = jsonDictionary[@"id"];
+                }
+                
+                [self displayLoginErrorWithMessage:message errorCode:errorCode];
+
             } else {
-                // TODO add status handling
+                
                 NSLog(@"poll request unknown status: %@", statusString);
+                
+                NSString *message = NSLocalizedString(@"Unknown Error",);
+                if ([jsonDictionary objectForKey:@"message"]) {
+                    message = [jsonDictionary objectForKey:@"message"];
+                }
+                
+                [self displayLoginErrorWithMessage:message errorCode:nil];
             }
-//            } else if ([@"REFUSED" isEqualToString:statusString]) {
-//                
-//                // TODO
-//                
-//            } else if ([@"ERROR" isEqualToString:statusString]) {
-//                
-//                // TODO
-//                
-//            }
         }
-        
     }
     failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSLog(@"poll request %@ has failed %@ ", request, error);
         if (JSON) {
             NSLog(@"error contained a JSON: %@", JSON);
         }
+        
+        [self displayLoginErrorWithMessage:[error localizedDescription] errorCode:nil];
     }];
     
     // reset previous timer if one existed
@@ -210,6 +226,22 @@
     ];
 }
 
+- (void)displayLoginErrorWithMessage:(NSString *)message errorCode:(NSString *)errorCode
+{
+    // alert
+    
+    NSString *alertTitle = NSLocalizedString(@"Error", );
+    if (errorCode) {
+        // TODO localize
+        alertTitle = [NSString stringWithFormat:@"Error <%@>", errorCode];
+    }
+    
+    [[[UIAlertView alloc] initWithTitle:alertTitle
+                                message:message
+                               delegate:nil
+                      cancelButtonTitle:NSLocalizedString(@"cancelButton", )
+                      otherButtonTitles:nil] show];
+}
 
 -  (void)successfulLoginWithUsername:(NSString *)username token:(NSString *)token
 {
@@ -290,6 +322,8 @@
     [self.loadingActivityIndicatorView stopAnimating];
 
     NSLog(@"didFailLoadWithError %@", [error localizedDescription]);
+    
+    [self displayLoginErrorWithMessage:[error localizedDescription] errorCode:nil];
 }
 
 
@@ -342,8 +376,9 @@
         
         NSLog(@"error cannot create folder despite new name");
         
-        // FIXME add an alert with failure
         [self.pollTimer invalidate];
+        
+        [self displayLoginErrorWithMessage:NSLocalizedString(@"Could not create a folder", ) errorCode:nil];
         
         [self dismissViewControllerAnimated:YES completion:nil];
         
