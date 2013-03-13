@@ -286,8 +286,12 @@
 
 - (void)reportError:(NSError *)error
 {
-    [[[UIAlertView alloc] initWithTitle:nil
-                                message:[error localizedDescription]
+    NSError *originError = error;
+    if ([[error userInfo] objectForKey:@"connectionError"]) {
+        originError = [[error userInfo] objectForKey:@"connectionError"];
+    }
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", )
+                                message:[originError localizedDescription]
                                delegate:nil
                       cancelButtonTitle:NSLocalizedString(@"cancelButton", )
                       otherButtonTitles:nil] show];
