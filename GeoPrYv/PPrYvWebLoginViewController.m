@@ -371,14 +371,11 @@
     } errorHandler:^(NSError *error) {
         
         NSLog(@"couldn't receive folders %@", error);
-        /*
-         [[[UIAlertView alloc] initWithTitle:nil
-         message:NSLocalizedString(@"alertCantGetFolderList", )
-         delegate:nil
-         cancelButtonTitle:NSLocalizedString(@"cancelButton", )
-         otherButtonTitles:nil] show];
-         */
-        
+        [[[UIAlertView alloc] initWithTitle:nil
+                                    message:NSLocalizedString(@"alertCantGetFolderList", )
+                                   delegate:nil
+                          cancelButtonTitle:NSLocalizedString(@"cancelButton", )
+                          otherButtonTitles:nil] show];
     }];
 }
 

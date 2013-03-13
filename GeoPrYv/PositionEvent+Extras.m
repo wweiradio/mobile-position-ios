@@ -26,8 +26,11 @@
     positionEvent.attachment = [fileURL absoluteString];
     positionEvent.uploaded = [NSNumber numberWithBool:NO];
     positionEvent.date = [NSDate dateWithTimeIntervalSince1970:([[NSDate date] timeIntervalSince1970] - [PPrYvApiClient sharedClient].serverTimeInterval)];
-
-    [context save:nil];
+    
+    NSError *error = nil;
+    if (![context save:&error]) {
+        NSLog(@"an error occured when saving a a position event: %@", error);
+    }
 
     return positionEvent;
 }

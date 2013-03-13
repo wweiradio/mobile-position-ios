@@ -97,7 +97,7 @@
                                                    self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
                                                    
                                                } errorHandler:^(NSError *error) {
-                                                   
+                                                   [self reportError:error];
                                                }];
 
     }];
@@ -277,13 +277,23 @@
                                                                      attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
-
     
     // dimiss the note composer
     [self cancelNote:nil];
 }
 
-#pragma mark MapView Delegate
+#pragma mark - private 
+
+- (void)reportError:(NSError *)error
+{
+    [[[UIAlertView alloc] initWithTitle:nil
+                                message:[error localizedDescription]
+                               delegate:nil
+                      cancelButtonTitle:NSLocalizedString(@"cancelButton", )
+                      otherButtonTitles:nil] show];
+}
+
+#pragma mark - MapView Delegate
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
@@ -611,7 +621,7 @@
                                                 [NSString stringWithFormat:NSLocalizedString(@"sessionCustom", ), dateFrom, dateTo];
                                             
                                             } errorHandler:^(NSError *error) {
-                                                
+                                                [self reportError:error];
                                             }];
 }
 
@@ -640,8 +650,8 @@
                                                self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
                                            
                                            } errorHandler:^(NSError *error) {
-                                           
-                                               // do some code here
+                                               
+                                               [self reportError:error];
                                            }];
 }
 
@@ -760,6 +770,7 @@
     
     [self createMKPolyLine];
 }
+
 #pragma mark - dealloc
 
 - (void)dealloc {
