@@ -82,23 +82,25 @@
                                                        queue:[NSOperationQueue mainQueue]
                                                   usingBlock:^(NSNotification *note) {
                                                       
-        User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+        User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+        if (user) {
         
-        // ask the PrYv API for events in the last 24h with the current user channel
-        NSTimeInterval interval = -60 * 60 * 24;
-        NSDate *dateTo = [NSDate date];
-        NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
-        [[PPrYvApiClient sharedClient] getEventsFromStartDate:dateFrom
-                                                    toEndDate:dateTo
-                                                   inFolderId:user.folderId
-                                               successHandler:^(NSArray *positionEventList) {
-                                                   
-                                                   [self didReceiveEvents:positionEventList];
-                                                   self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
-                                                   
-                                               } errorHandler:^(NSError *error) {
-                                                   [self reportError:error];
-                                               }];
+            // ask the PrYv API for events in the last 24h with the current user channel
+            NSTimeInterval interval = -60 * 60 * 24;
+            NSDate *dateTo = [NSDate date];
+            NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
+            [[PPrYvApiClient sharedClient] getEventsFromStartDate:dateFrom
+                                                        toEndDate:dateTo
+                                                       inFolderId:user.folderId
+                                                   successHandler:^(NSArray *positionEventList) {
+                                                       
+                                                       [self didReceiveEvents:positionEventList];
+                                                       self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
+                                                       
+                                                   } errorHandler:^(NSError *error) {
+                                                       [self reportError:error];
+                                                   }];
+        } // if user 
 
     }];
 }
