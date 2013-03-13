@@ -18,6 +18,7 @@
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *loadingActivityIndicatorView;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *refreshBarButtonItem;
 
 @property (strong, nonatomic) NSTimer *pollTimer;
 
@@ -89,6 +90,7 @@
                                        }
                              ]};
 
+    self.refreshBarButtonItem.enabled = NO;
     [self.loadingActivityIndicatorView startAnimating];
     
     [httpClient postPath:@"/access" parameters:params success:^(AFHTTPRequestOperation *operation, id JSON) {
@@ -121,6 +123,7 @@
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         
         [self.loadingActivityIndicatorView stopAnimating];
+        self.refreshBarButtonItem.enabled = YES;
         
         NSLog(@"[HTTPClient Error]: %@", error);
         
@@ -294,6 +297,12 @@
     }];
 }
 
+- (IBAction)reload:(id)sender
+{
+    [self requestLoginView];
+}
+
+
 #pragma mark - UIWebViewDelegate
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
@@ -311,9 +320,8 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-    // TODO
-    
     [self.loadingActivityIndicatorView stopAnimating];
+    self.refreshBarButtonItem.enabled = YES;
 
     NSLog(@"webViewDidFinishLoad");
 }
@@ -323,6 +331,7 @@
     // TODO create an alert to notify a user of an error
     
     [self.loadingActivityIndicatorView stopAnimating];
+    self.refreshBarButtonItem.enabled = YES;
 
     NSLog(@"didFailLoadWithError %@", [error localizedDescription]);
     
@@ -416,4 +425,8 @@
                                    }];
 }
 
+- (void)viewDidUnload {
+    [self setRefreshBarButtonItem:nil];
+    [super viewDidUnload];
+}
 @end
