@@ -84,10 +84,12 @@
                                                       
         User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
         
-        // clean the map from all annotations
         // ask the PrYv API for events in the last 24h with the current user channel
-        [[PPrYvApiClient sharedClient] getEventsFromStartDate:nil
-                                                    toEndDate:nil
+        NSTimeInterval interval = -60 * 60 * 24;
+        NSDate *dateTo = [NSDate date];
+        NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
+        [[PPrYvApiClient sharedClient] getEventsFromStartDate:dateFrom
+                                                    toEndDate:dateTo
                                                    inFolderId:user.folderId
                                                successHandler:^(NSArray *positionEventList) {
                                                    
@@ -587,8 +589,7 @@
     // get user
     User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
-    // clean the map from all annotations
-    NSTimeInterval interval = 60.*60.*24.;
+    NSTimeInterval interval = 60 * 60 * 24;
     NSDate * dateTo = [self.datePickerTo.date dateByAddingTimeInterval:interval];
     // ask for events in the chosen time period with the current user channel
     [[PPrYvApiClient sharedClient] getEventsFromStartDate:self.datePickerFrom.date
@@ -623,10 +624,15 @@
     User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     // clean the map from all annotations
-    NSLog(@"%@",user.folderId);
+    NSLog(@"%@", user.folderId);
+    
     // ask the PrYv API for events in the last 24h with the current user channel
-    [[PPrYvApiClient sharedClient] getEventsFromStartDate:nil
-                                                toEndDate:nil
+    NSTimeInterval interval = -60 * 60 * 24;
+    NSDate *dateTo = [NSDate date];
+    NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
+
+    [[PPrYvApiClient sharedClient] getEventsFromStartDate:dateFrom
+                                                toEndDate:dateTo
                                                inFolderId:user.folderId
                                            successHandler:^(NSArray *positionEventList) {
                                                

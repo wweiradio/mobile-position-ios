@@ -425,10 +425,10 @@
     if (startDate != nil && endDate != nil) {
         
         // the user asked for a specific time period
-        NSNumber *timeStampBeginning = [NSNumber numberWithDouble:[startDate timeIntervalSince1970]];
+        NSNumber *timeStampStart = [NSNumber numberWithDouble:[startDate timeIntervalSince1970]];
         NSNumber *timeStampEnd = [NSNumber numberWithDouble:[endDate timeIntervalSince1970]];
         
-        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events?fromTime=%@&toTime=%@&onlyFolders[]=%@&limit=1200", [self apiBaseUrl], self.channelId, timeStampBeginning, timeStampEnd, folderId]];
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events?fromTime=%@&toTime=%@&onlyFolders[]=%@&limit=1200", [self apiBaseUrl], self.channelId, timeStampStart, timeStampEnd, folderId]];
     }
     else {
         // the user asked for the last 24h

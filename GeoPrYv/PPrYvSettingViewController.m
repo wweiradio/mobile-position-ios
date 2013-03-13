@@ -98,12 +98,6 @@
         
         return NSLocalizedString(@"optionSection3Title", );
     }
-    /*
-    else if (section == 3) {
-        
-        return NSLocalizedString(@"optionSection4Title", );
-    }
-     */
     else if (section == 3) {
         return NSLocalizedString(@"optionSection5Title", );
     }
@@ -170,13 +164,6 @@
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
         cell.textLabel.textAlignment = UITextAlignmentCenter;
     }
-    /*
-    else if (indexPath.section == 3) {
-        
-        cell.textLabel.text = self.currentUser.folderId;
-        cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    }
-     */
     else if (indexPath.section == 3) {
         
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
