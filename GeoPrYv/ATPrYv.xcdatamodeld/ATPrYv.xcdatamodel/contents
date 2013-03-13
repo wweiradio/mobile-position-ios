@@ -6,10 +6,12 @@
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="elevation" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="folderId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="horizontalAccuracy" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="uploaded" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="verticalAccuracy" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
     </entity>
     <entity name="User" representedClassName="User" syncable="YES">
         <attribute name="folderId" optional="YES" attributeType="String" syncable="YES"/>
@@ -20,7 +22,7 @@
         <attribute name="userToken" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="PositionEvent" positionX="160" positionY="192" width="128" height="180"/>
+        <element name="PositionEvent" positionX="160" positionY="192" width="128" height="210"/>
         <element name="User" positionX="160" positionY="192" width="128" height="135"/>
     </elements>
 </model>

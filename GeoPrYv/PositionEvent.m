@@ -17,6 +17,8 @@
 @dynamic latitude;
 @dynamic longitude;
 @dynamic elevation;
+@dynamic horizontalAccuracy;
+@dynamic verticalAccuracy;
 @dynamic message;
 @dynamic uploaded;
 @dynamic attachmentList;

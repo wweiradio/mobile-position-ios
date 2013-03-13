@@ -55,8 +55,8 @@
     PositionEvent *positionEvent = [NSEntityDescription insertNewObjectForEntityForName:@"PositionEvent"
                                                                  inManagedObjectContext:scratchManagedObjectContext];
 
-    double latitude = [[[[positionEventDictionary objectForKey:@"value"] objectForKey:@"location"] objectForKey:@"lat"] doubleValue];
-    double longitude = [[[[positionEventDictionary objectForKey:@"value"] objectForKey:@"location"] objectForKey:@"lng"] doubleValue];
+    double latitude = [[[positionEventDictionary objectForKey:@"value"] objectForKey:@"latitude"] doubleValue];
+    double longitude = [[[positionEventDictionary objectForKey:@"value"] objectForKey:@"longitude"] doubleValue];
     NSString *folderId = [positionEventDictionary objectForKey:@"folderId"];
     double time = [[positionEventDictionary objectForKey:@"time"] doubleValue];
     
@@ -92,11 +92,10 @@
                                  },
                                  @"value" :
                                  @{
-                                         @"location" :
-                                         @{
-                                                 @"lat" : self.latitude,
-                                                 @"lng" : self.longitude
-                                         },
+                                         @"longitude" : self.longitude,
+                                         @"latitude" : self.latitude,
+                                         @"verticalAccuracy" : self.horizontalAccuracy,
+                                         @"horizontalAccuracy" : self.verticalAccuracy,
                                          @"elevation" : self.elevation
                                  },
                                  @"description" : message,
