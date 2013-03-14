@@ -77,17 +77,16 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     self.mapViewController.mapView.showsUserLocation = YES;
-    [[PPrYvApiClient sharedClient] synchronizeTimeWithSuccessHandler:^(NSTimeInterval serverTime) {
-        [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
-    } errorHandler:^(NSError *error) {
-        [self reportSyncError:error];
-    }];
-
     [[PPrYvLocationManager sharedInstance] applicationWillEnterForeground:application];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    [[PPrYvApiClient sharedClient] synchronizeTimeWithSuccessHandler:^(NSTimeInterval serverTime) {
+        [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
+    } errorHandler:^(NSError *error) {
+        [self reportSyncError:error];
+    }];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

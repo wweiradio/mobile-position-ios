@@ -57,7 +57,7 @@
 
 - (void)sendToPrYvApi
 {
-    assert([UIApplication sharedApplication].applicationState != UIApplicationStateBackground);
+    assert([UIApplication sharedApplication].applicationState == UIApplicationStateActive);
 
     __block NSArray *attachmentList = nil;
     if (self.positionEvent.attachment != nil) {
@@ -117,20 +117,15 @@
 - (void)sendEvent
 {
     [[PPrYvApiClient sharedClient] sendEvent:self.positionEvent withSuccessHandler:^{
-        [self didSentEvent];
+        self.positionEvent.uploaded = [NSNumber numberWithBool:YES];
+        [self.positionEvent.managedObjectContext save:nil];
+        
+        if (self.notify)
+            [self notifyFinishing];
     } errorHandler:^(NSError *error){
         if (self.notify)
             [self notifyFinishing];
     }];
-}
-
-- (void)didSentEvent
-{
-    self.positionEvent.uploaded = [NSNumber numberWithBool:YES];
-    [self.positionEvent.managedObjectContext save:nil];
-
-    if (self.notify)
-        [self notifyFinishing];
 }
 
 - (void)notifyFinishing

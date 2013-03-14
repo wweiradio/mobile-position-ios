@@ -262,7 +262,7 @@
 
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 
-        NSLog(@"could not synchronize");
+        NSLog(@"could not synchronize %@", error);
         NSDictionary *userInfo = @{
                 @"connectionError": [self nonNil:error],
                 @"NSHTTPURLResponse" : [self nonNil:operation.response],
@@ -360,7 +360,7 @@
             if (successHandler)
                 successHandler();
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-            NSLog(@"failed to send an event with attachment(s)");
+            NSLog(@"failed to send an event with attachment(s) %@", error);
             // create a dictionary with all the data we can get and pass it as userInfo
             NSDictionary *userInfo = @{
                     @"connectionError": [self nonNil:error],
@@ -389,7 +389,7 @@
             if (successHandler)
                 successHandler();
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-            NSLog(@"failed to send an event");
+            NSLog(@"failed to send an event %@", error);
             // create a dictionary with all the information we can get and pass it as userInfo
             NSDictionary *userInfo = @{
                     @"connectionError": [self nonNil:error],
