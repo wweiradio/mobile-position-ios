@@ -201,7 +201,7 @@
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
         [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification
@@ -246,7 +246,7 @@
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
         [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification object:nil userInfo:@{kPrYvLocationManagerDidAcceptNewLocationNotification : location}];

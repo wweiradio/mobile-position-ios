@@ -295,7 +295,9 @@
                                                                     withMessage:message
                                                                      attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+    
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
     // dimiss the note composer
     [self cancelNote:nil];
@@ -519,7 +521,9 @@
                                                                                                 attachment:assetURL
                                                                                                     folder:folderId
                                                                                                  inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-                               [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+                               
+                               if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+                                   [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
                            }];
                        }
                        // else the image was picked from the library
@@ -533,7 +537,9 @@
                                                                                             attachment:assetURL
                                                                                                 folder:folderId
                                                                                              inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-                           [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+                           
+                           if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+                               [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
                        }
                    
                    });
