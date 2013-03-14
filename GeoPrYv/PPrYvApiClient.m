@@ -236,8 +236,7 @@
     if (![self isReady]) {
         NSLog(@"fail synchronize: not initialized");
 
-        if (errorHandler)
-            errorHandler([self createNotReadyError]);
+        // we should just ignore this case
         return;
     }
         
@@ -549,7 +548,7 @@
         NSLog(@"successfully created folderName: %@ folderId: %@", folderName, folderId);
 
         if (successHandler)
-            successHandler(folderName, folderId);
+            successHandler(folderId, folderName);
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSLog(@"failed to create folderName: %@ folderId: %@ reason: %@", folderName, folderId, JSON);
 
