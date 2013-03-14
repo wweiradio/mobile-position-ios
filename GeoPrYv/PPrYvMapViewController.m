@@ -20,13 +20,9 @@
 #import "PPrYvWebLoginViewController.h"
 
 @interface PPrYvMapViewController ()
-
-- (void)createMKPolyLine;
 @end
 
 @implementation PPrYvMapViewController
-
-@synthesize recording = _recording;
 
 #pragma mark - Object Life Cycle
 
@@ -326,8 +322,14 @@
         return nil;
     }
     static NSString *annotationIdentifier = @"annotationIdentifier";
-    MKAnnotationView *annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
-                                                                    reuseIdentifier:annotationIdentifier];
+    MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:annotationIdentifier];
+    if (!annotationView) {
+        annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
+                                                      reuseIdentifier:annotationIdentifier];
+    } else {
+        annotationView.annotation = annotation;
+    }
+    
     annotationView.image = [UIImage imageNamed:@"pinPryv.png"];
     annotationView.enabled = YES;
     annotationView.canShowCallout = YES;
