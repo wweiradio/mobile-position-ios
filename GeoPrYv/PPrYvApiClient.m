@@ -244,6 +244,7 @@
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/", [self apiBaseUrl]]];
     
     AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:url];
+    [client.operationQueue setMaxConcurrentOperationCount:1];
     [client setDefaultHeader:@"Authorization" value:self.oAuthToken];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -332,6 +333,7 @@
     if (containAttachment) {
         // send event with attachments
         AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:url];
+        [client.operationQueue setMaxConcurrentOperationCount:1];
         [client setDefaultHeader:@"Authorization" value:self.oAuthToken];
 
         NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST"

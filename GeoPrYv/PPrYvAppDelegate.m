@@ -35,7 +35,7 @@
     [PPrYvLocationManager sharedInstance];
 
     // get the current user if any available
-    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
 
     self.mapViewController = [[PPrYvMapViewController alloc] initWithNibName:@"PPrYvMapViewController"
                                                                       bundle:nil];
@@ -44,25 +44,14 @@
     self.window.rootViewController = self.mapViewController;
     [self.window makeKeyAndVisible];
     
-    if (user == nil) {
-        
-        // no user available - show the login form
-        PPrYvWebLoginViewController * login = nil;
-        
-        login = [[PPrYvWebLoginViewController alloc] initWithNibName:@"PPrYvWebLoginViewController"
-                                                           bundle:nil];
-
-        [self.window.rootViewController presentViewController:login animated:YES completion:nil];
-    }
-    else {
-        
+    if (user) {
         // a user exists. Thus maybe some events are waiting to be uploaded
 
         // start or restart the api Client with the new user upon successful start it would try to synchronize
         PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
         [apiClient startClientWithUserId:user.userId
                               oAuthToken:user.userToken
-                               channelId:kPrYvApplicationChannel successHandler:^(NSTimeInterval serverTime)
+                               channelId:kPrYvApplicationChannelId successHandler:^(NSTimeInterval serverTime)
         {
 
             [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
@@ -70,7 +59,6 @@
         {
             [self reportSyncError:error];
         }];
-
     }
     
     return YES;
@@ -88,6 +76,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+    self.mapViewController.mapView.showsUserLocation = YES;
     [[PPrYvApiClient sharedClient] synchronizeTimeWithSuccessHandler:^(NSTimeInterval serverTime) {
         [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
     } errorHandler:^(NSError *error) {

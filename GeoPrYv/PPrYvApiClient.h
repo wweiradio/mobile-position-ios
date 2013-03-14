@@ -13,13 +13,13 @@
  
  On PrYv, Events are sent as JSON Data parameters. Single event can have files attached to them.
  Events can be of differents types.
- See http://dev.pryv.com/event-types.html
-     http://dev.pryv.com/standard-structure.html
+ See http://pryv.github.com/event-types.html
+     http://pryv.github.com/standard-structure.html
 
  Each Application uses one Channel and can have multiple folders within this channel
  You have only one channelId per application.
 
- Visit http://dev.pryv.com/ for the complete documentation on the PrYv API
+ Visit http://pryv.github.com/ for the complete documentation on the PrYv API
  
  */
 

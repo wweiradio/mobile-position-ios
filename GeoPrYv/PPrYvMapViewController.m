@@ -17,6 +17,7 @@
 #import "PPrYvApiClient.h"
 #import "PPrYvPointAnnotation.h"
 #import "UIView+Helpers.h"
+#import "PPrYvWebLoginViewController.h"
 
 @interface PPrYvMapViewController ()
 
@@ -63,11 +64,11 @@
     
     // Set default datepickers period from a week ago to now
     self.datePickerTo.date = [NSDate date];
-    self.datePickerFrom.date = [NSDate dateWithTimeIntervalSinceNow:-60*60*24*7];
+    self.datePickerFrom.date = [NSDate dateWithTimeIntervalSinceNow:-60 * 60 * 24 * 7];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:kPrYvLocationManagerDidAcceptNewLocation object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+    [[NSNotificationCenter defaultCenter] addObserverForName:kPrYvLocationManagerDidAcceptNewLocationNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
         
-        CLLocation * newLocation = [note.userInfo objectForKey:kPrYvLocationManagerDidAcceptNewLocation];
+        CLLocation * newLocation = [note.userInfo objectForKey:kPrYvLocationManagerDidAcceptNewLocationNotification];
         
         // add a new point on the map
         MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
@@ -83,7 +84,7 @@
                                                   usingBlock:^(NSNotification *note) {
                                                       
         User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-        if (user) {
+        if (user && ![self isRecording]) {
         
             // ask the PrYv API for events in the last 24h with the current user channel
             NSTimeInterval interval = -60 * 60 * 24;
@@ -100,14 +101,30 @@
                                                    } errorHandler:^(NSError *error) {
                                                        [self reportError:error];
                                                    }];
-        } // if user 
-
+        }
     }];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    NSLog(@"viewDidAppear");
     [super viewDidAppear:animated];
+    
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    
+    if (!user) {
+        NSLog(@"no user!");
+        // no user available - show the login form
+        PPrYvWebLoginViewController *loginViewController = nil;
+        loginViewController = [[PPrYvWebLoginViewController alloc] initWithNibName:@"PPrYvWebLoginViewController"
+                                                                            bundle:nil];
+        [self.view endEditing:YES];
+        
+        // TODO test on iPad
+        [self presentViewController:loginViewController animated:YES completion:nil];
+    } else {
+        NSLog(@"user: %@", user);
+    }
     
     self.mapView.showsUserLocation = YES;
     [self.mapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
@@ -346,10 +363,8 @@
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-    for (NSObject *annotation in [mapView annotations])
-    {
-        if ([annotation isKindOfClass:[MKUserLocation class]])
-        {
+    for (NSObject *annotation in [mapView annotations]) {
+        if ([annotation isKindOfClass:[MKUserLocation class]]) {
             MKAnnotationView *view = [mapView viewForAnnotation:(MKUserLocation *)annotation];
             [[view superview] bringSubviewToFront:view];
         }
@@ -372,11 +387,11 @@
         PPrYvPointAnnotation * point2 = obj2;
         
         if ([[point1.date earlierDate:point2.date] isEqualToDate:point1.date]) {
-            NSLog(@"ascending budy!");
+            //NSLog(@"ascending budy!");
             return (NSComparisonResult)NSOrderedDescending;
         }
         else if([[point1.date earlierDate:point2.date] isEqualToDate:point2.date]){
-            NSLog(@"descending budy! event1 = %@ event2 = %@", point1.date,point2.date);
+            //NSLog(@"descending budy! event1 = %@ event2 = %@", point1.date,point2.date);
             return (NSComparisonResult)NSOrderedAscending;
         }
         
@@ -387,7 +402,7 @@
     for (int i = 0; i < [sortedPoint count]; i++) {
         
         coords[i] = [(MKPointAnnotation *)[sortedPoint objectAtIndex:i] coordinate];
-        NSLog(@"did add coordinate");
+        //NSLog(@"did add coordinate");
     }
     
     MKPolyline * polyLine = [MKPolyline polylineWithCoordinates:coords count:[sortedPoint count]];
@@ -704,9 +719,9 @@
     
     NSLog(@"fetched events: %d", [positionEventList count]);
     
-    for (MKPointAnnotation * annot in self.mapView.annotations) {
-        if (annot != (MKPointAnnotation *)self.mapView.userLocation) {
-            [self.mapView removeAnnotation:annot];
+    for (MKPointAnnotation * annotation in self.mapView.annotations) {
+        if (![annotation isKindOfClass:[MKUserLocation class]]) {
+            [self.mapView removeAnnotation:annotation];
         }
     }
     
@@ -758,6 +773,7 @@
         PPrYvPointAnnotation * aPosition = [[PPrYvPointAnnotation alloc] init];
         aPosition.title = NSLocalizedString(@"mapPointText", );
         aPosition.coordinate = CLLocationCoordinate2DMake(latitude, longitude);
+        // aPosition.subtitle =
         aPosition.date = positionEvent.date;
         [annotations addObject:aPosition];
     }

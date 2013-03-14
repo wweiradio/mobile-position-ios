@@ -84,9 +84,9 @@
                              
                              @"requestedPermissions": @[
                                      @{
-                                         @"channelId" : @"position",
+                                         @"channelId" : kPrYvApplicationChannelId,
                                          @"level" : @"manage",
-                                         @"defaultName" : @"Position",
+                                         @"defaultName" : kPrYvApplicationChannelName,
                                        }
                              ]};
 
@@ -271,7 +271,7 @@
     PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
     [apiClient startClientWithUserId:newUser.userId
                           oAuthToken:newUser.userToken
-                           channelId:kPrYvApplicationChannel successHandler:^(NSTimeInterval serverTime)
+                           channelId:kPrYvApplicationChannelId successHandler:^(NSTimeInterval serverTime)
      {
          [self findExistingOrCreateNewFolderForUser];
      }

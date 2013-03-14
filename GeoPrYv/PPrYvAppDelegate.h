@@ -27,14 +27,14 @@
 
  SEE "PositionEvent" class to understand how we create a PrYv Event of type Positon from a CLLocation.
  more information
-    see http://dev.pryv.com/event-types.html
-    see http://dev.pryv.com/event-types.html#toc18
+    see http://pryv.github.com/event-types.html
+    see http://pryv.github.com/event-types.html#toc18
 
  
  SEE "PPrYvApiClient" to understand how we connect to the PrYv RESTful API with AFNetworking
  and send or get events from  specific time period.
  
- SEE http://dev.pryv.com/ for the complete documentation on the PrYv API
+ SEE http://pryv.github.com/ for the complete documentation on the PrYv API
  */
 
 #import <UIKit/UIKit.h>

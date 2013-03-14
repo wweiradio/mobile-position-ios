@@ -11,15 +11,25 @@
 #import "PPrYvCoreDataManager.h"
 #import "PPrYvPositionEventSender.h"
 
-@implementation PPrYvLocationManager {
-}
+@interface PPrYvLocationManager()
 
-@synthesize backgroundDate = _backgroundDate;
-@synthesize foregroundTimer = _foregroundTimer;
-@synthesize locationManager = _locationManager;
-@synthesize foregroundLocationUpdatesAllowed = _foregroundLocationUpdatesAllowed;
-@synthesize backgroundTaskIdentifier = _backgroundTaskIdentifier;
+// our background date used as a timer when the application is in background mode to filter locations
+@property (nonatomic, strong) NSDate *backgroundDate;
 
+// our foreground timer used when the application is in foreground to filter locations
+@property (nonatomic, strong) NSTimer *foregroundTimer;
+
+// our foreground timer flag
+@property (nonatomic, assign, getter = isForegroundLocationUpdatesAllowed) BOOL foregroundLocationUpdatesAllowed;
+
+// a backgroundTaskIdentifier used when connecting to the PrYv API when the application is in background
+// background taskIdentifiers allows you to have extra time to perform a task when the application is in background mode.
+@property (nonatomic, assign) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+
+@end
+
+
+@implementation PPrYvLocationManager
 
 + (PPrYvLocationManager *)sharedInstance
 {
@@ -97,7 +107,8 @@
     if (user != nil) {
         timeInterval = [user.locationTimeInterval doubleValue];
     }
-
+    
+    [self.foregroundTimer invalidate];
     self.foregroundTimer = [NSTimer scheduledTimerWithTimeInterval:timeInterval
                                                             target:self
                                                           selector:@selector(allowUpdateNow)
@@ -120,6 +131,8 @@
 {
     NSDictionary *userInfo = aNotification.userInfo;
     if ([userInfo objectForKey:kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey]) {
+        
+        assert([UIApplication sharedApplication].applicationState != UIApplicationStateBackground);
         [self.foregroundTimer invalidate];
         NSTimeInterval timeInterval = [[userInfo objectForKey:kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey] doubleValue];
         self.foregroundTimer = [NSTimer scheduledTimerWithTimeInterval:timeInterval
@@ -149,19 +162,21 @@
 // If iOS >= 6.0
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
-    CLLocation * location = [locations lastObject];
-    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    CLLocation *location = [locations lastObject];
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
 
     if (user == nil) {
         return;
     }
 
-    if(location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
+    if (location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
+        NSLog(@"Accuracy miss");
         return;
     }
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
-        if([self.backgroundDate timeIntervalSinceNow] > -[user.locationTimeInterval doubleValue]) {
+        if ([self.backgroundDate timeIntervalSinceNow] > -[user.locationTimeInterval doubleValue]) {
+            NSLog(@"Interval miss");
             return;
         }
         else {
@@ -169,6 +184,7 @@
         }
     }
     else if (self.foregroundTimer != nil && !self.isForegroundLocationUpdatesAllowed) {
+        NSLog(@"Other miss?");
         return;
     }
 
@@ -184,9 +200,13 @@
     PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:location
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocation object:nil userInfo:@{kPrYvLocationManagerDidAcceptNewLocation : location}];}
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
+        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification
+                                                        object:nil
+                                                      userInfo:@{kPrYvLocationManagerDidAcceptNewLocationNotification : location}];}
 
 // iOS <= 5.1
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
@@ -225,9 +245,11 @@
     PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:location
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocation object:nil userInfo:@{kPrYvLocationManagerDidAcceptNewLocation : location}];
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
+        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification object:nil userInfo:@{kPrYvLocationManagerDidAcceptNewLocationNotification : location}];
 }
 
 @end

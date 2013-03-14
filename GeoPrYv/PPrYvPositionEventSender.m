@@ -57,6 +57,8 @@
 
 - (void)sendToPrYvApi
 {
+    assert([UIApplication sharedApplication].applicationState != UIApplicationStateBackground);
+
     __block NSArray *attachmentList = nil;
     if (self.positionEvent.attachment != nil) {
 
