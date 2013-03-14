@@ -190,13 +190,17 @@
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
             self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
         }];
     }
     else {
         self.foregroundLocationUpdatesAllowed = NO;
     }
-
+    
+    // check with the previous position event
+    //      if location is close enough - update the time
+    
     PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:location
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
@@ -235,6 +239,7 @@
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
             self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
         }];
     }
