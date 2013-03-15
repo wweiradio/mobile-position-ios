@@ -72,7 +72,6 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [[PPrYvLocationManager sharedInstance] applicationDidEnterBackground:application];
-    self.mapViewController.mapView.showsUserLocation = NO;
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
