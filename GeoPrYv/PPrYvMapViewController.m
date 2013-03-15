@@ -172,7 +172,7 @@
     if (self.isRecording == NO) {
         
         // start tracking the user using the mainLocationManager
-        [[[PPrYvLocationManager sharedInstance] locationManager] startUpdatingLocation];
+        [[PPrYvLocationManager sharedInstance] startUpdatingLocation];
         
         // set flag
         self.recording = YES;
@@ -220,7 +220,7 @@
         self.recording = NO;
         
         // stop tracking the user
-        [[[PPrYvLocationManager sharedInstance] locationManager] stopUpdatingLocation];
+        [[PPrYvLocationManager sharedInstance] stopUpdatingLocation];
     }
 }
 

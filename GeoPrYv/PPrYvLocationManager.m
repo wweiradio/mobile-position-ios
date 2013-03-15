@@ -13,6 +13,9 @@
 
 @interface PPrYvLocationManager()
 
+// the location manager responsible for tracking the location we want to store on the PrYv API
+@property (nonatomic, strong) CLLocationManager *locationManager;
+
 // our background date used as a timer when the application is in background mode to filter locations
 @property (nonatomic, strong) NSDate *backgroundDate;
 
@@ -21,6 +24,8 @@
 
 // our foreground timer flag
 @property (nonatomic, assign, getter = isForegroundLocationUpdatesAllowed) BOOL foregroundLocationUpdatesAllowed;
+
+@property (nonatomic, strong) PositionEvent *lastPositionEvent;
 
 // a backgroundTaskIdentifier used when connecting to the PrYv API when the application is in background
 // background taskIdentifiers allows you to have extra time to perform a task when the application is in background mode.
@@ -151,6 +156,38 @@
     }
 }
 
+#pragma mark - 
+
+- (void)startUpdatingLocation
+{
+    self.lastPositionEvent = nil;
+    
+    [self.locationManager startUpdatingLocation];
+}
+
+- (void)stopUpdatingLocation
+{
+    [self.locationManager stopUpdatingLocation];
+}
+
+- (BOOL)tooCloseTooPreviousEvent:(CLLocation *)location
+{
+    if (!self.lastPositionEvent)
+        return NO;
+        
+    PositionEvent *previousEvent = self.lastPositionEvent;
+    
+    CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([previousEvent.latitude doubleValue],
+                                                                   [previousEvent.longitude doubleValue]);
+    CLLocation *previousLocation = [[CLLocation alloc] initWithCoordinate:coordinate
+                                                                 altitude:[previousEvent.elevation doubleValue]
+                                                       horizontalAccuracy:[previousEvent.horizontalAccuracy doubleValue]
+                                                         verticalAccuracy:[previousEvent.verticalAccuracy doubleValue]
+                                                                timestamp:[NSDate date]];
+    
+    return [location distanceFromLocation:previousLocation] < kPrYvMinimumDistanceBetweenConsecutiveEvents;
+}
+
 #pragma mark - Location Manager Delegate
 
 // called by the the foreground timer to allow new location to be accepted
@@ -170,13 +207,13 @@
     }
 
     if (location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
-        NSLog(@"Accuracy miss");
+        //NSLog(@"Accuracy miss");
         return;
     }
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
         if ([self.backgroundDate timeIntervalSinceNow] > -[user.locationTimeInterval doubleValue]) {
-            NSLog(@"Interval miss");
+            //NSLog(@"Interval miss");
             return;
         }
         else {
@@ -184,7 +221,7 @@
         }
     }
     else if (self.foregroundTimer != nil && !self.isForegroundLocationUpdatesAllowed) {
-        NSLog(@"Other miss?");
+        //NSLog(@"Other miss?");
         return;
     }
 
@@ -199,18 +236,33 @@
     }
     
     // check with the previous position event
-    //      if location is close enough - update the time
+    //      if location is close enough - update the time duration for the event
     
-    PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:location
-                                                                    withMessage:nil attachment:nil folder:user.folderId
-                                                                      inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    PositionEvent *locationEvent = nil;
+    if ([self tooCloseTooPreviousEvent:location]) {
+        
+        //send the previous event with calculated duration
+        locationEvent = self.lastPositionEvent;
+        double secondsSinceLastEvent = [[NSDate date] timeIntervalSince1970] - [locationEvent.date timeIntervalSince1970];
+        locationEvent.duration = [NSNumber numberWithDouble:secondsSinceLastEvent];
+    } else {
+        locationEvent = [PositionEvent createPositionEventInLocation:location
+                                                         withMessage:nil
+                                                          attachment:nil
+                                                              folder:user.folderId
+                                                           inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    }
+    
+    // save last position event
+    self.lastPositionEvent = locationEvent;
     
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
         [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification
                                                         object:nil
-                                                      userInfo:@{kPrYvLocationManagerDidAcceptNewLocationNotification : location}];}
+                                                      userInfo:@{kPrYvLocationManagerDidAcceptNewLocationNotification : location}];
+}
 
 // iOS <= 5.1
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
@@ -247,14 +299,33 @@
         self.foregroundLocationUpdatesAllowed = NO;
     }
 
-    PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:location
-                                                                    withMessage:nil attachment:nil folder:user.folderId
-                                                                      inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    // check with the previous position event
+    //      if location is close enough - update the time duration for the event
+    
+    PositionEvent *locationEvent = nil;
+    if ([self tooCloseTooPreviousEvent:location]) {
+        
+        //send the previous event with calculated duration
+        locationEvent = self.lastPositionEvent;
+        double secondsSinceLastEvent = [[NSDate date] timeIntervalSince1970] - [locationEvent.date timeIntervalSince1970];
+        locationEvent.duration = [NSNumber numberWithDouble:secondsSinceLastEvent];
+    } else {
+        locationEvent = [PositionEvent createPositionEventInLocation:location
+                                                         withMessage:nil
+                                                          attachment:nil
+                                                              folder:user.folderId
+                                                           inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    }
+    
+    // save last position event
+    self.lastPositionEvent = locationEvent;
     
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
         [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification object:nil userInfo:@{kPrYvLocationManagerDidAcceptNewLocationNotification : location}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification
+                                                        object:nil
+                                                      userInfo:@{kPrYvLocationManagerDidAcceptNewLocationNotification : location}];
 }
 
 @end

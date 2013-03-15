@@ -80,7 +80,6 @@
 // @name Event operations
 // ---------------------------------------------------------------------------------------------------------------------
 
-
 /**
  @discussion
  Send an position event with one or more attachments
@@ -93,8 +92,22 @@
  @see EventAttachment
 */
 - (void)sendEvent:(PositionEvent *)event
-withSuccessHandler:(void(^)(void))successHandler
+withSuccessHandler:(void(^)(NSString *eventId))successHandler
       errorHandler:(void(^)(NSError *error))errorHandler;
+
+
+/**
+ @discussion
+ Update the duration of event
+        PUT /{channel-id}/events/{event-id}
+
+ @param event with duration and event-id set
+ 
+ @see PositionEvent
+ */
+- (void)updateEvent:(PositionEvent *)event
+ withSuccessHandler:(void(^)(NSString *eventId))successHandler
+       errorHandler:(void(^)(NSError *error))errorHandler;
 
 
 /**

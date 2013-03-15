@@ -19,3 +19,6 @@
 
 #define kPrYvApplicationChannelId @"position"
 #define kPrYvApplicationChannelName @"Position"
+
+// in meters
+#define kPrYvMinimumDistanceBetweenConsecutiveEvents 10

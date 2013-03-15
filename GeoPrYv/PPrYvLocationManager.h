@@ -8,10 +8,10 @@
 
 @interface PPrYvLocationManager : NSObject<CLLocationManagerDelegate>
 
-// the location manager responsible for tracking the location we want to store on the PrYv API
-@property (nonatomic, strong) CLLocationManager *locationManager;
-
 + (PPrYvLocationManager *)sharedInstance;
+
+- (void)startUpdatingLocation;
+- (void)stopUpdatingLocation;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application;
 - (void)applicationWillEnterForeground:(UIApplication *)application;

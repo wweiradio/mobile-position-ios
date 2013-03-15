@@ -68,6 +68,8 @@
     positionEvent.latitude = [NSNumber numberWithDouble:latitude];
     positionEvent.longitude = [NSNumber numberWithDouble:longitude];
     positionEvent.folderId = folderId;
+    positionEvent.eventId = positionEventDictionary[@"id"];
+    positionEvent.duration = [NSNumber numberWithDouble:[[positionEventDictionary objectForKey:@"duration"] doubleValue]];
     positionEvent.uploaded = @YES; // do not try to upload it
     positionEvent.message = [positionEventDictionary objectForKey:@"description"];
     positionEvent.date = [NSDate dateWithTimeIntervalSince1970:time];
@@ -108,6 +110,30 @@
     NSAssert(result != nil, @"Unsuccessful json creation from position event");
     NSAssert(result.length > 0, @"Unsuccessful json creation from position event");
 
+    return result;
+}
+
+- (NSData *)updateDurationJSONObject
+{
+    NSDictionary *positionEventDictionary =
+    @{
+      @"id" : self.eventId,
+      @"value" :
+          @{
+              @"longitude" : self.longitude,
+              @"latitude" : self.latitude,
+              @"verticalAccuracy" : self.horizontalAccuracy,
+              @"horizontalAccuracy" : self.verticalAccuracy,
+              @"elevation" : self.elevation,
+              @"duration" : self.duration
+           },
+      };
+    
+    NSData *result = [NSJSONSerialization dataWithJSONObject:positionEventDictionary options:0 error:nil];
+    
+    NSAssert(result != nil, @"Unsuccessful json creation from position event");
+    NSAssert(result.length > 0, @"Unsuccessful json creation from position event");
+    
     return result;
 }
 
@@ -277,9 +303,60 @@
     [operation start];
 }
 
+#pragma mark - PrYv API Event update (PUT /{channel-id}/events/)
+
+// used to update the duration of position event
+
+- (void)updateEvent:(PositionEvent *)event withSuccessHandler:(void(^)(NSString *eventId))successHandler errorHandler:(void(^)(NSError *error))errorHandler;
+{
+    if (![self isReady]) {
+        NSLog(@"fail sending event: not initialized");
+        
+        if (errorHandler)
+            errorHandler([self createNotReadyError]);
+        return;
+    }
+    
+    NSString *eventId = event.eventId;
+    
+    // create the RESTful url corresponding the current action
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events/%@", [self apiBaseUrl], self.channelId, event.eventId]];
+
+    // send an event without attachments
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request addValue:self.oAuthToken forHTTPHeaderField:@"Authorization"];
+    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    request.HTTPMethod = @"PUT";
+    request.HTTPBody = [event updateDurationJSONObject];
+    
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        NSLog(@"successfully updated event with eventId: %@", eventId);
+        
+        if (successHandler)
+            successHandler(eventId);
+    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        NSLog(@"failed to send an event %@", error);
+        // create a dictionary with all the information we can get and pass it as userInfo
+        NSDictionary *userInfo = @{
+                                   @"connectionError": [self nonNil:error],
+                                   @"NSHTTPURLResponse" : [self nonNil:response],
+                                   @"event": [self nonNil:event],
+                                   @"serverError" : [self nonNil:JSON]
+                                   };
+        NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
+        
+        if (errorHandler)
+            errorHandler(requestError);
+    }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
+    [operation start];
+    
+}
+
+
 #pragma mark - PrYv API Event create (POST /{channel-id}/events/)
 
-- (void)sendEvent:(PositionEvent *)event withSuccessHandler:(void(^)(void))successHandler errorHandler:(void(^)(NSError *error))errorHandler;
+- (void)sendEvent:(PositionEvent *)event withSuccessHandler:(void(^)(NSString *eventId))successHandler errorHandler:(void(^)(NSError *error))errorHandler;
 {
     if (![self isReady]) {
         NSLog(@"fail sending event: not initialized");
@@ -355,10 +432,10 @@
 
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                                                                             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-            NSLog(@"successfully sent event with attachment(s)");
+            NSLog(@"successfully sent event with attachment(s) eventId: %@", JSON[@"id"]);
 
             if (successHandler)
-                successHandler();
+                successHandler(JSON[@"id"]);
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
             NSLog(@"failed to send an event with attachment(s) %@", error);
             // create a dictionary with all the data we can get and pass it as userInfo
@@ -385,10 +462,10 @@
         request.HTTPBody = [event dataWithJSONObject];
 
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-            NSLog(@"successfully sent event");
+            NSLog(@"successfully sent event eventId: %@", JSON[@"id"]);
 
             if (successHandler)
-                successHandler();
+                successHandler(JSON[@"id"]);
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
             NSLog(@"failed to send an event %@", error);
             // create a dictionary with all the information we can get and pass it as userInfo

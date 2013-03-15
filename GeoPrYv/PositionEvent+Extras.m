@@ -23,6 +23,7 @@
     positionEvent.horizontalAccuracy = [NSNumber numberWithDouble:location.horizontalAccuracy];
     positionEvent.message = message;
     positionEvent.folderId = folderId;
+    positionEvent.duration = [NSNumber numberWithDouble:0];
     positionEvent.attachment = [fileURL absoluteString];
     positionEvent.uploaded = [NSNumber numberWithBool:NO];
     positionEvent.date = [NSDate dateWithTimeIntervalSince1970:([[NSDate date] timeIntervalSince1970] - [PPrYvApiClient sharedClient].serverTimeInterval)];
@@ -34,7 +35,6 @@
 
     return positionEvent;
 }
-
 
 - (NSString *)description
 {
@@ -48,6 +48,8 @@
     [description appendFormat:@", self.verticalAccuracy=%@", self.verticalAccuracy];
     [description appendFormat:@", self.horizontalAccuracy=%@", self.horizontalAccuracy];
     [description appendFormat:@", self.uploaded=%@", self.uploaded];
+    [description appendFormat:@", self.duration=%@", self.duration];
+    [description appendFormat:@", self.eventId=%@", self.eventId];
     [description appendFormat:@", self.date=%@", self.date];
     [description appendString:@">"];
     return description;

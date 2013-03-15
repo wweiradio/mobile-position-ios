@@ -22,5 +22,7 @@
 @dynamic message;
 @dynamic uploaded;
 @dynamic attachmentList;
+@dynamic duration;
+@dynamic eventId;
 
 @end

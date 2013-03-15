@@ -116,16 +116,29 @@
 
 - (void)sendEvent
 {
-    [[PPrYvApiClient sharedClient] sendEvent:self.positionEvent withSuccessHandler:^{
-        self.positionEvent.uploaded = [NSNumber numberWithBool:YES];
-        [self.positionEvent.managedObjectContext save:nil];
-        
-        if (self.notify)
-            [self notifyFinishing];
-    } errorHandler:^(NSError *error){
-        if (self.notify)
-            [self notifyFinishing];
-    }];
+    if (self.positionEvent.eventId) {
+        [[PPrYvApiClient sharedClient] updateEvent:self.positionEvent withSuccessHandler:^(NSString *eventId){
+            self.positionEvent.uploaded = [NSNumber numberWithBool:YES];
+            [self.positionEvent.managedObjectContext save:nil];
+            if (self.notify)
+                [self notifyFinishing];
+        } errorHandler:^(NSError *error){
+            if (self.notify)
+                [self notifyFinishing];
+        }];
+    } else {
+        [[PPrYvApiClient sharedClient] sendEvent:self.positionEvent withSuccessHandler:^(NSString *eventId){
+            self.positionEvent.uploaded = [NSNumber numberWithBool:YES];
+            self.positionEvent.eventId = eventId;
+            [self.positionEvent.managedObjectContext save:nil];
+            
+            if (self.notify)
+                [self notifyFinishing];
+        } errorHandler:^(NSError *error){
+            if (self.notify)
+                [self notifyFinishing];
+        }];
+    }
 }
 
 - (void)notifyFinishing

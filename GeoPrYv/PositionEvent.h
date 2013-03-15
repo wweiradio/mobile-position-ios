@@ -22,6 +22,8 @@
 @property (nonatomic, retain) NSNumber *verticalAccuracy;
 @property (nonatomic, retain) NSString *message;
 @property (nonatomic, retain) NSNumber *uploaded;
+@property (nonatomic, retain) NSNumber *duration;
+@property (nonatomic, retain) NSString *eventId;
 
 // transient array of EventAttachment 
 @property (nonatomic, retain) NSArray  *attachmentList;
