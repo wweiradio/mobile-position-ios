@@ -151,6 +151,7 @@
     [self setCurrentPeriodLabel:nil];
     [self setDeckHolder:nil];
     [self setShadowView:nil];
+
     [super viewDidUnload];
 }
 
@@ -681,6 +682,15 @@
                                            }];
 }
 
+#pragma mark - Locate Me Action
+
+- (IBAction)locateMe:(UIButton *)sender
+{
+    [self.mapView setShowsUserLocation:YES];
+    [self.mapView setCenterCoordinate:self.mapView.userLocation.location.coordinate
+                             animated:YES];
+}
+
 #pragma mark - Settings Actions
 
 - (IBAction)pushSettingsViewController
@@ -800,8 +810,8 @@
 
 #pragma mark - dealloc
 
-- (void)dealloc {
-    
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

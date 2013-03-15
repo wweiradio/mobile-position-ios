@@ -52,6 +52,7 @@
 - (IBAction)showDatePickerFrom:(UIButton *)sender;
 - (IBAction)sendNoteWithCurrentLocation:(id)sender;
 - (IBAction)startStopLocationRecording:(UIButton *)sender;
+- (IBAction)locateMe:(UIButton *)sender;
 
 // our custom initializer. We pass the mainLocationManager and the unique application managedObjectContext
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
