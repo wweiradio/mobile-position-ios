@@ -307,8 +307,16 @@
     if ([[error userInfo] objectForKey:@"connectionError"]) {
         originError = [[error userInfo] objectForKey:@"connectionError"];
     }
+    
+    NSString *message = [originError localizedDescription];
+    
+    if ([[error userInfo] objectForKey:@"serverError"] && [[[error userInfo] objectForKey:@"serverError"] objectForKey:@"message"]) {
+        NSString *serverMessage = [error userInfo][@"serverError"][@"message"];
+        message = [NSString stringWithFormat: @"%@ (%@)", serverMessage, [originError localizedDescription]];
+    }
+    
     [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", )
-                                message:[originError localizedDescription]
+                                message:message
                                delegate:nil
                       cancelButtonTitle:NSLocalizedString(@"cancelButton", )
                       otherButtonTitles:nil] show];

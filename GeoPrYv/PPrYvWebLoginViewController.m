@@ -271,7 +271,8 @@
     PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
     [apiClient startClientWithUserId:newUser.userId
                           oAuthToken:newUser.userToken
-                           channelId:kPrYvApplicationChannelId successHandler:^(NSTimeInterval serverTime)
+                           channelId:kPrYvApplicationChannelId
+                      successHandler:^(NSTimeInterval serverTime)
      {
          [self findExistingOrCreateNewFolderForUser];
      }
@@ -370,9 +371,15 @@
         }
     } errorHandler:^(NSError *error) {
         
+        NSString *message = NSLocalizedString(@"alertCantGetFolderList", );
+        if ([[error userInfo] objectForKey:@"serverError"] && [[[error userInfo] objectForKey:@"serverError"] objectForKey:@"message"]) {
+            NSDictionary *originError = [[error userInfo] objectForKey:@"serverError"];
+            message = [NSString stringWithFormat: @"%@ (%@)", NSLocalizedString(@"alertCantGetFolderList", ), originError[@"message"]];
+        }
+        
         NSLog(@"couldn't receive folders %@", error);
         [[[UIAlertView alloc] initWithTitle:nil
-                                    message:NSLocalizedString(@"alertCantGetFolderList", )
+                                    message:message
                                    delegate:nil
                           cancelButtonTitle:NSLocalizedString(@"cancelButton", )
                           otherButtonTitles:nil] show];

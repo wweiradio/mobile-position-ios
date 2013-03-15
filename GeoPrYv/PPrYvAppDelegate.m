@@ -51,7 +51,8 @@
         PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
         [apiClient startClientWithUserId:user.userId
                               oAuthToken:user.userToken
-                               channelId:kPrYvApplicationChannelId successHandler:^(NSTimeInterval serverTime)
+                               channelId:kPrYvApplicationChannelId
+                          successHandler:^(NSTimeInterval serverTime)
         {
 
             [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];

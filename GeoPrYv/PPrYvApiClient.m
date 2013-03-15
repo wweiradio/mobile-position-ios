@@ -273,6 +273,7 @@
             errorHandler(requestError);
 
     }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     [operation start];
 }
 
@@ -372,6 +373,7 @@
             if (errorHandler)
                 errorHandler(requestError);
         }];
+        [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
         [operation start];
     }
     else {
@@ -401,6 +403,7 @@
             if (errorHandler)
                 errorHandler(requestError);
         }];
+        [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
         [operation start];
     }
 }
@@ -467,6 +470,7 @@
         if (errorHandler)
             errorHandler(requestError);
     }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     [operation start];
 }
 
@@ -515,6 +519,7 @@
             errorHandler(requestError);
 
     }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     [operation start];
 }
 
@@ -565,6 +570,7 @@
             errorHandler(requestError);
 
     }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     [operation start];
 }
 
@@ -611,6 +617,7 @@
         if (errorHandler)
             errorHandler(requestError);
     }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     [operation start];
 }
 
