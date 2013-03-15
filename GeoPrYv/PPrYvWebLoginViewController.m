@@ -45,7 +45,14 @@
 {
     [super viewDidLoad];
     self.webView.delegate = self;
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(requestLoginView)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
     [self requestLoginView];
 }
 
@@ -59,6 +66,13 @@
 {
     // kill the timer if one existed
     [self.pollTimer invalidate];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidBecomeActiveNotification
+                                                  object:nil];
 }
 
 #pragma mark - Private
@@ -136,6 +150,11 @@
 - (void)pollURL:(NSURL *)pollURL withTimeInterval:(NSTimeInterval)pollTimeInterval
 {
     NSLog(@"create a poll request to %@ with interval: %f", pollURL, pollTimeInterval);
+    
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        NSLog(@"stop polling if app is in backround");
+        return;
+    }
     
     NSURLRequest *pollRequest = [NSURLRequest requestWithURL:pollURL];
     AFJSONRequestOperation *pollRequestOperation = [AFJSONRequestOperation JSONRequestOperationWithRequest:pollRequest
