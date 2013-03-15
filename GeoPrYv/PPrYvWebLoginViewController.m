@@ -76,11 +76,13 @@
     httpClient.parameterEncoding = AFJSONParameterEncoding;
     [httpClient setDefaultHeader:@"Accept" value:@"application/json"];
     [httpClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+    NSString *preferredLanguageCode = [[NSLocale preferredLanguages] objectAtIndex:0];
     
     NSDictionary *params = @{
                              // TODO extract the app id some where to constants
                              @"requestingAppId": @"pryv-mobile-position-ios",
                              @"returnURL": @"false",
+                             @"languageCode" : preferredLanguageCode,
                              
                              @"requestedPermissions": @[
                                      @{
