@@ -191,6 +191,15 @@
     return object;
 }
 
+- (id)nonNilDictionary:(id)object
+{
+    if (!object) {
+        return [NSDictionary dictionary];
+    }
+    else
+        return object;
+}
+
 - (NSString *)apiBaseUrl
 {
     // production url
@@ -291,7 +300,7 @@
         NSDictionary *userInfo = @{
                 @"connectionError": [self nonNil:error],
                 @"NSHTTPURLResponse" : [self nonNil:operation.response],
-                @"serverError" : [self nonNil:operation.responseString]
+                @"serverError" : @{ @"message": [self nonNil:operation.responseString] }
         };
         NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
 
@@ -341,7 +350,7 @@
                                    @"connectionError": [self nonNil:error],
                                    @"NSHTTPURLResponse" : [self nonNil:response],
                                    @"event": [self nonNil:event],
-                                   @"serverError" : [self nonNil:JSON]
+                                   @"serverError" : [self nonNilDictionary:JSON]
                                    };
         NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
         
@@ -443,7 +452,7 @@
                     @"connectionError": [self nonNil:error],
                     @"NSHTTPURLResponse" : [self nonNil:response],
                     @"event": [self nonNil:event],
-                    @"serverError" : [self nonNil:JSON]
+                    @"serverError" : [self nonNilDictionary:JSON]
             };
             NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
 
@@ -473,7 +482,7 @@
                     @"connectionError": [self nonNil:error],
                     @"NSHTTPURLResponse" : [self nonNil:response],
                     @"event": [self nonNil:event],
-                    @"serverError" : [self nonNil:JSON]
+                    @"serverError" : [self nonNilDictionary:JSON]
             };
             NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
 
@@ -540,7 +549,7 @@
         NSDictionary *userInfo = @{
                 @"connectionError": [self nonNil:error],
                 @"NSHTTPURLResponse" : [self nonNil:response],
-                @"serverError" : [self nonNil:JSON]
+                @"serverError" : [self nonNilDictionary:JSON]
         };
         NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
 
@@ -588,7 +597,7 @@
         NSDictionary *userInfo = @{
                 @"connectionError": [self nonNil:error],
                 @"NSHTTPURLResponse" : [self nonNil:response],
-                @"serverError" : [self nonNil:JSON]
+                @"serverError" : [self nonNilDictionary:JSON]
         };
         NSError *requestError = [NSError errorWithDomain:@"connection failed" code:200 userInfo:userInfo];
 
@@ -639,7 +648,7 @@
                 @"NSHTTPURLResponse" : [self nonNil:response],
                 @"folderName": folderName,
                 @"folderId": folderId,
-                @"serverError" : [self nonNil:JSON]
+                @"serverError" : [self nonNilDictionary:JSON]
         };
         NSError *requestError = [NSError errorWithDomain:@"Error creating folder" code:210 userInfo:userInfo];
 
@@ -687,7 +696,7 @@
                 @"NSHTTPURLResponse" : [self nonNil:response],
                 @"folderName": newFolderName,
                 @"folderId": folderId,
-                @"serverError" : [self nonNil:JSON]
+                @"serverError" : [self nonNilDictionary:JSON]
         };
         NSError *requestError = [NSError errorWithDomain:@"Error renaming folder" code:220 userInfo:userInfo];
 

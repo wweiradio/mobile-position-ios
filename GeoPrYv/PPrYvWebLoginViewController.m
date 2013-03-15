@@ -374,7 +374,8 @@
     } errorHandler:^(NSError *error) {
         
         NSString *message = NSLocalizedString(@"alertCantGetFolderList", );
-        if ([[error userInfo] objectForKey:@"serverError"] && [[[error userInfo] objectForKey:@"serverError"] objectForKey:@"message"]) {
+        if ([[error userInfo] objectForKey:@"serverError"] &&
+            [[[error userInfo] objectForKey:@"serverError"] objectForKey:@"message"]) {
             NSDictionary *originError = [[error userInfo] objectForKey:@"serverError"];
             message = [NSString stringWithFormat: @"%@ (%@)", NSLocalizedString(@"alertCantGetFolderList", ), originError[@"message"]];
         }

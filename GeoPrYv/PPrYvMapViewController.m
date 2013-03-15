@@ -310,7 +310,8 @@
     
     NSString *message = [originError localizedDescription];
     
-    if ([[error userInfo] objectForKey:@"serverError"] && [[[error userInfo] objectForKey:@"serverError"] objectForKey:@"message"]) {
+    NSDictionary *userInfo = [error userInfo];
+    if ([userInfo objectForKey:@"serverError"] && [[userInfo objectForKey:@"serverError"] objectForKey:@"message"]) {
         NSString *serverMessage = [error userInfo][@"serverError"][@"message"];
         message = [NSString stringWithFormat: @"%@ (%@)", serverMessage, [originError localizedDescription]];
     }
