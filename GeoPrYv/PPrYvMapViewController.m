@@ -352,25 +352,13 @@
     for (int i = 0; i< [annotationViews count]; i++) {
         
         MKAnnotationView *annotationView = [annotationViews objectAtIndex:i];
-        CGRect endFrame = annotationView.frame;
-        annotationView.frame = CGRectOffset(endFrame, 0, -500);
-        NSTimeInterval interval = 0.03 * i;
-        
+
+        // send annotaion view to back if it is not current user location
         if (![[annotationView annotation] isKindOfClass:[MKUserLocation class]]) {
-            // send annotaion view to back if it is not current user location
             [[annotationView superview] sendSubviewToBack:annotationView];
+        } else {
+            [[annotationView superview] bringSubviewToFront:annotationView];
         }
-        
-        [UIView animateWithDuration:0.5 delay:interval options:UIViewAnimationCurveEaseOut animations:^{
-            annotationView.frame = endFrame;
-        } completion:^(BOOL finished) {
-            
-            // attempt to bring the current userLocation in front
-            if (i == [annotationViews count] - 1) {
-                UIView *view = [mapView viewForAnnotation:mapView.userLocation];
-                [[view superview] bringSubviewToFront:view];
-            } 
-        }];
     }
 }
 
