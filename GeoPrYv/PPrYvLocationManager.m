@@ -126,7 +126,7 @@
 - (void)locationDistanceIntervalDidChange:(NSNotification *)aNotification
 {
     NSDictionary *userInfo = aNotification.userInfo;
-    if ([userInfo objectForKey:kPrYvLocationDistanceIntervalDidChangeNotification]){
+    if ([userInfo objectForKey:kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey]){
         CLLocationAccuracy distanceInterval = [[userInfo objectForKey:kPrYvLocationDistanceIntervalDidChangeNotification] doubleValue];
         self.locationManager.distanceFilter = distanceInterval;
     }
