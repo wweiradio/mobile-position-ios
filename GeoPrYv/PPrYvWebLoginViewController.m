@@ -45,6 +45,9 @@
 {
     [super viewDidLoad];
     self.webView.delegate = self;
+    
+    [self cleanURLCache];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(requestLoginView)
                                                  name:UIApplicationDidBecomeActiveNotification
@@ -97,7 +100,6 @@
                              @"requestingAppId": @"pryv-mobile-position-ios",
                              @"returnURL": @"false",
                              @"languageCode" : preferredLanguageCode,
-                             
                              @"requestedPermissions": @[
                                      @{
                                          @"channelId" : kPrYvApplicationChannelId,
@@ -160,8 +162,6 @@
     AFJSONRequestOperation *pollRequestOperation = [AFJSONRequestOperation JSONRequestOperationWithRequest:pollRequest
     success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         assert(JSON);
-        NSLog(@"poll request success : %@", [request URL]);
-        
         NSDictionary *jsonDictionary = (NSDictionary *)JSON;
         
         // check status
@@ -253,6 +253,12 @@
     ];
 }
 
+- (void)cleanURLCache
+{
+    // remove all cached responses
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+}
+
 - (void)displayLoginErrorWithMessage:(NSString *)message errorCode:(NSString *)errorCode
 {
     // alert
@@ -321,6 +327,7 @@
 
 - (IBAction)reload:(id)sender
 {
+    [self cleanURLCache];
     [self requestLoginView];
 }
 
@@ -451,8 +458,10 @@
                                    }];
 }
 
-- (void)viewDidUnload {
+- (void)viewDidUnload
+{
     [self setRefreshBarButtonItem:nil];
     [super viewDidUnload];
 }
+
 @end
