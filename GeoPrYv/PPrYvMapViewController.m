@@ -296,8 +296,7 @@
                                                                      attachment:nil folder:user.folderId
                                                                       inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
     // dimiss the note composer
     [self cancelNote:nil];
@@ -525,8 +524,7 @@
                                                                                                     folder:folderId
                                                                                                  inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
                                
-                               if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-                                   [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+                               [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
                            }];
                        }
                        // else the image was picked from the library
@@ -541,8 +539,7 @@
                                                                                                 folder:folderId
                                                                                              inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
                            
-                           if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-                               [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+                           [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
                        }
                    
                    });

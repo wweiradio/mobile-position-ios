@@ -256,8 +256,7 @@
     // save last position event
     self.lastPositionEvent = locationEvent;
     
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification
                                                         object:nil
@@ -320,8 +319,7 @@
     // save last position event
     self.lastPositionEvent = locationEvent;
     
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification
                                                         object:nil
