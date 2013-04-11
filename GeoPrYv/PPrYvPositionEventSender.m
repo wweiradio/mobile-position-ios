@@ -13,14 +13,11 @@
 #import "PPrYvApiClient.h"
 
 @interface PPrYvPositionEventSender ()
-- (void)notifyFinishing;
 @end
 
-@implementation PPrYvPositionEventSender {
-}
+@implementation PPrYvPositionEventSender
 
-@synthesize notify = _notify;
-@synthesize positionEvent = _positionEvent;
+#pragma mark - Class methods
 
 + (void)sendAllPendingEventsToPrYvApi
 {
@@ -45,6 +42,8 @@
                                                         object:nil];
 }
 
+#pragma mark - designated initialiser
+
 - (id)initWithPositionEvent:(PositionEvent *)positionEvent
 {
     self = [super init];
@@ -57,8 +56,9 @@
 
 - (void)sendToPrYvApi
 {
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
         return;
+    }
     
     __block NSArray *attachmentList = nil;
     if (self.positionEvent.attachment != nil) {
@@ -117,9 +117,24 @@
 
 - (void)sendEvent
 {
-    if (self.positionEvent.eventId) {
+    if (self.positionEvent.message) {
+        // send note event
+        
+        [[PPrYvApiClient sharedClient] sendNoteEvent:self.positionEvent
+                                   completionHandler:^(NSString *eventId, NSError *error) {
+                                       if (eventId) {
+                                           // handle success
+                                           self.positionEvent.uploaded = @YES;
+                                           [self.positionEvent.managedObjectContext save:nil];
+                                       }
+                                       if (self.notify)
+                                           [self notifyFinishing];
+                                   }];
+    } else if (self.positionEvent.eventId) {
+        // update position event in case eventId is present
+        
         [[PPrYvApiClient sharedClient] updateEvent:self.positionEvent withSuccessHandler:^(NSString *eventId){
-            self.positionEvent.uploaded = [NSNumber numberWithBool:YES];
+            self.positionEvent.uploaded = @YES;
             [self.positionEvent.managedObjectContext save:nil];
             if (self.notify)
                 [self notifyFinishing];
@@ -128,8 +143,10 @@
                 [self notifyFinishing];
         }];
     } else {
+        // send position event
+        
         [[PPrYvApiClient sharedClient] sendEvent:self.positionEvent withSuccessHandler:^(NSString *eventId){
-            self.positionEvent.uploaded = [NSNumber numberWithBool:YES];
+            self.positionEvent.uploaded = @YES;
             self.positionEvent.eventId = eventId;
             [self.positionEvent.managedObjectContext save:nil];
             
@@ -141,6 +158,8 @@
         }];
     }
 }
+
+#pragma mark - private
 
 - (void)notifyFinishing
 {

@@ -20,14 +20,16 @@
 #import "DDTTYLogger.h"
 #import "DDFileLogger.h"
 
-
 @interface PPrYvAppDelegate()
-- (void)reportSyncError:(NSError *)error;
+
+// the map that will show the points.
+@property (nonatomic, strong) PPrYvMapViewController * mapViewController;
+
+@property (nonatomic, assign, getter = isSendingPendingEvents) BOOL sendingPendingEvents;
+
 @end
 
 @implementation PPrYvAppDelegate
-
-@synthesize mapViewController = _mapViewController;
 
 #pragma mark - Application Life Cycle
 
@@ -38,9 +40,6 @@
     // start core location manager
     [PPrYvLocationManager sharedInstance];
 
-    // get the current user if any available
-    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-
     self.mapViewController = [[PPrYvMapViewController alloc] initWithNibName:@"PPrYvMapViewController"
                                                                       bundle:nil];
 
@@ -48,53 +47,57 @@
     self.window.rootViewController = self.mapViewController;
     [self.window makeKeyAndVisible];
     
-    if (user) {
-        // a user exists. Thus maybe some events are waiting to be uploaded
-
-        // start or restart the api Client with the new user upon successful start it would try to synchronize
-        PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
-        [apiClient startClientWithUserId:user.userId
-                              oAuthToken:user.userToken
-                               channelId:kPrYvApplicationChannelId
-                          successHandler:^(NSTimeInterval serverTime)
-        {
-
-            [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
-        }                   errorHandler:^(NSError *error)
-        {
-            [self reportSyncError:error];
-        }];
-    }
-    
     return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
+    NSLog(@"applicationWillResignActive");
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+    NSLog(@"applicationDidEnterBackground");
+
     [[PPrYvLocationManager sharedInstance] applicationDidEnterBackground:application];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+    NSLog(@"applicationWillEnterForeground");
+
     self.mapViewController.mapView.showsUserLocation = YES;
     [[PPrYvLocationManager sharedInstance] applicationWillEnterForeground:application];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    [[PPrYvApiClient sharedClient] synchronizeTimeWithSuccessHandler:^(NSTimeInterval serverTime) {
-        [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
-    } errorHandler:^(NSError *error) {
-        [self reportSyncError:error];
-    }];
+    NSLog(@"applicationDidBecomeActive");
+
+    // get the current user if any available
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    if (user) {
+        // a user exists. Thus maybe some events are waiting to be uploaded
+        
+        // start or restart the api Client with the new user upon successful start it would try to synchronize
+        PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
+        [apiClient startClientWithUserId:user.userId
+                              oAuthToken:user.userToken
+                               channelId:kPrYvApplicationChannelId
+                          successHandler:^(NSTimeInterval serverTime)
+         {
+             [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
+         }                   errorHandler:^(NSError *error)
+         {
+             [self reportSyncError:error];
+         }];
+    }
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+    NSLog(@"applicationWillTerminate");
+    
     [[PPrYvCoreDataManager sharedInstance] saveContext];
 }
 
@@ -111,7 +114,7 @@
     
     [DDLog addLogger:fileLogger];
     
-    DDLogVerbose(@"Logging is setup (\"%@\")", [fileLogger.logFileManager logsDirectory]);
+    NSLog(@"Logging is setup (\"%@\")", [fileLogger.logFileManager logsDirectory]);
 }
 
 - (void)reportSyncError:(NSError *)error

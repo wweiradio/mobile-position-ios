@@ -42,9 +42,12 @@
 
 @interface PositionEvent (JSON)
 
+// TODO rename and move somewhere else
+
 + (PositionEvent *)positionEventFromDictionary:(NSDictionary *)positionEventDictionary inScratchContext:(NSManagedObjectContext *)scratchManagedObjectContext;
 
 - (NSData *)dataWithJSONObject;
+- (NSData *)noteEventWithJSONObject;
 
 @end
 
@@ -77,6 +80,7 @@
     return positionEvent;
 }
 
+// FIXME remove message from position event
 - (NSData *)dataWithJSONObject
 {
     // set empty message if no message
@@ -110,6 +114,33 @@
     NSAssert(result != nil, @"Unsuccessful json creation from position event");
     NSAssert(result.length > 0, @"Unsuccessful json creation from position event");
 
+    return result;
+}
+
+- (NSData *)noteEventWithJSONObject
+{
+    NSString * message = self.message;
+    
+    // turn the date into server format time
+    NSNumber * time = [NSNumber numberWithDouble:[self.date timeIntervalSince1970]];
+    
+    NSDictionary *noteEventDictionary =
+    @{
+      @"type" :
+          @{
+              @"class" : @"note",
+              @"format" : @"txt"
+           },
+      @"value" : message,
+      @"folderId" : @"notes", // TODO extract
+      @"time" : time
+    };
+    
+    NSData *result = [NSJSONSerialization dataWithJSONObject:noteEventDictionary options:0 error:nil];
+    
+    NSAssert(result != nil, @"Unsuccessful json creation from note event");
+    NSAssert(result.length > 0, @"Unsuccessful json creation from note event");
+    
     return result;
 }
 
@@ -266,7 +297,8 @@
 
 #pragma mark - PrYv API authorize and get server time (GET /)
 
-- (void)synchronizeTimeWithSuccessHandler:(void(^)(NSTimeInterval serverTime))successHandler errorHandler:(void(^)(NSError *error))errorHandler
+- (void)synchronizeTimeWithSuccessHandler:(void(^)(NSTimeInterval serverTime))successHandler
+                             errorHandler:(void(^)(NSError *error))errorHandler
 {
     if (![self isReady]) {
         NSLog(@"fail synchronize: not initialized");
@@ -494,6 +526,56 @@
     }
 }
 
+#pragma mark - 
+#define NOTE_CHANNEL_ID @"diary"
+
+- (void)sendNoteEvent:(PositionEvent *)event
+       completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler
+{
+    if (![self isReady]) {
+        NSLog(@"fail sending message event: not initialized");
+        
+        if (completionHandler)
+            completionHandler(nil, [self createNotReadyError]);
+        return;
+    }
+    
+    // create the RESTful url corresponding the current action
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], NOTE_CHANNEL_ID]];
+
+    // send an event without attachments
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request addValue:self.oAuthToken forHTTPHeaderField:@"Authorization"];
+    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = [event noteEventWithJSONObject];
+    
+    NSLog(@"sending note json: %@", [[NSString alloc] initWithData:request.HTTPBody
+                                                          encoding:NSUTF8StringEncoding]);
+    
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        NSLog(@"successfully sent note event eventId: %@", JSON[@"id"]);
+        
+        if (completionHandler)
+            completionHandler(JSON[@"id"], nil);
+    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        NSLog(@"failed to send an note event %@", error);
+        // create a dictionary with all the information we can get and pass it as userInfo
+        NSDictionary *userInfo = @{
+                                   @"connectionError": [self nonNil:error],
+                                   @"NSHTTPURLResponse" : [self nonNil:response],
+                                   @"event": [self nonNil:event],
+                                   @"serverError" : [self nonNilDictionary:JSON]
+                                   };
+        NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
+        
+        if (completionHandler)
+            completionHandler(nil, requestError);
+    }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
+    [operation start];
+}
+
 #pragma mark - PrYv API Event get/list (GET /{channel-id}/events/)
 
 - (void)getEventsFromStartDate:(NSDate *)startDate
@@ -537,9 +619,12 @@
             NSMutableArray *positionEventList = [NSMutableArray array];
             // TODO think how to destroy the scratchmanagedContext
             for (NSDictionary *positionEventDictionary in JSON) {
-                PositionEvent *positionEvent = [PositionEvent positionEventFromDictionary:positionEventDictionary
-                                                                         inScratchContext:scratchManagedContext];
-                [positionEventList addObject:positionEvent];
+                // only process events which are positions
+                if ([positionEventDictionary[@"type"][@"class"] isEqualToString:@"position"]) {
+                    PositionEvent *positionEvent = [PositionEvent positionEventFromDictionary:positionEventDictionary
+                                                                             inScratchContext:scratchManagedContext];
+                    [positionEventList addObject:positionEvent];
+                }
             }
             successHandler(positionEventList);
         }
@@ -562,8 +647,19 @@
 
 #pragma mark - PrYv API Folder get all (GET /{channel-id}/folders/)
 
+
 - (void)getFoldersWithSuccessHandler:(void (^)(NSArray *folderList))successHandler
                         errorHandler:(void (^)(NSError *error))errorHandler
+{
+    [self getFoldersInChannel:self.channelId
+           withSuccessHandler:successHandler
+                 errorHandler:errorHandler];
+}
+
+- (void)getFoldersInChannel:(NSString *)channelId
+         withSuccessHandler:(void (^)(NSArray *folderList))successHandler
+               errorHandler:(void (^)(NSError *error))errorHandler
+
 {
     if (![self isReady]) {
         NSLog(@"fail sending: not initialized");
@@ -573,7 +669,7 @@
         return;
     }
 
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/folders/", [self apiBaseUrl], self.channelId]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/folders/", [self apiBaseUrl], channelId]];
 
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:self.oAuthToken forHTTPHeaderField:@"Authorization"];

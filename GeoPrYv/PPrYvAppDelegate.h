@@ -45,8 +45,4 @@
 
 @property (nonatomic, strong) UIWindow *window;
 
-// the map that will show the points.
-@property (nonatomic, strong) PPrYvMapViewController * mapViewController;
-
-
 @end

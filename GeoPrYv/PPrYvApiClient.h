@@ -124,6 +124,26 @@ withSuccessHandler:(void(^)(NSString *eventId))successHandler
                 successHandler:(void (^)(NSArray *positionEventList))successHandler
                   errorHandler:(void(^)(NSError *error))errorHandler;
 
+// ---------------------------------------------------------------------------------------------------------------------
+// @name Events of class note
+// ---------------------------------------------------------------------------------------------------------------------
+
+
+// TODO create a new event of type Note
+/**
+ @discussion
+ Send an event of class note:txt
+ 
+ POST /{channel-id}/events/
+ 
+ @param event of type note:txt to send
+ 
+ @see PositionEvent
+ @see EventAttachment
+ */
+- (void)sendNoteEvent:(PositionEvent *)event
+    completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // @name Folder operations
@@ -142,6 +162,19 @@ withSuccessHandler:(void(^)(NSString *eventId))successHandler
 - (void)getFoldersWithSuccessHandler:(void (^)(NSArray *folderList))successHandler
                         errorHandler:(void (^)(NSError *error))errorHandler;
 
+
+/**
+ @discussion
+ Get list of folders for a channel
+ 
+    GET /{channel-id}/folders/
+ 
+ @param channelId of the channel to get folders from
+ 
+ */
+- (void)getFoldersInChannel:(NSString *)channelId
+         withSuccessHandler:(void (^)(NSArray *folderList))successHandler
+               errorHandler:(void (^)(NSError *error))errorHandler;
 
 /**
  @discussion

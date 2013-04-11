@@ -280,23 +280,36 @@
                      }];    
 }
 
+// TODO move to constants
+#define MAX_NOTE_LENGTH 4194304
+
 - (IBAction)sendNoteWithCurrentLocation:(id)sender
 {
     // get the message
     NSString * message = self.noteComposer.text;
     
-    // get the current location from the map
-    CLLocation * messageLocation = self.mapView.userLocation.location;
-    
-    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    // do not send the empty note
+    if ([message length] > 0) {
+        
+        // trim the message to MAX length
+        if ([message length] > MAX_NOTE_LENGTH) {
+            message = [message substringWithRange:NSMakeRange(0, MAX_NOTE_LENGTH)];
+        }
+        
+        // get the current location from the map
+        CLLocation * messageLocation = self.mapView.userLocation.location;
+        
+        User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
 
-    // create a new event and send to PrYv API
-    PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:messageLocation
-                                                                    withMessage:message
-                                                                     attachment:nil folder:user.folderId
-                                                                      inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-    
-    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+        // create a new event and send to PrYv API
+        PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:messageLocation
+                                                                        withMessage:message
+                                                                         attachment:nil
+                                                                             folder:user.folderId
+                                                                          inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+        
+        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+    }
     
     // dimiss the note composer
     [self cancelNote:nil];
