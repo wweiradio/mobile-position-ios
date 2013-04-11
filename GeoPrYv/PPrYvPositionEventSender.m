@@ -130,6 +130,18 @@
                                        if (self.notify)
                                            [self notifyFinishing];
                                    }];
+    } else if (self.positionEvent.attachmentList) {
+        [[PPrYvApiClient sharedClient] sendPictureEvent:self.positionEvent
+                                      completionHandler:^(NSString *eventId, NSError *error) {
+                                          if (eventId) {
+                                              // handle success
+                                              self.positionEvent.uploaded = @YES;
+                                              [self.positionEvent.managedObjectContext save:nil];
+                                          }
+                                          if (self.notify)
+                                              [self notifyFinishing];
+                                      }];
+
     } else if (self.positionEvent.eventId) {
         // update position event in case eventId is present
         

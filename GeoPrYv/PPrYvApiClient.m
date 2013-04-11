@@ -144,6 +144,30 @@
     return result;
 }
 
+- (NSData *)pictureEventWithJSONObject
+{
+    // turn the date into server format time
+    NSNumber * time = [NSNumber numberWithDouble:[self.date timeIntervalSince1970]];
+    
+    NSDictionary *noteEventDictionary =
+    @{
+      @"type" :
+          @{
+              @"class" : @"picture",
+              @"format" : @"attached"
+           },
+      @"folderId" : @"notes", // TODO extract
+      @"time" : time
+    };
+    
+    NSData *result = [NSJSONSerialization dataWithJSONObject:noteEventDictionary options:0 error:nil];
+    
+    NSAssert(result != nil, @"Unsuccessful json creation from note event");
+    NSAssert(result.length > 0, @"Unsuccessful json creation from note event");
+    
+    return result;
+}
+
 - (NSData *)updateDurationJSONObject
 {
     NSDictionary *positionEventDictionary =
@@ -406,9 +430,55 @@
             errorHandler([self createNotReadyError]);
         return;
     }
+    
+    // create the RESTful url corresponding the current action    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], self.channelId]];
 
+    // send an event without attachments
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request addValue:self.oAuthToken forHTTPHeaderField:@"Authorization"];
+    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = [event dataWithJSONObject];
+
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        NSLog(@"successfully sent event eventId: %@", JSON[@"id"]);
+
+        if (successHandler)
+            successHandler(JSON[@"id"]);
+    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        NSLog(@"failed to send an event %@", error);
+        // create a dictionary with all the information we can get and pass it as userInfo
+        NSDictionary *userInfo = @{
+                @"connectionError": [self nonNil:error],
+                @"NSHTTPURLResponse" : [self nonNil:response],
+                @"event": [self nonNil:event],
+                @"serverError" : [self nonNilDictionary:JSON]
+        };
+        NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
+
+        if (errorHandler)
+            errorHandler(requestError);
+    }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
+    [operation start];
+}
+
+#pragma mark - 
+#define NOTE_CHANNEL_ID @"diary"
+
+- (void)sendPictureEvent:(PositionEvent *)event
+       completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler
+{
+    if (![self isReady]) {
+        NSLog(@"fail sending event: not initialized");
+        
+        if (completionHandler)
+            completionHandler(nil, [self createNotReadyError]);
+        return;
+    }
+    
     NSArray *attachmentList = [event attachmentList];
-    BOOL containAttachment = NO;
     
     if (attachmentList != nil && [attachmentList count] > 0) {
         for (EventAttachment *attachment in attachmentList) {
@@ -419,115 +489,84 @@
             
             if (fileData == nil || fileData.length == 0) {
                 NSError *error = [NSError errorWithDomain:@"an attachment file is empty or missing." code:21 userInfo:nil];
-
-                if (errorHandler)
-                    errorHandler(error);
+                
+                if (completionHandler)
+                    completionHandler(nil, error);
                 return;
             }
             
             if (fileName == nil || fileName.length == 0) {
                 NSError *error = [NSError errorWithDomain:@"an attachment file name is empty or missing." code:22 userInfo:nil];
-
-                if (errorHandler)
-                    errorHandler(error);
+                
+                if (completionHandler)
+                    completionHandler(nil, error);
                 return;
             }
             
             if (mimeType == nil || mimeType.length == 0) {
                 NSError *error = [NSError errorWithDomain:@"an attachment MIME Type specifier is empty or missing." code:23 userInfo:nil];
-
-                if (errorHandler)
-                    errorHandler(error);
+                
+                if (completionHandler)
+                    completionHandler(nil, error);
                 return;
             }
         }
         // data verified, this event should contain valid attachment(s)
-        containAttachment = YES;
     }
     
-    // create the RESTful url corresponding the current action    
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], self.channelId]];
-
-    if (containAttachment) {
-        // send event with attachments
-        AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:url];
-        [client.operationQueue setMaxConcurrentOperationCount:1];
-        [client setDefaultHeader:@"Authorization" value:self.oAuthToken];
-
-        NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST"
-                                                                         path:@""
-                                                                   parameters:nil
-                                                    constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-
-            // append the event part
-            [formData appendPartWithFormData:[event dataWithJSONObject] name:@"event"];
-
-            for (EventAttachment *attachment in attachmentList) {
-                // append the attachment(s) parts
-                [formData appendPartWithFileData:attachment.fileData
-                                            name:attachment.name
-                                        fileName:attachment.fileName
-                                        mimeType:attachment.mimeType];
-            }
-        }];
-
-        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                            success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-            NSLog(@"successfully sent event with attachment(s) eventId: %@", JSON[@"id"]);
-
-            if (successHandler)
-                successHandler(JSON[@"id"]);
-        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-            NSLog(@"failed to send an event with attachment(s) %@", error);
-            // create a dictionary with all the data we can get and pass it as userInfo
-            NSDictionary *userInfo = @{
-                    @"connectionError": [self nonNil:error],
-                    @"NSHTTPURLResponse" : [self nonNil:response],
-                    @"event": [self nonNil:event],
-                    @"serverError" : [self nonNilDictionary:JSON]
-            };
-            NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
-
-            if (errorHandler)
-                errorHandler(requestError);
-        }];
-        [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
-        [operation start];
-    }
-    else {
-        // send an event without attachments
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-        [request addValue:self.oAuthToken forHTTPHeaderField:@"Authorization"];
-        [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-        request.HTTPMethod = @"POST";
-        request.HTTPBody = [event dataWithJSONObject];
-
-        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-            NSLog(@"successfully sent event eventId: %@", JSON[@"id"]);
-
-            if (successHandler)
-                successHandler(JSON[@"id"]);
-        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-            NSLog(@"failed to send an event %@", error);
-            // create a dictionary with all the information we can get and pass it as userInfo
-            NSDictionary *userInfo = @{
-                    @"connectionError": [self nonNil:error],
-                    @"NSHTTPURLResponse" : [self nonNil:response],
-                    @"event": [self nonNil:event],
-                    @"serverError" : [self nonNilDictionary:JSON]
-            };
-            NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
-
-            if (errorHandler)
-                errorHandler(requestError);
-        }];
-        [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
-        [operation start];
-    }
+    // create the RESTful url corresponding the current action
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], NOTE_CHANNEL_ID]];
+    
+    // send event with attachments
+    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:url];
+    [client.operationQueue setMaxConcurrentOperationCount:1];
+    [client setDefaultHeader:@"Authorization" value:self.oAuthToken];
+    
+    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST"
+                                                                     path:@""
+                                                               parameters:nil
+    constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        
+        // append the event part
+        [formData appendPartWithFormData:[event pictureEventWithJSONObject] name:@"event"];
+        
+        for (EventAttachment *attachment in attachmentList) {
+            // append the attachment(s) parts
+            [formData appendPartWithFileData:attachment.fileData
+                                        name:attachment.name
+                                    fileName:attachment.fileName
+                                    mimeType:attachment.mimeType];
+        }
+    }];
+    
+    NSLog(@"sending picture json: %@", [[NSString alloc] initWithData:[event pictureEventWithJSONObject]
+                                                             encoding:NSUTF8StringEncoding]);
+    
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+    success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        NSLog(@"successfully sent event with attachment(s) eventId: %@", JSON[@"id"]);
+        
+        if (completionHandler)
+            completionHandler(JSON[@"id"], nil);
+    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        NSLog(@"failed to send an event with attachment(s) %@", error);
+        // create a dictionary with all the data we can get and pass it as userInfo
+        NSDictionary *userInfo = @{
+                                   @"connectionError": [self nonNil:error],
+                                   @"NSHTTPURLResponse" : [self nonNil:response],
+                                   @"event": [self nonNil:event],
+                                   @"serverError" : [self nonNilDictionary:JSON]
+                                   };
+        NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
+        
+        if (completionHandler)
+            completionHandler(nil, requestError);
+    }];
+    [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
+    [operation start];
 }
 
-#pragma mark - 
-#define NOTE_CHANNEL_ID @"diary"
+#pragma mark -
 
 - (void)sendNoteEvent:(PositionEvent *)event
        completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler
@@ -550,7 +589,7 @@
     request.HTTPMethod = @"POST";
     request.HTTPBody = [event noteEventWithJSONObject];
     
-    NSLog(@"sending note json: %@", [[NSString alloc] initWithData:request.HTTPBody
+    NSLog(@"sending note json: %@", [[NSString alloc] initWithData:[event noteEventWithJSONObject]
                                                           encoding:NSUTF8StringEncoding]);
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {

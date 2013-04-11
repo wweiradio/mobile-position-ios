@@ -129,7 +129,6 @@ withSuccessHandler:(void(^)(NSString *eventId))successHandler
 // ---------------------------------------------------------------------------------------------------------------------
 
 
-// TODO create a new event of type Note
 /**
  @discussion
  Send an event of class note:txt
@@ -144,6 +143,14 @@ withSuccessHandler:(void(^)(NSString *eventId))successHandler
 - (void)sendNoteEvent:(PositionEvent *)event
     completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// @name Events of class picture
+// ---------------------------------------------------------------------------------------------------------------------
+
+
+- (void)sendPictureEvent:(PositionEvent *)event
+       completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // @name Folder operations
