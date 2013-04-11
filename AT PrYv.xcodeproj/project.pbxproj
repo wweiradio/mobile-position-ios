@@ -64,6 +64,18 @@
 		B0BC9F98C453AD2A9CE910CC /* PositionEvent+Extras.m in Sources */ = {isa = PBXBuildFile; fileRef = B0BC99D3D5E7BAFA04138629 /* PositionEvent+Extras.m */; };
 		B0BC9FFECB2A58D811E6DD32 /* EventAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = B0BC98051DFCC4C483C0AF9C /* EventAttachment.m */; };
 		FB2BC95D169E3A1D007649F5 /* PositionEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2BC95C169E3A1D007649F5 /* PositionEvent.m */; };
+		FB3248201716EBAC00E392FB /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FB3248171716EBAC00E392FB /* DDAbstractDatabaseLogger.m */; };
+		FB3248211716EBAC00E392FB /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FB3248191716EBAC00E392FB /* DDASLLogger.m */; };
+		FB3248221716EBAC00E392FB /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FB32481B1716EBAC00E392FB /* DDFileLogger.m */; };
+		FB3248231716EBAC00E392FB /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = FB32481D1716EBAC00E392FB /* DDLog.m */; };
+		FB3248241716EBAC00E392FB /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FB32481F1716EBAC00E392FB /* DDTTYLogger.m */; };
+		FB3248331717011000E392FB /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = FB3248291717011000E392FB /* ioapi.c */; };
+		FB3248341717011000E392FB /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = FB32482B1717011000E392FB /* mztools.c */; };
+		FB3248351717011000E392FB /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = FB32482D1717011000E392FB /* unzip.c */; };
+		FB3248361717011000E392FB /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = FB32482F1717011000E392FB /* zip.c */; };
+		FB3248371717011000E392FB /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = FB3248321717011000E392FB /* SSZipArchive.m */; };
+		FB3248391717015D00E392FB /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FB3248381717015D00E392FB /* libz.dylib */; };
+		FB32483B1717022200E392FB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB32483A1717022200E392FB /* MessageUI.framework */; };
 		FB5F77BF169AE2DE00585D11 /* PPrYvLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB5F77BE169AE2DE00585D11 /* PPrYvLocationManager.m */; };
 		FB6D93CF16EE2353008F4D35 /* PPrYvWebLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6D93CD16EE2353008F4D35 /* PPrYvWebLoginViewController.m */; };
 		FB6D93D016EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB6D93CE16EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib */; };
@@ -161,6 +173,30 @@
 		B0BC9F73CA4AA4115EB1180F /* EventAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventAttachment.h; sourceTree = "<group>"; };
 		FB2BC95B169E3A1D007649F5 /* PositionEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PositionEvent.h; sourceTree = "<group>"; };
 		FB2BC95C169E3A1D007649F5 /* PositionEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PositionEvent.m; sourceTree = "<group>"; };
+		FB3248161716EBAC00E392FB /* DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
+		FB3248171716EBAC00E392FB /* DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
+		FB3248181716EBAC00E392FB /* DDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDASLLogger.h; sourceTree = "<group>"; };
+		FB3248191716EBAC00E392FB /* DDASLLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDASLLogger.m; sourceTree = "<group>"; };
+		FB32481A1716EBAC00E392FB /* DDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDFileLogger.h; sourceTree = "<group>"; };
+		FB32481B1716EBAC00E392FB /* DDFileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDFileLogger.m; sourceTree = "<group>"; };
+		FB32481C1716EBAC00E392FB /* DDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDLog.h; sourceTree = "<group>"; };
+		FB32481D1716EBAC00E392FB /* DDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDLog.m; sourceTree = "<group>"; };
+		FB32481E1716EBAC00E392FB /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTTYLogger.h; sourceTree = "<group>"; };
+		FB32481F1716EBAC00E392FB /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTTYLogger.m; sourceTree = "<group>"; };
+		FB3248251716ECEC00E392FB /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
+		FB3248281717011000E392FB /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		FB3248291717011000E392FB /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		FB32482A1717011000E392FB /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		FB32482B1717011000E392FB /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		FB32482C1717011000E392FB /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		FB32482D1717011000E392FB /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		FB32482E1717011000E392FB /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		FB32482F1717011000E392FB /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		FB3248301717011000E392FB /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		FB3248311717011000E392FB /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
+		FB3248321717011000E392FB /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
+		FB3248381717015D00E392FB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		FB32483A1717022200E392FB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		FB5F77BD169AE2DE00585D11 /* PPrYvLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvLocationManager.h; sourceTree = "<group>"; };
 		FB5F77BE169AE2DE00585D11 /* PPrYvLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvLocationManager.m; sourceTree = "<group>"; };
 		FB6D93CC16EE2353008F4D35 /* PPrYvWebLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvWebLoginViewController.h; sourceTree = "<group>"; };
@@ -174,6 +210,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB3248391717015D00E392FB /* libz.dylib in Frameworks */,
+				FB32483B1717022200E392FB /* MessageUI.framework in Frameworks */,
 				5655188C167E7463006FE2A2 /* MobileCoreServices.framework in Frameworks */,
 				56F6656A167B223F00E85921 /* QuartzCore.framework in Frameworks */,
 				56F66561167B1F3000E85921 /* AssetsLibrary.framework in Frameworks */,
@@ -220,6 +258,8 @@
 		5655187F167B67A6006FE2A2 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				FB3248261717011000E392FB /* SSZipArchive */,
+				FB3248151716EBAC00E392FB /* Lumberjack */,
 				562C01D0167F8BCA00706EE3 /* AFNetworking */,
 			);
 			name = Vendor;
@@ -232,6 +272,7 @@
 				56B4813D1694DD1C006529EB /* PPrYvAppDelegate.h */,
 				56B4813E1694DD3E006529EB /* PPrYvAppDelegate.m */,
 				B0BC906476D7AE6665E844DB /* Constants.h */,
+				FB3248251716ECEC00E392FB /* Logging.h */,
 				B0BC936CE6C540811B75FDC9 /* PPrYvCoreDataManager.h */,
 				B0BC9EFF2D2FC7B9083F96DE /* PPrYvCoreDataManager.m */,
 				FB5F77BD169AE2DE00585D11 /* PPrYvLocationManager.h */,
@@ -301,6 +342,8 @@
 		568242E71670AAD90032489E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FB3248381717015D00E392FB /* libz.dylib */,
+				FB32483A1717022200E392FB /* MessageUI.framework */,
 				5655188B167E7463006FE2A2 /* MobileCoreServices.framework */,
 				56F66569167B223F00E85921 /* QuartzCore.framework */,
 				56F66560167B1F2F00E85921 /* AssetsLibrary.framework */,
@@ -393,6 +436,49 @@
 				B0BC98051DFCC4C483C0AF9C /* EventAttachment.m */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		FB3248151716EBAC00E392FB /* Lumberjack */ = {
+			isa = PBXGroup;
+			children = (
+				FB3248161716EBAC00E392FB /* DDAbstractDatabaseLogger.h */,
+				FB3248171716EBAC00E392FB /* DDAbstractDatabaseLogger.m */,
+				FB3248181716EBAC00E392FB /* DDASLLogger.h */,
+				FB3248191716EBAC00E392FB /* DDASLLogger.m */,
+				FB32481A1716EBAC00E392FB /* DDFileLogger.h */,
+				FB32481B1716EBAC00E392FB /* DDFileLogger.m */,
+				FB32481C1716EBAC00E392FB /* DDLog.h */,
+				FB32481D1716EBAC00E392FB /* DDLog.m */,
+				FB32481E1716EBAC00E392FB /* DDTTYLogger.h */,
+				FB32481F1716EBAC00E392FB /* DDTTYLogger.m */,
+			);
+			path = Lumberjack;
+			sourceTree = "<group>";
+		};
+		FB3248261717011000E392FB /* SSZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				FB3248271717011000E392FB /* minizip */,
+				FB3248311717011000E392FB /* SSZipArchive.h */,
+				FB3248321717011000E392FB /* SSZipArchive.m */,
+			);
+			path = SSZipArchive;
+			sourceTree = "<group>";
+		};
+		FB3248271717011000E392FB /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				FB3248281717011000E392FB /* crypt.h */,
+				FB3248291717011000E392FB /* ioapi.c */,
+				FB32482A1717011000E392FB /* ioapi.h */,
+				FB32482B1717011000E392FB /* mztools.c */,
+				FB32482C1717011000E392FB /* mztools.h */,
+				FB32482D1717011000E392FB /* unzip.c */,
+				FB32482E1717011000E392FB /* unzip.h */,
+				FB32482F1717011000E392FB /* zip.c */,
+				FB3248301717011000E392FB /* zip.h */,
+			);
+			path = minizip;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -510,6 +596,16 @@
 				56B1652616B1809000C0530D /* PPrYvPointAnnotation.m in Sources */,
 				56FEF97A16B2D651008A5948 /* UIView+Helpers.m in Sources */,
 				FB6D93CF16EE2353008F4D35 /* PPrYvWebLoginViewController.m in Sources */,
+				FB3248201716EBAC00E392FB /* DDAbstractDatabaseLogger.m in Sources */,
+				FB3248211716EBAC00E392FB /* DDASLLogger.m in Sources */,
+				FB3248221716EBAC00E392FB /* DDFileLogger.m in Sources */,
+				FB3248231716EBAC00E392FB /* DDLog.m in Sources */,
+				FB3248241716EBAC00E392FB /* DDTTYLogger.m in Sources */,
+				FB3248331717011000E392FB /* ioapi.c in Sources */,
+				FB3248341717011000E392FB /* mztools.c in Sources */,
+				FB3248351717011000E392FB /* unzip.c in Sources */,
+				FB3248361717011000E392FB /* zip.c in Sources */,
+				FB3248371717011000E392FB /* SSZipArchive.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

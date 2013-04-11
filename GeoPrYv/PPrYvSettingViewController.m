@@ -6,12 +6,14 @@
 //  Copyright (c) 2012 PrYv. All rights reserved.
 //
 
+#import <MessageUI/MessageUI.h>
 #import "PPrYvSettingViewController.h"
 #import "PPrYvWebLoginViewController.h"
 #import "User+Extras.h"
+#import "SSZipArchive.h"
 #import "PPrYvCoreDataManager.h"
 
-@interface PPrYvSettingViewController ()
+@interface PPrYvSettingViewController () <MFMailComposeViewControllerDelegate>
 - (void)updateDistanceFilterWithValue:(double)distanceFilterValue;
 - (void)updateTimeFilterWithValue:(double)timeFilterValue;
 - (void)changeLocationManagerTimeInterval:(UISlider *)timeIntervalSlider;
@@ -23,6 +25,17 @@
 @synthesize distanceFilterLabel = _distanceFilterLabel;
 @synthesize timeFilterLabel = _timeFilterLabel;
 @synthesize currentUser = _currentUser;
+
+enum {
+    SectionDistanceInterval = 0,
+    SectionTimeInterval,
+    SectionLoginInfo,
+    SectionFolderInfo,
+#if DEBUG
+    SectionSendLogs,
+#endif
+    NumSections
+};
 
 #pragma mark - Object Life Cycle
 
@@ -76,7 +89,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 4;
+    return NumSections;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -86,41 +99,45 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if (section == 0) {
-        
-        return NSLocalizedString(@"optionSection1Title", );
+    switch (section) {
+        case SectionDistanceInterval:
+            return NSLocalizedString(@"optionSection1Title", );
+            
+        case SectionTimeInterval:
+            return NSLocalizedString(@"optionSection2Title", );
+            
+        case SectionLoginInfo:
+            return NSLocalizedString(@"optionSection3Title", );
+            
+        case SectionFolderInfo:
+            return NSLocalizedString(@"optionSection5Title", );
+
+#if DEBUG
+        case SectionSendLogs:
+            return @"Report problem";
+#endif
+            
+        default:
+            return @"";
     }
-    else if (section == 1) {
-        
-        return NSLocalizedString(@"optionSection2Title", );
-    }
-    else if (section == 2) {
-        
-        return NSLocalizedString(@"optionSection3Title", );
-    }
-    else if (section == 3) {
-        return NSLocalizedString(@"optionSection5Title", );
-    }
-    else
-        return @"";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0 || indexPath.section == 1) {
-        
+    if (indexPath.section == SectionDistanceInterval || indexPath.section == SectionTimeInterval) {
         return 60;
     }
     
     return 40;
 }
 
+// FIXME reuse tableview cells
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    if (indexPath.section == 0 && indexPath.row == 0) {
+    if (indexPath.section == SectionDistanceInterval && indexPath.row == 0) {
         
         UISlider * slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30, cell.contentView.frame.size.width-60, 30)];
         slider.maximumValue = powf(100.0f, 0.5f);
@@ -139,7 +156,7 @@
 
         [self updateDistanceFilterWithValue:[self.currentUser.locationDistanceInterval doubleValue]];
     }
-    else if (indexPath.section == 1 && indexPath.row == 0) {
+    else if (indexPath.section == SectionTimeInterval && indexPath.row == 0) {
         
         UISlider * slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30, cell.contentView.frame.size.width-60, 30)];
         [slider addTarget:self action:@selector(changeLocationManagerTimeInterval:) forControlEvents:UIControlEventValueChanged];
@@ -158,17 +175,24 @@
 
         [self updateTimeFilterWithValue:[self.currentUser.locationTimeInterval doubleValue]];
     }
-    else if (indexPath.section == 2 && indexPath.row == 0) {
+    else if (indexPath.section == SectionLoginInfo && indexPath.row == 0) {
         
         cell.textLabel.text = self.currentUser.userId;
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
         cell.textLabel.textAlignment = UITextAlignmentCenter;
     }
-    else if (indexPath.section == 3) {
+    else if (indexPath.section == SectionFolderInfo) {
         
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
         cell.textLabel.text = self.currentUser.folderName;
     }
+#if DEBUG
+    else if (indexPath.section == SectionSendLogs) {
+        cell.textLabel.adjustsFontSizeToFitWidth = YES;
+        cell.textLabel.text = @"Send Logs";
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+    }
+#endif
     return cell;
 }
 
@@ -194,12 +218,103 @@
     }
 }
 
+#pragma mark - Log sending 
+
+- (NSString *)cachesDirectory
+{
+    return NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
+}
+
+- (NSString *)logsDirectory
+{
+    return [[self cachesDirectory] stringByAppendingPathComponent:@"Logs"]; // FIXME extract the logs 
+}
+
+- (NSData *)zipLogs
+{
+    NSString *logsDir = [self logsDirectory];
+    NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logsDir error:nil];
+    NSPredicate *textFilePredicate = [NSPredicate predicateWithFormat:@"self ENDSWITH '.txt'"];
+    files = [files filteredArrayUsingPredicate:textFilePredicate];
+    
+    NSString *logZipPath = [logsDir stringByAppendingPathComponent:@"logs.zip"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:logZipPath]) {
+        [[NSFileManager defaultManager] removeItemAtPath:logZipPath error:nil];
+    }
+    
+    NSMutableArray *inputFiles = [NSMutableArray array];
+    for (NSString *file in files) {
+        [inputFiles addObject:[logsDir stringByAppendingPathComponent:file]];
+    }
+    
+    [SSZipArchive createZipFileAtPath:logZipPath withFilesAtPaths:inputFiles];
+    NSData *zipData = [NSData dataWithContentsOfFile:logZipPath];
+    [[NSFileManager defaultManager] removeItemAtPath:logZipPath error:nil];
+    return zipData;
+}
+
 
 #pragma mark - Table View Delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-      // do nothing here
+#if DEBUG
+    if (indexPath.section == SectionSendLogs) {
+        if (![MFMailComposeViewController canSendMail]) {
+            [[[UIAlertView alloc] initWithTitle:@"Can't send email"
+                                        message:@"Please set up your mail account first"
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil] show];
+            return;
+        }
+        
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        dispatch_async(queue, ^{
+            NSData *zipFileData = [self zipLogs];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                MFMailComposeViewController *mailVC = [[MFMailComposeViewController alloc] init];
+                [mailVC setSubject:@"Pryv Logs"];
+                [mailVC setToRecipients:@[ @"konstantin@dorodov.com" ]]; // FIXME add a constant
+                [mailVC setMessageBody:@"Please find the attached logs" isHTML:NO];
+                [mailVC addAttachmentData:zipFileData
+                                 mimeType:@"application/zip"
+                                 fileName:@"pryv_logs.zip"];
+                
+                [mailVC setMailComposeDelegate:self];
+                
+                [self presentViewController:mailVC animated:YES completion:nil];
+            });
+        });
+    }
+#endif
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - MFMailComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    switch (result) {
+        case MFMailComposeResultSaved:
+            NSLog(@"Saved as a draft");
+            break;
+            
+        case MFMailComposeResultCancelled:
+            NSLog(@"Mail cancelled");
+            break;
+            
+        case MFMailComposeResultSent:
+            NSLog(@"Mail sent");
+            break;
+            
+        case MFMailComposeResultFailed:
+            NSLog(@"Mail send failed");
+            break;
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Settings Methods

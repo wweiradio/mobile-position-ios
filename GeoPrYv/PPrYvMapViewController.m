@@ -314,7 +314,7 @@
     NSString *message = [originError localizedDescription];
     
     NSDictionary *userInfo = [error userInfo];
-    if ([userInfo objectForKey:@"serverError"] && [[userInfo objectForKey:@"serverError"] objectForKey:@"message"]) {
+    if (userInfo[@"serverError"] && userInfo[@"serverError"][@"message"]) {
         NSString *serverMessage = [error userInfo][@"serverError"][@"message"];
         message = [NSString stringWithFormat: @"%@ (%@)", serverMessage, [originError localizedDescription]];
     }
@@ -745,7 +745,7 @@
     NSMutableArray * annotations = [NSMutableArray array];
     
     // Calculate the region to show on map according to all the received points
-    u_int locationsCount = [positionEventList count];
+    NSUInteger locationsCount = [positionEventList count];
     double latitudeSum = 0;
     double longitudeSum = 0;
     double latitudeMax = 0;

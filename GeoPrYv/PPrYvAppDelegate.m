@@ -16,6 +16,10 @@
 #import "PPrYvApiClient.h"
 #import "PPrYvOpenUDID.h"
 #import "Folder.h"
+#import "DDLog.h"
+#import "DDTTYLogger.h"
+#import "DDFileLogger.h"
+
 
 @interface PPrYvAppDelegate()
 - (void)reportSyncError:(NSError *)error;
@@ -29,8 +33,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSLog(@"OpenUDID: %@", [PPrYvOpenUDID value]);
-
+    [self setupLogging];
+    
     // start core location manager
     [PPrYvLocationManager sharedInstance];
 
@@ -95,6 +99,20 @@
 }
 
 #pragma mark - private
+
+- (void)setupLogging
+{
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    
+    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
+    [fileLogger setRollingFrequency:60 * 60 * 24];   // roll every day
+    [fileLogger setMaximumFileSize:1024 * 1024 * 2]; // max 2mb file size
+    [fileLogger.logFileManager setMaximumNumberOfLogFiles:7];
+    
+    [DDLog addLogger:fileLogger];
+    
+    DDLogVerbose(@"Logging is setup (\"%@\")", [fileLogger.logFileManager logsDirectory]);
+}
 
 - (void)reportSyncError:(NSError *)error
 {
