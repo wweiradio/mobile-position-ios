@@ -277,7 +277,7 @@ enum {
                 MFMailComposeViewController *mailVC = [[MFMailComposeViewController alloc] init];
                 [mailVC setSubject:@"Pryv Logs"];
                 [mailVC setToRecipients:@[ @"konstantin@dorodov.com" ]]; // FIXME add a constant
-                [mailVC setMessageBody:@"Please find the attached logs" isHTML:NO];
+                [mailVC setMessageBody:@"Please specify the date and the time of the crash:\n\nPlease find the attached logs" isHTML:NO];
                 [mailVC addAttachmentData:zipFileData
                                  mimeType:@"application/zip"
                                  fileName:@"pryv_logs.zip"];
