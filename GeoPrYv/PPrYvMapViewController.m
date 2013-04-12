@@ -51,8 +51,8 @@
     [self.bRecorder setTitle:NSLocalizedString(@"bRecordStart", ) forState:UIControlStateNormal];
     //[self.bTakePicture setTitle:NSLocalizedString(@"bTakePicture", ) forState:UIControlStateNormal];
     [self.bAskTimePeriod setTitle:NSLocalizedString(@"bAskTimePeriod", ) forState:UIControlStateNormal];
-    [self.bConfirmTimePeriod setTitle:NSLocalizedString(@"bConfirmTimePeriod", ) forState:UIControlStateNormal];
-    [self.bCancelDatePickers setTitle:NSLocalizedString(@"bCancelDatePickers", ) forState:UIControlStateNormal];
+    //[self.bConfirmTimePeriod setTitle:NSLocalizedString(@"bConfirmTimePeriod", ) forState:UIControlStateNormal];
+    //[self.bCancelDatePickers setTitle:NSLocalizedString(@"bCancelDatePickers", ) forState:UIControlStateNormal];
     
     self.bSendNote.title = NSLocalizedString(@"bNavBarSendNote", );
     self.bCancelNote.title = NSLocalizedString(@"bNavBarCancelNote", );
@@ -589,10 +589,10 @@
 {
     self.shadowView.hidden = NO;
     NSLog(@"everything I called");
-    [UIView animateWithDuration:.5 animations:^{
+    [UIView animateWithDuration:.2 animations:^{
 
         self.deckHolder.top = self.view.height-self.deckHolder.height;
-        self.shadowView.alpha = .3f;
+        self.shadowView.alpha = .6f;
     }];
     
     if (!IS_IPAD) {
@@ -623,7 +623,7 @@
 
 - (IBAction)cancelDatePickers:(UIButton *)sender
 {
-    [UIView animateWithDuration:.3 animations:^{
+    [UIView animateWithDuration:.2 animations:^{
         self.deckHolder.top = self.view.height;
         self.shadowView.alpha = 0.f;
     }];
