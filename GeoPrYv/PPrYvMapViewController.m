@@ -420,6 +420,7 @@
     }
     
     MKPolyline * polyLine = [MKPolyline polylineWithCoordinates:coords count:[sortedPoint count]];
+    free(coords);
     
     [self.mapView addOverlay:polyLine];
 }
