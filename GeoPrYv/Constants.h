@@ -22,3 +22,7 @@
 
 // in meters
 #define kPrYvMinimumDistanceBetweenConsecutiveEvents 10
+
+// maximum length of the note in characters
+// TODO rename
+#define kPrYvMaximumNoteLength 4194304

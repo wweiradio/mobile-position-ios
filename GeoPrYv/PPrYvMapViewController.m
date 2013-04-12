@@ -280,9 +280,6 @@
                      }];    
 }
 
-// TODO move to constants
-#define MAX_NOTE_LENGTH 4194304
-
 - (IBAction)sendNoteWithCurrentLocation:(id)sender
 {
     // get the message
@@ -292,8 +289,8 @@
     if ([message length] > 0) {
         
         // trim the message to MAX length
-        if ([message length] > MAX_NOTE_LENGTH) {
-            message = [message substringWithRange:NSMakeRange(0, MAX_NOTE_LENGTH)];
+        if ([message length] > kPrYvMaximumNoteLength) {
+            message = [message substringWithRange:NSMakeRange(0, kPrYvMaximumNoteLength)];
         }
         
         // get the current location from the map
