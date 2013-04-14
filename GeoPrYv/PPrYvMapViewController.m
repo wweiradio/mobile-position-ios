@@ -76,11 +76,13 @@
     // rename all the buttons according to the current local en,fr,de...
     [self.bAskLast24h setTitle:NSLocalizedString(@"bAsk24h", ) forState:UIControlStateNormal];
     [self.bTakeNote setTitle:NSLocalizedString(@"bTakeNote", ) forState:UIControlStateNormal];
-    [self.bRecorder setTitle:NSLocalizedString(@"bRecordStart", ) forState:UIControlStateNormal];
     //[self.bTakePicture setTitle:NSLocalizedString(@"bTakePicture", ) forState:UIControlStateNormal];
     [self.bAskTimePeriod setTitle:NSLocalizedString(@"bAskTimePeriod", ) forState:UIControlStateNormal];
     //[self.bConfirmTimePeriod setTitle:NSLocalizedString(@"bConfirmTimePeriod", ) forState:UIControlStateNormal];
     //[self.bCancelDatePickers setTitle:NSLocalizedString(@"bCancelDatePickers", ) forState:UIControlStateNormal];
+
+    [self.bRecorder setTitle:NSLocalizedString(@"bRecordStart", ) forState:UIControlStateNormal];
+    [self.bRecorder setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 
     [self formatDateButton:self.bNextDate withPrefix:NSLocalizedString(@"bToDate", ) date:[self defaultToDate]];
     [self formatDateButton:self.bFromDate withPrefix:NSLocalizedString(@"bFromDate", ) date:[self defaultFromDate]];
@@ -221,12 +223,13 @@
         
         // change the button title accroding to the situation
         [self.bRecorder setTitle:NSLocalizedString(@"bRecordStop", ) forState:UIControlStateNormal];
+        [self.bRecorder setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+
+        //Change recorder button color
+        [self.bRecorder setBackgroundImage:[UIImage imageNamed:@"bPryvitOn.png"] forState:UIControlStateNormal];
         
         // prompt the information
         self.currentPeriodLabel.text = NSLocalizedString(@"currentPeriod", );
-        
-        //Change button colors
-        //
         
         // animate the interface for the user experience and
         // show a status bar to inform the location recording is enabled
@@ -243,6 +246,10 @@
         
         // change the button title according to the situation
         [self.bRecorder setTitle:NSLocalizedString(@"bRecordStart", ) forState:UIControlStateNormal];
+        [self.bRecorder setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+
+        //Change recorder button color
+        [self.bRecorder setBackgroundImage:[UIImage imageNamed:@"bPryvitOff.png"] forState:UIControlStateNormal];
 
         // animate the transition from the recording state back to the idle state
         [UIView animateWithDuration:.3 animations:^{
