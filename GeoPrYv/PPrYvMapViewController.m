@@ -81,6 +81,9 @@
     //[self.bConfirmTimePeriod setTitle:NSLocalizedString(@"bConfirmTimePeriod", ) forState:UIControlStateNormal];
     //[self.bCancelDatePickers setTitle:NSLocalizedString(@"bCancelDatePickers", ) forState:UIControlStateNormal];
 
+    [self.bFromDate setBackgroundImage:[UIImage imageNamed:@"bDateSelected.png"] forState:UIControlStateSelected];
+    [self.bNextDate setBackgroundImage:[UIImage imageNamed:@"bDateSelected.png"] forState:UIControlStateSelected];
+    
     [self.bRecorder setTitle:NSLocalizedString(@"bRecordStart", ) forState:UIControlStateNormal];
     [self.bRecorder setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 
