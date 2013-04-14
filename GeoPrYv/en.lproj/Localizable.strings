@@ -18,8 +18,8 @@
 "bNavBarSendNote"   = "Send";
 "bAskTimePeriod" = "Look At A Custom Period";
 "bAsk24h" = "Last 24h";
-"bToDate" = "To Date";
-"bFromDate" = "From Date";
+"bToDate" = "To";
+"bFromDate" = "From";
 "bConfirmTimePeriod" = "Ask This Period";
 "bCancelDatePickers" = "Cancel";
 

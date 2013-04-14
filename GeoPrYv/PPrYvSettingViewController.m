@@ -227,7 +227,7 @@ enum {
 
 - (NSString *)logsDirectory
 {
-    return [[self cachesDirectory] stringByAppendingPathComponent:@"Logs"]; // FIXME extract the logs 
+    return [[self cachesDirectory] stringByAppendingPathComponent:@"Logs"];
 }
 
 - (NSData *)zipLogs

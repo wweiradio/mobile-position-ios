@@ -37,6 +37,36 @@
     return self;
 }
 
+#pragma mark - default date in query parameters
+
+- (NSDate *)defaultToDate
+{
+    NSDate *toDate = [NSDate date];
+    
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    if ([userDefaults doubleForKey:@"defaultDateRangeToDate"] > 1) {
+        toDate = [NSDate dateWithTimeIntervalSince1970:[userDefaults doubleForKey:@"defaultDateRangeToDate"]];
+    }
+    return toDate;
+}
+
+- (NSDate *)defaultFromDate
+{
+    // yesterday
+    NSDate *today = [NSDate date];
+    NSDateComponents *components = [[NSDateComponents alloc] init];
+    [components setDay:-1];
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDate *fromDate = [gregorian dateByAddingComponents:components toDate:today options:0];
+    
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    if ([userDefaults doubleForKey:@"defaultDateRangeFromDate"] > 1) {
+        fromDate = [NSDate dateWithTimeIntervalSince1970:[userDefaults doubleForKey:@"defaultDateRangeFromDate"]];
+    }
+    return fromDate;
+}
+
+
 #pragma mark - View LifeCycle
 
 - (void)viewDidLoad
@@ -44,15 +74,16 @@
     [super viewDidLoad];
     
     // rename all the buttons according to the current local en,fr,de...
-    [self.bNextDate setTitle:NSLocalizedString(@"bToDate", ) forState:UIControlStateNormal];
     [self.bAskLast24h setTitle:NSLocalizedString(@"bAsk24h", ) forState:UIControlStateNormal];
-    [self.bFromDate setTitle:NSLocalizedString(@"bFromDate", ) forState:UIControlStateNormal];
     [self.bTakeNote setTitle:NSLocalizedString(@"bTakeNote", ) forState:UIControlStateNormal];
     [self.bRecorder setTitle:NSLocalizedString(@"bRecordStart", ) forState:UIControlStateNormal];
     //[self.bTakePicture setTitle:NSLocalizedString(@"bTakePicture", ) forState:UIControlStateNormal];
     [self.bAskTimePeriod setTitle:NSLocalizedString(@"bAskTimePeriod", ) forState:UIControlStateNormal];
     //[self.bConfirmTimePeriod setTitle:NSLocalizedString(@"bConfirmTimePeriod", ) forState:UIControlStateNormal];
     //[self.bCancelDatePickers setTitle:NSLocalizedString(@"bCancelDatePickers", ) forState:UIControlStateNormal];
+
+    [self formatDateButton:self.bNextDate withPrefix:NSLocalizedString(@"bToDate", ) date:[self defaultToDate]];
+    [self formatDateButton:self.bFromDate withPrefix:NSLocalizedString(@"bFromDate", ) date:[self defaultFromDate]];
     
     self.bSendNote.title = NSLocalizedString(@"bNavBarSendNote", );
     self.bCancelNote.title = NSLocalizedString(@"bNavBarCancelNote", );
@@ -62,7 +93,9 @@
     self.datePickerTo.date = [NSDate date];
     self.datePickerFrom.date = [NSDate dateWithTimeIntervalSinceNow:-60 * 60 * 24 * 7];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:kPrYvLocationManagerDidAcceptNewLocationNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+    [[NSNotificationCenter defaultCenter] addObserverForName:kPrYvLocationManagerDidAcceptNewLocationNotification
+                                                      object:nil queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification *note) {
         
         CLLocation * newLocation = [note.userInfo objectForKey:kPrYvLocationManagerDidAcceptNewLocationNotification];
         
@@ -280,6 +313,7 @@
                      }];    
 }
 
+// TODO: rename: note doesn't have a location
 - (IBAction)sendNoteWithCurrentLocation:(id)sender
 {
     // get the message
@@ -359,7 +393,6 @@
     return annotationView;
 }
 
-// TODO rethink animating all the views because the amount of points/view can be pretty big
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)annotationViews
 {
     for (int i = 0; i< [annotationViews count]; i++) {
@@ -586,7 +619,6 @@
 - (IBAction)askForTimePeriod:(UIButton *)sender
 {
     self.shadowView.hidden = NO;
-    NSLog(@"everything I called");
     [UIView animateWithDuration:.2 animations:^{
 
         self.deckHolder.top = self.view.height-self.deckHolder.height;
@@ -630,15 +662,65 @@
     //self.deckHolder.top = 460;
 }
 
+- (NSDateFormatter *)buttonDateFormatter
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateStyle = NSDateFormatterShortStyle;
+    dateFormatter.locale = [NSLocale currentLocale];
+    return dateFormatter;
+}
+
+// TODO: consider putting in a UIButton category
+- (void)formatDateButton:(UIButton *)button withPrefix:(NSString *)prefix date:(NSDate *)buttonDate
+{
+    NSString *dateFormatted = [[self buttonDateFormatter] stringFromDate:buttonDate];
+    [button setTitle:[NSString stringWithFormat:@"%@ %@", prefix, dateFormatted]
+            forState:UIControlStateNormal];
+}
+
+- (IBAction)datePickerFromChanged:(UIDatePicker *)datePicker
+{
+    [self formatDateButton:self.bFromDate withPrefix:NSLocalizedString(@"bFromDate", ) date:datePicker.date];
+}
+
+- (IBAction)datePickerNextChanged:(UIDatePicker *)datePicker
+{
+    [self formatDateButton:self.bNextDate withPrefix:NSLocalizedString(@"bToDate", ) date:datePicker.date];
+}
+
+// FIXME: add some feedback
+//  - dismiss date picker first
+//  - block new requests unless this one is finished
+//  - show some progress: start
+//  - remove progress on success/error
+
 - (IBAction)askServerForTimePeriodData
 {
+    // remember the date range
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setDouble:[self.datePickerFrom.date timeIntervalSince1970]
+                     forKey:@"defaultDateRangeFromDate"];
+    [userDefaults setDouble:[self.datePickerTo.date timeIntervalSince1970]
+                     forKey:@"defaultDateRangeToDate"];
+    
     // dismiss the date pickers
     
+    NSDateFormatter *currentPeriodLabelDateFormatter = [[NSDateFormatter alloc] init];
+    currentPeriodLabelDateFormatter.dateFormat = @"EEE, MMM d, yyyy";
+    currentPeriodLabelDateFormatter.locale = [NSLocale currentLocale];
+    
+    [self cancelDatePickers:nil];
+    self.currentPeriodLabel.text = [NSString stringWithFormat:
+                                    NSLocalizedString(@"sessionCustom", ),
+                                    [currentPeriodLabelDateFormatter stringFromDate:self.datePickerFrom.date],
+                                    [currentPeriodLabelDateFormatter stringFromDate:self.datePickerTo.date]];
+    
     // get user
-    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     NSTimeInterval interval = 60 * 60 * 24;
-    NSDate * dateTo = [self.datePickerTo.date dateByAddingTimeInterval:interval];
+    NSDate *dateTo = [self.datePickerTo.date dateByAddingTimeInterval:interval];
+    
     // ask for events in the chosen time period with the current user channel
     [[PPrYvApiClient sharedClient] getEventsFromStartDate:self.datePickerFrom.date
                                                 toEndDate:dateTo
@@ -646,17 +728,7 @@
                                            successHandler:^(NSArray *positionEventList) {
                                                 
                                                 [self didReceiveEvents:positionEventList];
-                                                
-                                                NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-                                                formatter.dateFormat = @"EEE, MMM d, yyyy";
-                                                formatter.locale = [NSLocale currentLocale];
-                                                
-                                                NSString * dateFrom = [formatter stringFromDate:self.datePickerFrom.date];
-                                                NSString * dateTo = [formatter stringFromDate:self.datePickerTo.date];
-                                               [self cancelDatePickers:nil];
-                                               
-                                                self.currentPeriodLabel.text =
-                                                [NSString stringWithFormat:NSLocalizedString(@"sessionCustom", ), dateFrom, dateTo];
+
                                             
                                             } errorHandler:^(NSError *error) {
                                                 [self reportError:error];
@@ -669,7 +741,7 @@
     [self cancelDatePickers:nil];
     
     // get user
-    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     // clean the map from all annotations
     NSLog(@"%@", user.folderId);
