@@ -8,7 +8,6 @@
 
 #import "PPrYvAppDelegate.h"
 #import "PPrYvMapViewController.h"
-#import "PPrYvWebLoginViewController.h"
 #import "User+Extras.h"
 #import "PPrYvCoreDataManager.h"
 #import "PPrYvLocationManager.h"
