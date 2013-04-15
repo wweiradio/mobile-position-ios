@@ -118,11 +118,11 @@
                                                        queue:[NSOperationQueue mainQueue]
                                                   usingBlock:^(NSNotification *note) {
 
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-
         User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
         if (user && ![self isRecording]) {
-        
+       
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            
             // ask the PrYv API for events in the last 24h with the current user channel
             NSTimeInterval interval = -60 * 60 * 24;
             NSDate *dateTo = [NSDate date];
@@ -131,11 +131,12 @@
                                                         toEndDate:dateTo
                                                        inFolderId:user.folderId
                                                    successHandler:^(NSArray *positionEventList) {
-                                                       [MBProgressHUD hideHUDForView:self.view animated:YES];
 
                                                        [self didReceiveEvents:positionEventList];
                                                        self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
-                                                       
+
+                                                       [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                                   
                                                    } errorHandler:^(NSError *error) {
                                                        [MBProgressHUD hideHUDForView:self.view animated:YES];
 
