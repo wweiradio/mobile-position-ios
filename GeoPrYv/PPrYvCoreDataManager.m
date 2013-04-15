@@ -83,7 +83,10 @@ NSString * const kDataManagerSQLiteName = @"ATPrYv.sqlite";
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
 
     // Define the Core Data version migration options
-    NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES};
+    NSDictionary *options = @{
+                               NSMigratePersistentStoresAutomaticallyOption: @YES,
+                               NSInferMappingModelAutomaticallyOption: @YES
+                              };
     
     NSPersistentStore *persistentStore = [_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
                                                                                    configuration:nil
@@ -91,18 +94,33 @@ NSString * const kDataManagerSQLiteName = @"ATPrYv.sqlite";
                                                                                          options:options
                                                                                            error:&error];
     if (!persistentStore) {
-        /*
-         * Simply deleting the existing store:
-         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil]
-         */
-        
         NSLog(@"===============================================================================");
         NSLog(@"ATTENTION! The core data model is different from your current persistent store");
+        
+// we are resetting the persistent store 
+#if DEBUG
+        // delete the persistent store
+        [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
+        NSLog(@"           Deleting it from the device...                                      ");
+        NSLog(@"===============================================================================");
+        
+        // recreate the perstistent store with the same options
+        persistentStore = [_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
+                                                                    configuration:nil
+                                                                              URL:storeURL
+                                                                          options:options
+                                                                            error:&error];
+        if (!persistentStore) {
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+#else
         NSLog(@"           Please delete current application on the iDevice       ");
         NSLog(@"           or the iOS Simulator. This would delete the outdated persistent store too. ");
         NSLog(@"===============================================================================");
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
+#endif
     }
 
     return _persistentStoreCoordinator;
