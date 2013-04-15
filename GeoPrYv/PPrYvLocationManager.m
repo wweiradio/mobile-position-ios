@@ -82,7 +82,6 @@
                                                  selector:@selector(sendingLocationDidFinish:)
                                                      name:kPrYvFinishedSendingLocationNotification
                                                    object:nil];
-
     }
     return self;
 }
@@ -201,11 +200,17 @@
 {
     CLLocation *location = [locations lastObject];
     User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-
     if (user == nil) {
         return;
     }
-
+    
+    // skip 0/0 coordinate
+    if (location.coordinate.latitude == 0.0f && location.coordinate.longitude == 0.0f) {
+        NSLog(@"ignore sending the 0/0 coordinate");
+        return;
+    }
+    
+    // TODO extract 100.0f to the settings
     if (location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
         return;
     }

@@ -662,6 +662,12 @@
                 if ([positionEventDictionary[@"type"][@"class"] isEqualToString:@"position"]) {
                     PositionEvent *positionEvent = [PositionEvent positionEventFromDictionary:positionEventDictionary
                                                                              inScratchContext:scratchManagedContext];
+                    // skip 0/0 coordinate
+                    if ([positionEvent.longitude doubleValue] == 0.0f && [positionEvent.latitude doubleValue] == 0.0f) {
+                        [scratchManagedContext deleteObject:positionEvent];
+                        NSLog(@"ignore receiving the 0/0 coordinate");
+                        continue;
+                    }
                     [positionEventList addObject:positionEvent];
                 }
             }
