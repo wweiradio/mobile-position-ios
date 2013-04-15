@@ -57,4 +57,6 @@
 // our custom initializer. We pass the mainLocationManager and the unique application managedObjectContext
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 
+- (void)applicationDidBecomeActive;
+
 @end

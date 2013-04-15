@@ -72,25 +72,8 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     NSLog(@"applicationDidBecomeActive");
-
-    // get the current user if any available
-    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-    if (user) {
-        // a user exists. Thus maybe some events are waiting to be uploaded
-        
-        // start or restart the api Client with the new user upon successful start it would try to synchronize
-        PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
-        [apiClient startClientWithUserId:user.userId
-                              oAuthToken:user.userToken
-                               channelId:kPrYvApplicationChannelId
-                          successHandler:^(NSTimeInterval serverTime)
-         {
-             [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
-         }                   errorHandler:^(NSError *error)
-         {
-             [self reportSyncError:error];
-         }];
-    }
+    
+    [self.mapViewController applicationDidBecomeActive];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -115,14 +98,14 @@
     
     NSLog(@"Logging is setup (\"%@\")", [fileLogger.logFileManager logsDirectory]);
 }
-
-- (void)reportSyncError:(NSError *)error
-{
-    [[[UIAlertView alloc] initWithTitle:nil
-                                message:NSLocalizedString(@"alertCantSynchronize", )
-                               delegate:nil
-                      cancelButtonTitle:NSLocalizedString(@"cancelButton", )
-                      otherButtonTitles:nil] show];
-}
+//
+//- (void)reportSyncError:(NSError *)error
+//{
+//    [[[UIAlertView alloc] initWithTitle:nil
+//                                message:NSLocalizedString(@"alertCantSynchronize", )
+//                               delegate:nil
+//                      cancelButtonTitle:NSLocalizedString(@"cancelButton", )
+//                      otherButtonTitles:nil] show];
+//}
 
 @end

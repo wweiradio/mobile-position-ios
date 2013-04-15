@@ -14,17 +14,9 @@
 #import "PPrYvCoreDataManager.h"
 
 @interface PPrYvSettingViewController () <MFMailComposeViewControllerDelegate>
-- (void)updateDistanceFilterWithValue:(double)distanceFilterValue;
-- (void)updateTimeFilterWithValue:(double)timeFilterValue;
-- (void)changeLocationManagerTimeInterval:(UISlider *)timeIntervalSlider;
-- (void)changeLocationManagerDistanceFilter:(UISlider *)distanceIntervalSlider;
 @end
 
 @implementation PPrYvSettingViewController
-
-@synthesize distanceFilterLabel = _distanceFilterLabel;
-@synthesize timeFilterLabel = _timeFilterLabel;
-@synthesize currentUser = _currentUser;
 
 enum {
     SectionDistanceInterval = 0,
@@ -364,6 +356,8 @@ enum {
 
 - (IBAction)logOutCurrentUser:(id)sender
 {
+    self.currentUser = nil;
+    
     // destroy all cached user data
     [[PPrYvCoreDataManager sharedInstance] destroyAllData];
     
@@ -373,7 +367,7 @@ enum {
                 
         int64_t delayInSeconds = 1;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        dispatch_after(popTime, dispatch_get_main_queue(), ^{
             
             PPrYvWebLoginViewController * login = [[PPrYvWebLoginViewController alloc] initWithNibName:@"PPrYvWebLoginViewController" bundle:nil];
             

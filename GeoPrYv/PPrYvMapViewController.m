@@ -121,6 +121,7 @@
         User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
         if (user && ![self isRecording]) {
        
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             
             // ask the PrYv API for events in the last 24h with the current user channel
@@ -208,6 +209,43 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
     return YES;
+}
+
+#pragma mark - Application lifecycle
+
+- (void)applicationDidBecomeActive
+{
+    // TODO: refactor 
+    
+    // get the current user if any available
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    if (user) {
+        // a user exists. Thus maybe some events are waiting to be uploaded
+        
+        // start or restart the api Client with the new user upon successful start it would try to synchronize
+        PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
+        [apiClient startClientWithUserId:user.userId
+                              oAuthToken:user.userToken
+                               channelId:kPrYvApplicationChannelId
+                          successHandler:^(NSTimeInterval serverTime)
+         {
+             [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
+         }                   errorHandler:^(NSError *error)
+         {
+             //
+             [MBProgressHUD hideHUDForView:self.view animated:YES];
+             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+             
+             // Configure for text only and offset down
+             hud.mode = MBProgressHUDModeText;
+             hud.labelText = NSLocalizedString(@"alertCantSynchronize", );
+//             hud.margin = 10.f;
+//             hud.yOffset = 150.f;
+             hud.removeFromSuperViewOnHide = YES;
+             
+             [hud hide:YES afterDelay:3];
+         }];
+    }
 }
 
 #pragma mark - Actions
@@ -363,13 +401,50 @@
     [self cancelNote:nil];
 }
 
-#pragma mark - private 
+#pragma mark - private
+
+- (void)openSettingsWithLogout:(BOOL)autoLogout
+{
+    // show the settings menu
+    PPrYvSettingViewController * settingsViewController =
+    [[PPrYvSettingViewController alloc] initWithNibName:@"PPrYvSettingViewController"
+                                                 bundle:nil];
+    
+    if (IS_IPAD) {
+        
+        // we are on ipad need to use a popover
+        self.iPadPopover = [[UIPopoverController alloc] initWithContentViewController:settingsViewController];
+        
+        // keep reference for future dismiss
+        settingsViewController.iPadHoldingPopOver = self.iPadPopover;
+        settingsViewController.iPadHoldingPopOverViewController = self;
+        self.iPadPopover.popoverContentSize = CGSizeMake(320, 540);
+        [self.iPadPopover presentPopoverFromRect:self.bSettings.frame
+                                          inView:self.view
+                        permittedArrowDirections:UIPopoverArrowDirectionAny
+                                        animated:YES];
+    }
+    else {
+        
+        [self presentViewController:settingsViewController animated:YES completion:^{
+            if (autoLogout)
+                [settingsViewController logOutCurrentUser:nil];
+        }];
+    }
+}
 
 - (void)reportError:(NSError *)error
 {
     NSError *originError = error;
     if ([[error userInfo] objectForKey:@"connectionError"]) {
         originError = [[error userInfo] objectForKey:@"connectionError"];
+    }
+
+    NSUInteger httpStatusCode = [[originError userInfo][@"AFNetworkingOperationFailingURLResponseErrorKey"] statusCode];
+    if (httpStatusCode == 401 || httpStatusCode == 403 || httpStatusCode == 404) {
+        // access / permission error / folder|channel does not exist
+        [self openSettingsWithLogout:YES];
+        return;
     }
     
     NSString *message = [originError localizedDescription];
@@ -380,14 +455,11 @@
         message = [NSString stringWithFormat: @"%@ (%@)", serverMessage, [originError localizedDescription]];
     }
 
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	
-	// Configure for text only and offset down
 	hud.mode = MBProgressHUDModeText;
 	hud.labelText = @"Error";
     hud.detailsLabelText = message;
-//	hud.margin = 10.f;
-//	hud.yOffset = 150.f;
 	hud.removeFromSuperViewOnHide = YES;
 	
 	[hud hide:YES afterDelay:5];
@@ -728,7 +800,8 @@
     
     // dismiss the date pickers
     [self cancelDatePickers:nil];
-
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 
     // get user
@@ -768,6 +841,7 @@
     // dimiss the date pickers
     [self cancelDatePickers:nil];
     
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     // get user
@@ -814,29 +888,7 @@
 
 - (IBAction)pushSettingsViewController
 {
-    // show the settings menu
-    PPrYvSettingViewController * settings =
-       [[PPrYvSettingViewController alloc] initWithNibName:@"PPrYvSettingViewController"
-                                                    bundle:nil];
-
-    if (IS_IPAD) {
-
-        // we are on ipad need to use a popover
-        self.iPadPopover = [[UIPopoverController alloc] initWithContentViewController:settings];        
-        
-        // keep refference for future dismiss
-        settings.iPadHoldingPopOver = self.iPadPopover;
-        settings.iPadHoldingPopOverViewController = self;
-        self.iPadPopover.popoverContentSize = CGSizeMake(320, 540);
-        [self.iPadPopover presentPopoverFromRect:self.bSettings.frame
-                                          inView:self.view
-                        permittedArrowDirections:UIPopoverArrowDirectionAny
-                                        animated:YES];
-    }
-    else {
-        
-        [self presentViewController:settings animated:YES completion:nil];
-    }
+    [self openSettingsWithLogout:NO];
 }
 
 #pragma mark -  Events Received
