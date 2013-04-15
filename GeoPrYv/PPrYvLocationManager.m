@@ -207,13 +207,11 @@
     }
 
     if (location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
-        //NSLog(@"Accuracy miss");
         return;
     }
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
         if ([self.backgroundDate timeIntervalSinceNow] > -[user.locationTimeInterval doubleValue]) {
-            //NSLog(@"Interval miss");
             return;
         }
         else {
@@ -221,7 +219,6 @@
         }
     }
     else if (self.foregroundTimer != nil && !self.isForegroundLocationUpdatesAllowed) {
-        //NSLog(@"Other miss?");
         return;
     }
 
@@ -266,64 +263,7 @@
 // iOS <= 5.1
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
-    CLLocation * location = newLocation;
-    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-    if (user == nil) {
-        return;
-    }
-
-    if(location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
-        return;
-    }
-
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground){
-        if([self.backgroundDate timeIntervalSinceNow] > -[user.locationTimeInterval doubleValue]) {
-            return;
-        }
-        else {
-            self.backgroundDate = [NSDate date];
-        }
-    }
-    else if (self.foregroundTimer != nil && !self.isForegroundLocationUpdatesAllowed) {
-        return;
-    }
-
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
-            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-        }];
-    }
-    else {
-        self.foregroundLocationUpdatesAllowed = NO;
-    }
-
-    // check with the previous position event
-    //      if location is close enough - update the time duration for the event
-    
-    PositionEvent *locationEvent = nil;
-    if ([self tooCloseTooPreviousEvent:location]) {
-        
-        //send the previous event with calculated duration
-        locationEvent = self.lastPositionEvent;
-        double secondsSinceLastEvent = [[NSDate date] timeIntervalSince1970] - [locationEvent.date timeIntervalSince1970];
-        locationEvent.duration = [NSNumber numberWithDouble:secondsSinceLastEvent];
-    } else {
-        locationEvent = [PositionEvent createPositionEventInLocation:location
-                                                         withMessage:nil
-                                                          attachment:nil
-                                                              folder:user.folderId
-                                                           inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-    }
-    
-    // save last position event
-    self.lastPositionEvent = locationEvent;
-    
-    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationManagerDidAcceptNewLocationNotification
-                                                        object:nil
-                                                      userInfo:@{kPrYvLocationManagerDidAcceptNewLocationNotification : location}];
+    [self locationManager:manager didUpdateLocations:@[ newLocation ]];
 }
 
 @end
