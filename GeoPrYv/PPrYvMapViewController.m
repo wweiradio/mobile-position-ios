@@ -18,6 +18,7 @@
 #import "PPrYvPointAnnotation.h"
 #import "UIView+Helpers.h"
 #import "PPrYvWebLoginViewController.h"
+#import "MBProgressHUD.h"
 
 @interface PPrYvMapViewController ()
 @end
@@ -116,7 +117,9 @@
                                                       object:nil
                                                        queue:[NSOperationQueue mainQueue]
                                                   usingBlock:^(NSNotification *note) {
-                                                      
+
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+
         User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
         if (user && ![self isRecording]) {
         
@@ -128,11 +131,14 @@
                                                         toEndDate:dateTo
                                                        inFolderId:user.folderId
                                                    successHandler:^(NSArray *positionEventList) {
-                                                       
+                                                       [MBProgressHUD hideHUDForView:self.view animated:YES];
+
                                                        [self didReceiveEvents:positionEventList];
                                                        self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
                                                        
                                                    } errorHandler:^(NSError *error) {
+                                                       [MBProgressHUD hideHUDForView:self.view animated:YES];
+
                                                        [self reportError:error];
                                                    }];
         }
@@ -372,12 +378,18 @@
         NSString *serverMessage = [error userInfo][@"serverError"][@"message"];
         message = [NSString stringWithFormat: @"%@ (%@)", serverMessage, [originError localizedDescription]];
     }
-    
-    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", )
-                                message:message
-                               delegate:nil
-                      cancelButtonTitle:NSLocalizedString(@"cancelButton", )
-                      otherButtonTitles:nil] show];
+
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	
+	// Configure for text only and offset down
+	hud.mode = MBProgressHUDModeText;
+	hud.labelText = @"Error";
+    hud.detailsLabelText = message;
+//	hud.margin = 10.f;
+//	hud.yOffset = 150.f;
+	hud.removeFromSuperViewOnHide = YES;
+	
+	[hud hide:YES afterDelay:5];
 }
 
 #pragma mark - MapView Delegate
@@ -714,17 +726,10 @@
                      forKey:@"defaultDateRangeToDate"];
     
     // dismiss the date pickers
-    
-    NSDateFormatter *currentPeriodLabelDateFormatter = [[NSDateFormatter alloc] init];
-    currentPeriodLabelDateFormatter.dateFormat = @"EEE, MMM d, yyyy";
-    currentPeriodLabelDateFormatter.locale = [NSLocale currentLocale];
-    
     [self cancelDatePickers:nil];
-    self.currentPeriodLabel.text = [NSString stringWithFormat:
-                                    NSLocalizedString(@"sessionCustom", ),
-                                    [currentPeriodLabelDateFormatter stringFromDate:self.datePickerFrom.date],
-                                    [currentPeriodLabelDateFormatter stringFromDate:self.datePickerTo.date]];
-    
+
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+
     // get user
     User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
@@ -736,19 +741,33 @@
                                                 toEndDate:dateTo
                                                inFolderId:user.folderId
                                            successHandler:^(NSArray *positionEventList) {
-                                                
-                                                [self didReceiveEvents:positionEventList];
-
-                                            
-                                            } errorHandler:^(NSError *error) {
-                                                [self reportError:error];
-                                            }];
+                                               
+                                               [self didReceiveEvents:positionEventList];
+                                               
+                                               // update info label
+                                               NSDateFormatter *currentPeriodLabelDateFormatter = [[NSDateFormatter alloc] init];
+                                               currentPeriodLabelDateFormatter.dateFormat = @"EEE, MMM d, yyyy";
+                                               currentPeriodLabelDateFormatter.locale = [NSLocale currentLocale];
+                                               self.currentPeriodLabel.text = [NSString stringWithFormat:
+                                                                               NSLocalizedString(@"sessionCustom", ),
+                                                                               [currentPeriodLabelDateFormatter stringFromDate:self.datePickerFrom.date],
+                                                                               [currentPeriodLabelDateFormatter stringFromDate:self.datePickerTo.date]];
+                                               
+                                               [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                           
+                                           } errorHandler:^(NSError *error) {
+                                               [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                               
+                                               [self reportError:error];
+                                           }];
 }
 
 - (IBAction)askForLast24h:(UIButton *)sender
 {
     // dimiss the date pickers
     [self cancelDatePickers:nil];
+    
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     // get user
     User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
@@ -767,10 +786,16 @@
                                            successHandler:^(NSArray *positionEventList) {
                                                
                                                [self didReceiveEvents:positionEventList];
-                                               self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
-                                           
-                                           } errorHandler:^(NSError *error) {
                                                
+                                               // update info label
+                                               self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
+                                               
+                                               [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                               
+                                           } errorHandler:^(NSError *error) {
+                                               [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                               
+                                               // TODO show error if any
                                                [self reportError:error];
                                            }];
 }

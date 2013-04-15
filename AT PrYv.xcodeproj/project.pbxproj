@@ -100,6 +100,7 @@
 		FB6D93CF16EE2353008F4D35 /* PPrYvWebLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6D93CD16EE2353008F4D35 /* PPrYvWebLoginViewController.m */; };
 		FB6D93D016EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB6D93CE16EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib */; };
 		FB6D93D216EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB6D93D116EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib */; };
+		FB7CC4AE171B45A7008D0A42 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = FB7CC4AD171B45A7008D0A42 /* MBProgressHUD.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -243,6 +244,8 @@
 		FB6D93CD16EE2353008F4D35 /* PPrYvWebLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvWebLoginViewController.m; sourceTree = "<group>"; };
 		FB6D93CE16EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PPrYvWebLoginViewController~iphone.xib"; sourceTree = "<group>"; };
 		FB6D93D116EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PPrYvWebLoginViewController~ipad.xib"; sourceTree = "<group>"; };
+		FB7CC4AC171B45A7008D0A42 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		FB7CC4AD171B45A7008D0A42 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -298,9 +301,10 @@
 		5655187F167B67A6006FE2A2 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
-				FB3248261717011000E392FB /* SSZipArchive */,
-				FB3248151716EBAC00E392FB /* Lumberjack */,
 				562C01D0167F8BCA00706EE3 /* AFNetworking */,
+				FB3248151716EBAC00E392FB /* Lumberjack */,
+				FB7CC4AB171B45A7008D0A42 /* MBProgressHUD */,
+				FB3248261717011000E392FB /* SSZipArchive */,
 			);
 			name = Vendor;
 			sourceTree = "<group>";
@@ -317,8 +321,8 @@
 				B0BC9EFF2D2FC7B9083F96DE /* PPrYvCoreDataManager.m */,
 				FB5F77BD169AE2DE00585D11 /* PPrYvLocationManager.h */,
 				FB5F77BE169AE2DE00585D11 /* PPrYvLocationManager.m */,
-				B0BC90B3350DCFDA7A78E71D /* PPrYvPositionEventSender.m */,
 				B0BC9F283A9CB84786EB2CA4 /* PPrYvPositionEventSender.h */,
+				B0BC90B3350DCFDA7A78E71D /* PPrYvPositionEventSender.m */,
 			);
 			name = Application;
 			sourceTree = "<group>";
@@ -541,6 +545,15 @@
 			path = minizip;
 			sourceTree = "<group>";
 		};
+		FB7CC4AB171B45A7008D0A42 /* MBProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				FB7CC4AC171B45A7008D0A42 /* MBProgressHUD.h */,
+				FB7CC4AD171B45A7008D0A42 /* MBProgressHUD.m */,
+			);
+			path = MBProgressHUD;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -686,6 +699,7 @@
 				FB3248351717011000E392FB /* unzip.c in Sources */,
 				FB3248361717011000E392FB /* zip.c in Sources */,
 				FB3248371717011000E392FB /* SSZipArchive.m in Sources */,
+				FB7CC4AE171B45A7008D0A42 /* MBProgressHUD.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
