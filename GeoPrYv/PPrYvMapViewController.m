@@ -216,33 +216,34 @@
     
     // get the current user if any available
     User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-    if (user) {
-        // a user exists. Thus maybe some events are waiting to be uploaded
-        
-        // start or restart the api Client with the new user upon successful start it would try to synchronize
-        PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
-        [apiClient startClientWithUserId:user.userId
-                              oAuthToken:user.userToken
-                               channelId:kPrYvApplicationChannelId
-                          successHandler:^(NSTimeInterval serverTime)
-         {
-             [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
-         }                   errorHandler:^(NSError *error)
-         {
-             //
-             [MBProgressHUD hideHUDForView:self.view animated:YES];
-             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-             
-             // Configure for text only and offset down
-             hud.mode = MBProgressHUDModeText;
-             hud.labelText = NSLocalizedString(@"alertCantSynchronize", );
-//             hud.margin = 10.f;
-//             hud.yOffset = 150.f;
-             hud.removeFromSuperViewOnHide = YES;
-             
-             [hud hide:YES afterDelay:3];
-         }];
+    if (!user) {
+        return;
     }
+    
+    // a user exists. Thus maybe some events are waiting to be uploaded
+    // start or restart the api Client with the new user upon successful start it would try to synchronize
+    PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
+    [apiClient startClientWithUserId:user.userId
+                          oAuthToken:user.userToken
+                           channelId:kPrYvApplicationChannelId
+                      successHandler:^(NSTimeInterval serverTime) {
+                          
+                          [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
+                          
+                      } errorHandler:^(NSError *error) {
+                          //
+                          [MBProgressHUD hideHUDForView:self.view animated:YES];
+                          MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                         
+                          // Configure for text only and offset down
+                          hud.mode = MBProgressHUDModeText;
+                          hud.labelText = NSLocalizedString(@"alertCantSynchronize", );
+                          // hud.margin = 10.f;
+                          // hud.yOffset = 150.f;
+                          hud.removeFromSuperViewOnHide = YES;
+                         
+                          [hud hide:YES afterDelay:3];
+                     }];
 }
 
 #pragma mark - Actions
@@ -391,7 +392,7 @@
                                                                              folder:user.folderId
                                                                           inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
         
-        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+        [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApiCompletion:nil];
     }
     
     // dimiss the note composer
@@ -660,7 +661,7 @@
                                                                                                     folder:folderId
                                                                                                  inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
                                
-                               [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+                               [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApiCompletion:nil];
                            }];
                        }
                        // else the image was picked from the library
@@ -675,7 +676,7 @@
                                                                                                 folder:folderId
                                                                                              inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
                            
-                           [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+                           [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApiCompletion:nil];
                        }
                    
                    });

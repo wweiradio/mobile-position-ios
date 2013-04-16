@@ -17,7 +17,7 @@
 
 /**
  send all events that are still waiting to be sent to the PrYvAPI
- This will simply call the -sendToPrYvApi method for each PositionEvent instance
+ This will simply call the -sendToPrYvApiCompletion method for each PositionEvent instance
  that has not been already uploaded
  */
 + (void)sendAllPendingEventsToPrYvApi;
@@ -30,6 +30,6 @@
  create the JSON data and send the position event to the PrYv API
  This is an example Events can hold many other paramaters than those used in this method
 */
-- (void)sendToPrYvApi;
+- (void)sendToPrYvApiCompletion:(void(^)(void))completionBlock;
 
 @end

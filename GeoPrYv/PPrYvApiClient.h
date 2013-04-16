@@ -91,9 +91,7 @@
  @see PositionEvent
  @see EventAttachment
 */
-- (void)sendEvent:(PositionEvent *)event
-withSuccessHandler:(void(^)(NSString *eventId))successHandler
-      errorHandler:(void(^)(NSError *error))errorHandler;
+- (void)sendEvent:(PositionEvent *)event completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
 
 
 /**
@@ -105,9 +103,7 @@ withSuccessHandler:(void(^)(NSString *eventId))successHandler
  
  @see PositionEvent
  */
-- (void)updateEvent:(PositionEvent *)event
- withSuccessHandler:(void(^)(NSString *eventId))successHandler
-       errorHandler:(void(^)(NSError *error))errorHandler;
+- (void)updateEvent:(PositionEvent *)event completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
 
 
 /**

@@ -372,13 +372,13 @@
 
 // used to update the duration of position event
 
-- (void)updateEvent:(PositionEvent *)event withSuccessHandler:(void(^)(NSString *eventId))successHandler errorHandler:(void(^)(NSError *error))errorHandler;
+- (void)updateEvent:(PositionEvent *)event completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
 {
     if (![self isReady]) {
         NSLog(@"fail sending event: not initialized");
         
-        if (errorHandler)
-            errorHandler([self createNotReadyError]);
+        if (completionHandler)
+            completionHandler(nil, [self createNotReadyError]);
         return;
     }
     
@@ -397,8 +397,8 @@
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         NSLog(@"successfully updated event with eventId: %@", eventId);
         
-        if (successHandler)
-            successHandler(eventId);
+        if (completionHandler)
+            completionHandler(eventId, nil);
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSLog(@"failed to send an event %@", error);
         // create a dictionary with all the information we can get and pass it as userInfo
@@ -410,8 +410,8 @@
                                    };
         NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
         
-        if (errorHandler)
-            errorHandler(requestError);
+        if (completionHandler)
+            completionHandler(nil, requestError);
     }];
     [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     [operation start];
@@ -421,13 +421,13 @@
 
 #pragma mark - PrYv API Event create (POST /{channel-id}/events/)
 
-- (void)sendEvent:(PositionEvent *)event withSuccessHandler:(void(^)(NSString *eventId))successHandler errorHandler:(void(^)(NSError *error))errorHandler;
+- (void)sendEvent:(PositionEvent *)event completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
 {
     if (![self isReady]) {
         NSLog(@"fail sending event: not initialized");
 
-        if (errorHandler)
-            errorHandler([self createNotReadyError]);
+        if (completionHandler)
+            completionHandler(nil, [self createNotReadyError]);
         return;
     }
     
@@ -444,8 +444,8 @@
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         NSLog(@"successfully sent event eventId: %@", JSON[@"id"]);
 
-        if (successHandler)
-            successHandler(JSON[@"id"]);
+        if (completionHandler)
+            completionHandler(JSON[@"id"], nil);
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSLog(@"failed to send an event %@", error);
         // create a dictionary with all the information we can get and pass it as userInfo
@@ -457,8 +457,8 @@
         };
         NSError *requestError = [NSError errorWithDomain:@"connection failed" code:100 userInfo:userInfo];
 
-        if (errorHandler)
-            errorHandler(requestError);
+        if (completionHandler)
+            completionHandler(nil, requestError);
     }];
     [operation setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     [operation start];
