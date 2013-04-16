@@ -97,6 +97,8 @@
 		FB3248391717015D00E392FB /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FB3248381717015D00E392FB /* libz.dylib */; };
 		FB32483B1717022200E392FB /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB32483A1717022200E392FB /* MessageUI.framework */; };
 		FB5F77BF169AE2DE00585D11 /* PPrYvLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB5F77BE169AE2DE00585D11 /* PPrYvLocationManager.m */; };
+		FB657119171DE6240075CCF2 /* CrumbPath.m in Sources */ = {isa = PBXBuildFile; fileRef = FB657116171DE6240075CCF2 /* CrumbPath.m */; };
+		FB65711A171DE6240075CCF2 /* CrumbPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = FB657118171DE6240075CCF2 /* CrumbPathView.m */; };
 		FB6D93CF16EE2353008F4D35 /* PPrYvWebLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FB6D93CD16EE2353008F4D35 /* PPrYvWebLoginViewController.m */; };
 		FB6D93D016EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB6D93CE16EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib */; };
 		FB6D93D216EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FB6D93D116EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib */; };
@@ -240,6 +242,10 @@
 		FB32483A1717022200E392FB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		FB5F77BD169AE2DE00585D11 /* PPrYvLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvLocationManager.h; sourceTree = "<group>"; };
 		FB5F77BE169AE2DE00585D11 /* PPrYvLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvLocationManager.m; sourceTree = "<group>"; };
+		FB657115171DE6240075CCF2 /* CrumbPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrumbPath.h; sourceTree = "<group>"; };
+		FB657116171DE6240075CCF2 /* CrumbPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrumbPath.m; sourceTree = "<group>"; };
+		FB657117171DE6240075CCF2 /* CrumbPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrumbPathView.h; sourceTree = "<group>"; };
+		FB657118171DE6240075CCF2 /* CrumbPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrumbPathView.m; sourceTree = "<group>"; };
 		FB6D93CC16EE2353008F4D35 /* PPrYvWebLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPrYvWebLoginViewController.h; sourceTree = "<group>"; };
 		FB6D93CD16EE2353008F4D35 /* PPrYvWebLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPrYvWebLoginViewController.m; sourceTree = "<group>"; };
 		FB6D93CE16EE2353008F4D35 /* PPrYvWebLoginViewController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "PPrYvWebLoginViewController~iphone.xib"; sourceTree = "<group>"; };
@@ -330,6 +336,7 @@
 		56551881167B6800006FE2A2 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				FB657114171DE6140075CCF2 /* Overlay */,
 				568243141670B2490032489E /* PPrYvMapViewController.h */,
 				568243151670B2490032489E /* PPrYvMapViewController.m */,
 				56F66559167A464100E85921 /* PPrYvSettingViewController.h */,
@@ -545,6 +552,17 @@
 			path = minizip;
 			sourceTree = "<group>";
 		};
+		FB657114171DE6140075CCF2 /* Overlay */ = {
+			isa = PBXGroup;
+			children = (
+				FB657115171DE6240075CCF2 /* CrumbPath.h */,
+				FB657116171DE6240075CCF2 /* CrumbPath.m */,
+				FB657117171DE6240075CCF2 /* CrumbPathView.h */,
+				FB657118171DE6240075CCF2 /* CrumbPathView.m */,
+			);
+			name = Overlay;
+			sourceTree = "<group>";
+		};
 		FB7CC4AB171B45A7008D0A42 /* MBProgressHUD */ = {
 			isa = PBXGroup;
 			children = (
@@ -700,6 +718,8 @@
 				FB3248361717011000E392FB /* zip.c in Sources */,
 				FB3248371717011000E392FB /* SSZipArchive.m in Sources */,
 				FB7CC4AE171B45A7008D0A42 /* MBProgressHUD.m in Sources */,
+				FB657119171DE6240075CCF2 /* CrumbPath.m in Sources */,
+				FB65711A171DE6240075CCF2 /* CrumbPathView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
