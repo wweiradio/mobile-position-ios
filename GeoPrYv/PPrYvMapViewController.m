@@ -77,10 +77,7 @@
     // rename all the buttons according to the current local en,fr,de...
     [self.bAskLast24h setTitle:NSLocalizedString(@"bAsk24h", ) forState:UIControlStateNormal];
     [self.bTakeNote setTitle:NSLocalizedString(@"bTakeNote", ) forState:UIControlStateNormal];
-    //[self.bTakePicture setTitle:NSLocalizedString(@"bTakePicture", ) forState:UIControlStateNormal];
     [self.bAskTimePeriod setTitle:NSLocalizedString(@"bAskTimePeriod", ) forState:UIControlStateNormal];
-    //[self.bConfirmTimePeriod setTitle:NSLocalizedString(@"bConfirmTimePeriod", ) forState:UIControlStateNormal];
-    //[self.bCancelDatePickers setTitle:NSLocalizedString(@"bCancelDatePickers", ) forState:UIControlStateNormal];
 
     [self.bFromDate setBackgroundImage:[UIImage imageNamed:@"bDateSelected.png"] forState:UIControlStateSelected];
     [self.bNextDate setBackgroundImage:[UIImage imageNamed:@"bDateSelected.png"] forState:UIControlStateSelected];
