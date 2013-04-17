@@ -19,8 +19,14 @@
 #import "UIView+Helpers.h"
 #import "PPrYvWebLoginViewController.h"
 #import "MBProgressHUD.h"
+#import "CrumbPath.h"
+#import "CrumbPathView.h"
 
 @interface PPrYvMapViewController ()
+
+@property (nonatomic, strong) CrumbPath *crumbs;
+@property (nonatomic, strong) CrumbPathView *crumbView;
+
 @end
 
 @implementation PPrYvMapViewController
@@ -95,52 +101,17 @@
     // Set default datepickers period from a week ago to now
     self.datePickerTo.date = [NSDate date];
     self.datePickerFrom.date = [NSDate dateWithTimeIntervalSinceNow:-60 * 60 * 24 * 7];
-    
-    [[NSNotificationCenter defaultCenter] addObserverForName:kPrYvLocationManagerDidAcceptNewLocationNotification
-                                                      object:nil queue:[NSOperationQueue mainQueue]
-                                                  usingBlock:^(NSNotification *note) {
-        
-        CLLocation * newLocation = [note.userInfo objectForKey:kPrYvLocationManagerDidAcceptNewLocationNotification];
-        
-        // add a new point on the map
-        MKPointAnnotation * aPosition = [[MKPointAnnotation alloc] init];
-        aPosition.title = NSLocalizedString(@"You were here", );
-        aPosition.coordinate = newLocation.coordinate;
-        
-        [self.mapView addAnnotation:aPosition];
-    }];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateLocation:)
+                                                 name:kPrYvLocationManagerDidAcceptNewLocationNotification
+                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification
                                                       object:nil
                                                        queue:[NSOperationQueue mainQueue]
                                                   usingBlock:^(NSNotification *note) {
 
-        User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
-        if (user && ![self isRecording]) {
-       
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            
-            // ask the PrYv API for events in the last 24h with the current user channel
-            NSTimeInterval interval = -60 * 60 * 24;
-            NSDate *dateTo = [NSDate date];
-            NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
-            [[PPrYvApiClient sharedClient] getEventsFromStartDate:dateFrom
-                                                        toEndDate:dateTo
-                                                       inFolderId:user.folderId
-                                                   successHandler:^(NSArray *positionEventList) {
-
-                                                       [self didReceiveEvents:positionEventList];
-                                                       self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
-
-                                                       [MBProgressHUD hideHUDForView:self.view animated:YES];
-                                                   
-                                                   } errorHandler:^(NSError *error) {
-                                                       [MBProgressHUD hideHUDForView:self.view animated:YES];
-
-                                                       [self reportError:error];
-                                                   }];
-        }
     }];
 }
 
@@ -212,15 +183,39 @@
 
 - (void)applicationDidBecomeActive
 {
-    // TODO: refactor 
-    
     // get the current user if any available
     User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     if (!user) {
         return;
     }
     
-    // a user exists. Thus maybe some events are waiting to be uploaded
+    if (![self isRecording]) {
+    
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        
+        // ask the PrYv API for events in the last 24h with the current user channel
+        NSTimeInterval interval = -60 * 60 * 24;
+        NSDate *dateTo = [NSDate date];
+        NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
+        [[PPrYvApiClient sharedClient] getEventsFromStartDate:dateFrom
+                                                    toEndDate:dateTo
+                                                   inFolderId:user.folderId
+                                               successHandler:^(NSArray *positionEventList) {
+                                                   
+                                                   [self didReceiveEvents:positionEventList];
+                                                   self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
+                                                   
+                                                   [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                                   
+                                               } errorHandler:^(NSError *error) {
+                                                   [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                                   
+                                                   [self reportError:error];
+                                               }];
+    }
+    
+    // if a user exists Thus might be some events are waiting to be uploaded
     // start or restart the api Client with the new user upon successful start it would try to synchronize
     PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
     [apiClient startClientWithUserId:user.userId
@@ -251,21 +246,17 @@
 - (IBAction)startStopLocationRecording:(UIButton *)sender
 {
     // if we are not tracking the user location when the button is pressed
-    if (self.isRecording == NO) {
-        
+    if (!self.isRecording) {
+
+        self.crumbs = nil;
+        self.crumbView = nil;
+        [self.mapView removeOverlays:self.mapView.overlays];
+
         // start tracking the user using the mainLocationManager
         [[PPrYvLocationManager sharedInstance] startUpdatingLocation];
         
         // set flag
         self.recording = YES;
-        
-        for (MKPointAnnotation * annot in self.mapView.annotations) {
-            if (annot != (MKPointAnnotation *)self.mapView.userLocation) {
-                [self.mapView removeAnnotation:annot];
-            }
-        }
-        
-        [self.mapView removeOverlays:self.mapView.overlays];
         
         // change the button title accroding to the situation
         [self.bRecorder setTitle:NSLocalizedString(@"bRecordStop", ) forState:UIControlStateNormal];
@@ -463,102 +454,195 @@
 	[hud hide:YES afterDelay:5];
 }
 
+#pragma mark - 
+
+- (void)updateLocation:(NSNotification *)aNotification
+{
+    CLLocation *newLocation = aNotification.userInfo[kPrYvLocationManagerDidAcceptNewLocationNotification];
+    if (!self.crumbs)
+    {
+        // This is the first time we're getting a location update, so create
+        // the CrumbPath and add it to the map.
+        //
+        _crumbs = [[CrumbPath alloc] initWithCenterCoordinate:newLocation.coordinate];
+        [self.mapView addOverlay:self.crumbs];
+        
+        // On the first location update only, zoom map to user location
+        MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(newLocation.coordinate, 2000, 2000);
+        [self.mapView setRegion:region animated:YES];
+    }
+    else
+    {
+        // This is a subsequent location update.
+        // If the crumbs MKOverlay model object determines that the current location has moved
+        // far enough from the previous location, use the returned updateRect to redraw just
+        // the changed area.
+        //
+        // note: iPhone 3G will locate you using the triangulation of the cell towers.
+        // so you may experience spikes in location data (in small time intervals)
+        // due to 3G tower triangulation.
+        //
+        MKMapRect updateRect = [self.crumbs addCoordinate:newLocation.coordinate];
+        
+        if (!MKMapRectIsNull(updateRect))
+        {
+            // There is a non null update rect.
+            // Compute the currently visible map zoom scale
+            MKZoomScale currentZoomScale = (CGFloat)(self.mapView.bounds.size.width /
+                                                     self.mapView.visibleMapRect.size.width);
+            // Find out the line width at this zoom scale and outset the updateRect by that amount
+            CGFloat lineWidth = MKRoadWidthAtZoomScale(currentZoomScale);
+            updateRect = MKMapRectInset(updateRect, -lineWidth, -lineWidth);
+            
+            // Ask the overlay view to update just the changed area.
+            [self.crumbView setNeedsDisplayInMapRect:updateRect];
+        }
+    }
+
+}
+
 #pragma mark - MapView Delegate
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
-    if (annotation == mapView.userLocation) {
-        return nil;
-    }
-    static NSString *annotationIdentifier = @"annotationIdentifier";
-    MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:annotationIdentifier];
-    if (!annotationView) {
-        annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
-                                                      reuseIdentifier:annotationIdentifier];
-    } else {
-        annotationView.annotation = annotation;
-    }
-    
-    annotationView.image = [UIImage imageNamed:@"pinPryv.png"];
-    annotationView.enabled = YES;
-    annotationView.canShowCallout = YES;
-    
-    return annotationView;
+    return nil;
 }
 
 - (void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)annotationViews
 {
-    for (int i = 0; i< [annotationViews count]; i++) {
-        
-        MKAnnotationView *annotationView = [annotationViews objectAtIndex:i];
-
-        // send annotaion view to back if it is not current user location
-        if (![[annotationView annotation] isKindOfClass:[MKUserLocation class]]) {
-            [[annotationView superview] sendSubviewToBack:annotationView];
-        } else {
-            [[annotationView superview] bringSubviewToFront:annotationView];
-        }
-    }
 }
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-    for (NSObject *annotation in [mapView annotations]) {
-        if ([annotation isKindOfClass:[MKUserLocation class]]) {
-            MKAnnotationView *view = [mapView viewForAnnotation:(MKUserLocation *)annotation];
-            [[view superview] bringSubviewToFront:view];
-        }
-    }
 }
 
-- (void)createMKPolyLine
+#pragma mark - overlay
+
+- (MKPolyline *)createPolyLinePathWithPositionEvents:(NSArray *)positionEventList
 {
+    NSLog(@"Create a polyline from position events with count %d", [positionEventList count]);
     
-    NSMutableArray * mapPoints = [NSMutableArray arrayWithArray:self.mapView.annotations];
+    CLLocationCoordinate2D *coords = malloc(sizeof(CLLocationCoordinate2D) *[positionEventList count]);
     
-    [mapPoints removeObject:self.mapView.userLocation];
-
-    
-    CLLocationCoordinate2D *coords = malloc(sizeof(CLLocationCoordinate2D) * [mapPoints count]);
-    
-    NSMutableArray * sortedPoint = [NSMutableArray arrayWithArray:[mapPoints sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        
-        PPrYvPointAnnotation * point1 = obj1;
-        PPrYvPointAnnotation * point2 = obj2;
-        
-        if ([[point1.date earlierDate:point2.date] isEqualToDate:point1.date]) {
-            //NSLog(@"ascending budy!");
-            return (NSComparisonResult)NSOrderedDescending;
-        }
-        else if([[point1.date earlierDate:point2.date] isEqualToDate:point2.date]){
-            //NSLog(@"descending budy! event1 = %@ event2 = %@", point1.date,point2.date);
-            return (NSComparisonResult)NSOrderedAscending;
-        }
-        
-        return (NSComparisonResult)NSOrderedSame;
-
-    }]];
-        
-    for (int i = 0; i < [sortedPoint count]; i++) {
-        
-        coords[i] = [(MKPointAnnotation *)[sortedPoint objectAtIndex:i] coordinate];
-        //NSLog(@"did add coordinate");
+    for (int i = 0; i < [positionEventList count]; i++)
+    {
+        PositionEvent *positionEvent = [positionEventList objectAtIndex:i];
+        coords[i] = CLLocationCoordinate2DMake([positionEvent.latitude doubleValue],
+                                               [positionEvent.longitude doubleValue]);
     }
     
-    MKPolyline * polyLine = [MKPolyline polylineWithCoordinates:coords count:[sortedPoint count]];
+    MKPolyline *polyLine = [MKPolyline polylineWithCoordinates:coords
+                                                         count:[positionEventList count]];
     free(coords);
     
-    [self.mapView addOverlay:polyLine];
+    return polyLine;
 }
 
 - (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay
 {
-    MKPolylineView * polylineView =[[MKPolylineView alloc] initWithPolyline:(MKPolyline *)overlay];
-    polylineView.strokeColor = [UIColor colorWithWhite:.7 alpha:.9];
-    polylineView.lineWidth = 5.f;
-    polylineView.lineJoin = kCGLineJoinRound;
+    if ([overlay isKindOfClass:[CrumbPath class]])
+    {
+        if (!self.crumbView) {
+            _crumbView = [[CrumbPathView alloc] initWithOverlay:overlay];
+        }
+        return self.crumbView;
+    }
+    else
+    {
+        MKPolylineView * polylineView =[[MKPolylineView alloc] initWithPolyline:(MKPolyline *)overlay];
+        polylineView.strokeColor = [UIColor colorWithWhite:.7 alpha:.9];
+        polylineView.lineWidth = 9.f;
+        polylineView.lineJoin = kCGLineJoinRound;
+        
+        return polylineView;
+    }
+}
+
+#pragma mark -  Events Received on Overlay
+
+- (void)didReceiveEvents:(NSArray *)positionEventList
+{
+    // we have received a list of positionEvents
     
-    return polylineView;
+    if (![positionEventList count]) {
+        NSLog(@"no events found");
+        return;
+    }
+    
+    NSLog(@"fetched events of count %d", [positionEventList count]);
+    
+    // remove previous overlays made by searches
+    NSMutableArray *overlaysToRemove = [NSMutableArray array];
+    for (id<MKOverlay> overlay in self.mapView.overlays) {
+        if (![overlay isKindOfClass:[CrumbPath class]]) {
+            [overlaysToRemove addObject:overlay];
+        }
+    }
+    
+    [self.mapView removeOverlays:overlaysToRemove];
+    
+    // Calculate the region to show on map according to all the received points
+    NSUInteger locationsCount = [positionEventList count];
+    double latitudeSum = 0;
+    double longitudeSum = 0;
+    double latitudeMax = 0;
+    double latitudeMin = 0;
+    double longitudeMax = 0;
+    double longitudeMin = 0;
+    
+    PositionEvent *previousEvent = nil;
+    for (PositionEvent *positionEvent in positionEventList)
+    {
+        if (previousEvent)
+        {
+            NSAssert([previousEvent.date compare:positionEvent.date] == NSOrderedDescending ||
+                     [previousEvent.date compare:positionEvent.date] == NSOrderedSame, @"unordered events!");
+        }
+        previousEvent = positionEvent;
+        
+        
+        double latitude = [positionEvent.latitude doubleValue];
+        double longitude = [positionEvent.longitude doubleValue];
+        
+        latitudeSum += latitude;
+        longitudeSum += longitude;
+        
+        if (latitudeMax != 0) {
+            latitudeMax = MAX(latitude, latitudeMax);
+        }else {
+            latitudeMax = longitude;
+        }
+        if (latitudeMin != 0) {
+            latitudeMin = MIN(latitude, latitudeMin);
+        }
+        else {
+            latitudeMin = latitude;
+        }
+        if (longitudeMax != 0) {
+            longitudeMax = MAX(longitude, longitudeMax);
+        }
+        else {
+            longitudeMax = longitude;
+        }
+        if (longitudeMin != 0) {
+            longitudeMin = MIN(longitude, longitudeMin);
+        }
+        else {
+            longitudeMin = longitude;
+        }
+    }
+    
+    double latitudeAvg = latitudeSum/ locationsCount;
+    double longitudeAvg = longitudeSum / locationsCount;
+    double latitudeDelta = MAX(fabs(latitudeMax-latitudeMin), 0.03);
+    double longitudeDelta = MAX(fabs(longitudeMax-longitudeMin), 0.03);
+    
+    MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(latitudeAvg, longitudeAvg),
+                                                       MKCoordinateSpanMake(latitudeDelta, longitudeDelta));
+    
+    [self.mapView setRegion:region animated:YES];
+    
+    [self.mapView addOverlay:[self createPolyLinePathWithPositionEvents:positionEventList]];
 }
 
 #pragma mark - Action Sheet Delegate
@@ -781,11 +865,7 @@
     [self formatDateButton:self.bNextDate withPrefix:NSLocalizedString(@"bToDate", ) date:datePicker.date];
 }
 
-// FIXME: add some feedback
-//  - dismiss date picker first
-//  - block new requests unless this one is finished
-//  - show some progress: start
-//  - remove progress on success/error
+// TODO consider blocking creating new queries unless this one is finished
 
 - (IBAction)askServerForTimePeriodData
 {
@@ -887,94 +967,6 @@
 - (IBAction)pushSettingsViewController
 {
     [self openSettingsWithLogout:NO];
-}
-
-#pragma mark -  Events Received
-
-- (void)didReceiveEvents:(NSArray *)positionEventList
-{
-    // we have received a list of positionEvents
-
-    if (![positionEventList count]) {
-        NSLog(@"no events found");
-
-        return;
-    }
-    
-    NSLog(@"fetched events: %d", [positionEventList count]);
-    
-    for (MKPointAnnotation * annotation in self.mapView.annotations) {
-        if (![annotation isKindOfClass:[MKUserLocation class]]) {
-            [self.mapView removeAnnotation:annotation];
-        }
-    }
-    
-    [self.mapView removeOverlays:self.mapView.overlays];
-
-    NSMutableArray * annotations = [NSMutableArray array];
-    
-    // Calculate the region to show on map according to all the received points
-    NSUInteger locationsCount = [positionEventList count];
-    double latitudeSum = 0;
-    double longitudeSum = 0;
-    double latitudeMax = 0;
-    double latitudeMin = 0;
-    double longitudeMax = 0;
-    double longitudeMin = 0;
-    
-    for (PositionEvent *positionEvent in positionEventList) {
-
-        double latitude = [positionEvent.latitude doubleValue];
-        double longitude = [positionEvent.longitude doubleValue];
-
-        latitudeSum += latitude;
-        longitudeSum += longitude;
-        
-        if (latitudeMax != 0) {
-            latitudeMax = MAX(latitude, latitudeMax);
-        }else {
-            latitudeMax = longitude;
-        }
-        if (latitudeMin != 0) {
-            latitudeMin = MIN(latitude, latitudeMin);
-        }
-        else {
-            latitudeMin = latitude;
-        }
-        if (longitudeMax != 0) {
-            longitudeMax = MAX(longitude, longitudeMax);
-        }
-        else {
-            longitudeMax = longitude;
-        }
-        if (longitudeMin != 0) {
-            longitudeMin = MIN(longitude, longitudeMin);
-        }
-        else {
-            longitudeMin = longitude;
-        }
-
-        PPrYvPointAnnotation * aPosition = [[PPrYvPointAnnotation alloc] init];
-        aPosition.title = NSLocalizedString(@"mapPointText", );
-        aPosition.coordinate = CLLocationCoordinate2DMake(latitude, longitude);
-        // aPosition.subtitle =
-        aPosition.date = positionEvent.date;
-        [annotations addObject:aPosition];
-    }
-
-    double latitudeAvg = latitudeSum/ locationsCount;
-    double longitudeAvg = longitudeSum / locationsCount;
-    double latitudeDelta = MAX(fabs(latitudeMax-latitudeMin), 0.03);
-    double longitudeDelta = MAX(fabs(longitudeMax-longitudeMin), 0.03);
-
-    
-    MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(latitudeAvg, longitudeAvg), MKCoordinateSpanMake(latitudeDelta, longitudeDelta));
-    
-    [self.mapView setRegion:region animated:YES];
-    
-    [self.mapView addAnnotations:annotations];
-    
-    [self createMKPolyLine];
 }
 
 #pragma mark - dealloc

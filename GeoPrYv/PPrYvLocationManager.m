@@ -86,6 +86,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    self.locationManager.delegate = nil;
+}
+
 #pragma mark - Application lifecycle
 
 
@@ -161,12 +166,14 @@
 {
     self.lastPositionEvent = nil;
     
+    self.locationManager.delegate = self;
     [self.locationManager startUpdatingLocation];
 }
 
 - (void)stopUpdatingLocation
 {
     [self.locationManager stopUpdatingLocation];
+    self.locationManager.delegate = nil;
 }
 
 - (BOOL)tooCloseTooPreviousEvent:(CLLocation *)location
