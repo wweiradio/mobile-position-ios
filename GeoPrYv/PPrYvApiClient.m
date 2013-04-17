@@ -14,6 +14,8 @@
 #import "PositionEvent.h"
 #import "PPrYvCoreDataManager.h"
 
+#define kEventSendingTimout 500
+
 # pragma mark - Folder JSON serialisation
 
 @interface Folder (JSON)
@@ -440,6 +442,7 @@
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
     request.HTTPBody = [event dataWithJSONObject];
+    [request setTimeoutInterval:kEventSendingTimout];
 
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         NSLog(@"successfully sent event eventId: %@", JSON[@"id"]);
@@ -538,6 +541,7 @@
                                     mimeType:attachment.mimeType];
         }
     }];
+    [request setTimeoutInterval:kEventSendingTimout];
     
     NSLog(@"sending picture json: %@", [[NSString alloc] initWithData:[event pictureEventWithJSONObject]
                                                              encoding:NSUTF8StringEncoding]);
@@ -588,6 +592,7 @@
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
     request.HTTPBody = [event noteEventWithJSONObject];
+    [request setTimeoutInterval:kEventSendingTimout];
     
     NSLog(@"sending note json: %@", [[NSString alloc] initWithData:[event noteEventWithJSONObject]
                                                           encoding:NSUTF8StringEncoding]);

@@ -38,21 +38,19 @@
 
     NSLog(@"--> preparing to send pending events: %d", [pendingEvents count]);
     
+    __block int count = [pendingEvents count];
     [pendingEvents enumerateObjectsUsingBlock:^(PositionEvent *positionEvent, NSUInteger idx, BOOL *stop) {
         PPrYvPositionEventSender *eventSender = [[PPrYvPositionEventSender alloc] initWithPositionEvent:positionEvent];
         eventSender.notify = NO;
-        
         [eventSender sendToPrYvApiCompletion:^{
-            if (idx == [pendingEvents count] - 1) {
-                NSLog(@"--> just sent the last event");
-                
+            NSLog(@"--> sent the event #%d", idx);
+            count = count - 1;
+            
+            if (count <= 0) {
                 // FIXME should send a notification only when the last event was sent!
                 [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvFinishedSendingLocationNotification
                                                                     object:nil];
                 NSLog(@"--> supposedly finished sending out pending events");
-
-            } else {
-                NSLog(@"--> sending the event #%d", idx);
             }
         }];
     }];
