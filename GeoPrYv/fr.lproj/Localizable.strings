@@ -37,6 +37,7 @@
 
 // SETTINGS
 "optionSection1Title" = "Distance minimale entre les positions";
+"optionSection11Title" = "iOS Location Service Accuracy";
 "optionSection2Title" = "Interval de temps minimal entre les positions";
 "optionSection3Title" = "Utilisateur";
 "optionSection4Title" = "Identifiant du dossier actuel";

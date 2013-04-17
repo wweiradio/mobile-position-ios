@@ -37,12 +37,13 @@
 
 // SETTINGS
 "optionSection1Title" = "Minimal Distance Interval Between Position Events";
+"optionSection11Title" = "iOS Location Service Accuracy";
 "optionSection2Title" = "Minimal Time Interval Between Position Events";
 "optionSection3Title" = "Logged In As";
 "optionSection4Title" = "Current Folder ID";
 "optionSection5Title" = "Current Folder Name";
 "settingsTitle" = "Settings";
-"bSettingsReturn" = "Retour";
+"bSettingsReturn" = "Return";
 "bSettingsLogOut" = "Log Out";
 
 // LOGIN VIEW

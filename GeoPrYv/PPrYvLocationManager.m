@@ -79,6 +79,11 @@
                                                    object:nil];
 
         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(desiredAccuracyDidChange:)
+                                                     name:kPrYvDesiredAccuracyDidChangeNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(sendingLocationDidFinish:)
                                                      name:kPrYvFinishedSendingLocationNotification
                                                    object:nil];
@@ -131,8 +136,17 @@
 {
     NSDictionary *userInfo = aNotification.userInfo;
     if ([userInfo objectForKey:kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey]){
-        CLLocationAccuracy distanceInterval = [[userInfo objectForKey:kPrYvLocationDistanceIntervalDidChangeNotification] doubleValue];
+        CLLocationAccuracy distanceInterval = [[userInfo objectForKey:kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey] doubleValue];
         self.locationManager.distanceFilter = distanceInterval;
+    }
+}
+
+- (void)desiredAccuracyDidChange:(NSNotification *)aNotification
+{
+    NSDictionary *userInfo = aNotification.userInfo;
+    if ([userInfo objectForKey:kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey]){
+        CLLocationAccuracy desiredAccuracy = [[userInfo objectForKey:kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey] doubleValue];
+        self.locationManager.desiredAccuracy = desiredAccuracy;
     }
 }
 

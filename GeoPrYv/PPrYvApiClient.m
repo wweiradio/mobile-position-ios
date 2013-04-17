@@ -286,15 +286,19 @@
 {
     NSError *error;
     if (self.userId == nil || self.userId.length == 0) {
+            NSLog(@"userId not set");
             error = [NSError errorWithDomain:@"user not set" code:7 userInfo:nil];
         }
         else if (self.oAuthToken == nil || self.oAuthToken.length == 0) {
+            NSLog(@"oauthToken not set");
             error = [NSError errorWithDomain:@"auth token not set" code:77 userInfo:nil];
         }
         else if (self.channelId == nil || self.channelId.length == 0) {
+            NSLog(@"channelId not set");
             error = [NSError errorWithDomain:@"channel not set" code:777 userInfo:nil];
         }
         else {
+            NSLog(@"unknown error");
             error = [NSError errorWithDomain:@"unknown error" code:999 userInfo:nil];
         }
     return error;

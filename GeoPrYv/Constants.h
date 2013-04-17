@@ -11,10 +11,13 @@
 #define kPrYvLocationTimeIntervalDidChangeNotification @"PrYvLocationTimeIntervalDidChangeNotification"
 #define kPrYvLocationManagerDidAcceptNewLocationNotification @"kPrYvLocationManagerDidAcceptNewLocationNotification"
 
+#define kPrYvDesiredAccuracyDidChangeNotification @"kPrYvDesiredAccuracyDidChangeNotification"
+
 // notification keys in userInfo dictionary
 
 #define kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey  @"PrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey"
 #define kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey @"PrYvLocationTimeIntervalDidChangeNotificationUserInfoKey"
+#define kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey @"kPrYvDesiredAccuracyDidChangeNotificationInfoKey"
 
 
 #define kPrYvApplicationChannelId @"position"
@@ -24,5 +27,4 @@
 #define kPrYvMinimumDistanceBetweenConsecutiveEvents 10
 
 // maximum length of the note in characters
-// TODO rename
 #define kPrYvMaximumNoteLength 4194304

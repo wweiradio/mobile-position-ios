@@ -12,6 +12,8 @@
 #import "User+Extras.h"
 #import "SSZipArchive.h"
 #import "PPrYvCoreDataManager.h"
+#import <QuartzCore/QuartzCore.h>
+#import <CoreLocation/CoreLocation.h>
 
 @interface PPrYvSettingViewController () <MFMailComposeViewControllerDelegate>
 @end
@@ -19,7 +21,8 @@
 @implementation PPrYvSettingViewController
 
 enum {
-    SectionDistanceInterval = 0,
+    SectionDistanceFilter = 0,
+    SectionDesiredAccuracy,
     SectionTimeInterval,
     SectionLoginInfo,
     SectionFolderInfo,
@@ -92,8 +95,11 @@ enum {
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     switch (section) {
-        case SectionDistanceInterval:
+        case SectionDistanceFilter:
             return NSLocalizedString(@"optionSection1Title", );
+
+        case SectionDesiredAccuracy:
+            return NSLocalizedString(@"optionSection11Title", );
             
         case SectionTimeInterval:
             return NSLocalizedString(@"optionSection2Title", );
@@ -116,7 +122,9 @@ enum {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == SectionDistanceInterval || indexPath.section == SectionTimeInterval) {
+    if (indexPath.section == SectionDistanceFilter ||
+        indexPath.section == SectionTimeInterval ||
+        indexPath.section == SectionDesiredAccuracy) {
         return 60;
     }
     
@@ -126,16 +134,20 @@ enum {
 // FIXME reuse tableview cells
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                    reuseIdentifier:nil];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    if (indexPath.section == SectionDistanceInterval && indexPath.row == 0) {
+    if (indexPath.section == SectionDistanceFilter && indexPath.row == 0) {
         
-        UISlider * slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30, cell.contentView.frame.size.width-60, 30)];
+        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30, cell.contentView.frame.size.width-60, 30)];
         slider.maximumValue = powf(100.0f, 0.5f);
         slider.minimumValue = powf(10.0f, 0.5f);
-        [slider addTarget:self action:@selector(changeLocationManagerDistanceFilter:) forControlEvents:UIControlEventValueChanged];
-        [slider setValue:powf([self.currentUser.locationDistanceInterval doubleValue], .5f) animated:NO];
+        [slider addTarget:self
+                   action:@selector(changeLocationManagerDistanceFilter:)
+         forControlEvents:UIControlEventValueChanged];
+        [slider setValue:powf([self.currentUser.locationDistanceInterval doubleValue], .5f)
+                animated:NO];
         
         self.distanceFilterLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0, 80, 30)];
         self.distanceFilterLabel.textColor = [UIColor colorWithWhite:.3 alpha:1];
@@ -148,10 +160,41 @@ enum {
 
         [self updateDistanceFilterWithValue:[self.currentUser.locationDistanceInterval doubleValue]];
     }
+    else if (indexPath.section == SectionDesiredAccuracy && indexPath.row == 0) {
+        
+        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30,
+                                                                      cell.contentView.frame.size.width-60, 30)];
+        [slider addTarget:self
+                   action:@selector(desiredAccuracyValueChanged:)
+         forControlEvents:UIControlEventValueChanged];
+        slider.maximumValue = 5.f;
+        slider.minimumValue = 0.f;
+        [slider setValue:0.f animated:NO];
+        
+        self.desiredAccuracyLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0,
+                                                                              260, 30)];
+        self.desiredAccuracyLabel.textColor = [UIColor colorWithWhite:.3 alpha:1];
+        self.desiredAccuracyLabel.backgroundColor = [UIColor clearColor];
+        self.desiredAccuracyLabel.textAlignment = UITextAlignmentRight;
+        self.desiredAccuracyLabel.minimumFontSize = 8;
+        self.desiredAccuracyLabel.adjustsFontSizeToFitWidth = YES;
+        self.desiredAccuracyLabel.font = [UIFont boldSystemFontOfSize:16.0f];
+        // REMOVEME
+//        self.desiredAccuracyLabel.layer.borderColor = [UIColor redColor].CGColor;
+//        self.desiredAccuracyLabel.layer.borderWidth = 1;
+        
+        [cell.contentView addSubview:slider];
+        [cell.contentView addSubview:self.desiredAccuracyLabel];
+        
+        // TODO get a saved value from User settings
+        [self updateDesiredAccuracyWithSliderValue:0];
+    }
     else if (indexPath.section == SectionTimeInterval && indexPath.row == 0) {
         
-        UISlider * slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30, cell.contentView.frame.size.width-60, 30)];
-        [slider addTarget:self action:@selector(changeLocationManagerTimeInterval:) forControlEvents:UIControlEventValueChanged];
+        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30, cell.contentView.frame.size.width-60, 30)];
+        [slider addTarget:self
+                   action:@selector(changeLocationManagerTimeInterval:)
+         forControlEvents:UIControlEventValueChanged];
         slider.maximumValue = powf(300.0f, 0.5f);
         slider.minimumValue = powf(10.0f, 0.5f);
         [slider setValue:powf([self.currentUser.locationTimeInterval doubleValue], .5f) animated:NO];
@@ -208,6 +251,45 @@ enum {
     else {
         self.timeFilterLabel.text = [NSString stringWithFormat:@"%.0f min", timeFilterValue / 60];
     }
+}
+
+- (NSString *)desiredAccuracyTextForIndex:(NSUInteger) idx
+{
+    static NSArray *accuracyLabelValues = nil;
+    
+    if (accuracyLabelValues == nil) {
+        accuracyLabelValues = @[
+                           @"kCLLocationAccuracyBestForNavigation",
+                           @"kCLLocationAccuracyBest",
+                           @"kCLLocationAccuracyNearestTenMeters",
+                           @"kCLLocationAccuracyHundredMeters",
+                           @"kCLLocationAccuracyKilometer",
+                           @"kCLLocationAccuracyThreeKilometers"
+                           ];
+    }
+    
+    return accuracyLabelValues[idx];
+}
+
+- (NSNumber *)desiredOccuracyValueForIndex:(NSUInteger) idx
+{
+    static NSArray* accuracyValues = nil;
+    if (accuracyValues == nil) {
+        accuracyValues = @[
+                           @(kCLLocationAccuracyBestForNavigation),
+                           @(kCLLocationAccuracyBest),
+                           @(kCLLocationAccuracyNearestTenMeters),
+                           @(kCLLocationAccuracyHundredMeters),
+                           @(kCLLocationAccuracyKilometer),
+                           @(kCLLocationAccuracyThreeKilometers)
+                           ];
+    }
+    return accuracyValues[idx];
+}
+
+- (void)updateDesiredAccuracyWithSliderValue:(int)sliderValue
+{
+    self.desiredAccuracyLabel.text = [self desiredAccuracyTextForIndex:sliderValue];
 }
 
 #pragma mark - Log sending 
@@ -334,6 +416,18 @@ enum {
                                                       userInfo:@{kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey : [NSNumber numberWithDouble:timeInterval]}];
 
     [self updateTimeFilterWithValue:[self.currentUser.locationTimeInterval doubleValue]];
+}
+
+- (void)desiredAccuracyValueChanged:(UISlider *)slider
+{
+    // get int value from 0 to 5
+    int idx = (int)ceilf(slider.value);
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvDesiredAccuracyDidChangeNotification
+                                                        object:nil
+                                                      userInfo:@{ kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey : [self desiredOccuracyValueForIndex:idx] }];
+    
+    [self updateDesiredAccuracyWithSliderValue:idx];
 }
 
 #pragma mark - Navigation Bar Button Actions
