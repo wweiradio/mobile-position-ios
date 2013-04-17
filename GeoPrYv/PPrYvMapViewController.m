@@ -188,33 +188,7 @@
     if (!user) {
         return;
     }
-    
-    if (![self isRecording]) {
-    
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        
-        // ask the PrYv API for events in the last 24h with the current user channel
-        NSTimeInterval interval = -60 * 60 * 24;
-        NSDate *dateTo = [NSDate date];
-        NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
-        [[PPrYvApiClient sharedClient] getEventsFromStartDate:dateFrom
-                                                    toEndDate:dateTo
-                                                   inFolderId:user.folderId
-                                               successHandler:^(NSArray *positionEventList) {
-                                                   
-                                                   [self didReceiveEvents:positionEventList];
-                                                   self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
-                                                   
-                                                   [MBProgressHUD hideHUDForView:self.view animated:YES];
-                                                   
-                                               } errorHandler:^(NSError *error) {
-                                                   [MBProgressHUD hideHUDForView:self.view animated:YES];
-                                                   
-                                                   [self reportError:error];
-                                               }];
-    }
-    
+   
     // if a user exists Thus might be some events are waiting to be uploaded
     // start or restart the api Client with the new user upon successful start it would try to synchronize
     PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
@@ -225,20 +199,48 @@
                           
                           [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
                           
+                          if (![self isRecording]) {
+                              
+                              [MBProgressHUD hideHUDForView:self.view animated:YES];
+                              [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                              
+                              // ask the PrYv API for events in the last 24h with the current user channel
+                              NSTimeInterval interval = -60 * 60 * 24;
+                              NSDate *dateTo = [NSDate date];
+                              NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
+                              [apiClient getEventsFromStartDate:dateFrom
+                                                      toEndDate:dateTo
+                                                     inFolderId:user.folderId
+                                                 successHandler:^(NSArray *positionEventList) {
+                                                     
+                                                     [self didReceiveEvents:positionEventList];
+                                                     self.currentPeriodLabel.text = NSLocalizedString(@"last24hSession", );
+                                                     
+                                                     [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                                     
+                                                 } errorHandler:^(NSError *error) {
+                                                     [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                                     
+                                                     [self reportError:error];
+                                                 }];
+                          }
+
+                          
                       } errorHandler:^(NSError *error) {
                           //
                           [MBProgressHUD hideHUDForView:self.view animated:YES];
                           MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-                         
+                          
                           // Configure for text only and offset down
                           hud.mode = MBProgressHUDModeText;
                           hud.labelText = NSLocalizedString(@"alertCantSynchronize", );
                           // hud.margin = 10.f;
                           // hud.yOffset = 150.f;
                           hud.removeFromSuperViewOnHide = YES;
-                         
+                          
                           [hud hide:YES afterDelay:3];
-                     }];
+                      }];
+    
 }
 
 #pragma mark - Actions
