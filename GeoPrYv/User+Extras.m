@@ -6,6 +6,7 @@
 
 #import "User+Extras.h"
 #import "PPrYvOpenUDID.h"
+#import <CoreLocation/CoreLocation.h>
 
 @implementation User (Extras)
 
@@ -20,6 +21,7 @@
     newUser.userId = userIdentifier;
     newUser.userToken = token;
     newUser.locationDistanceInterval = [NSNumber numberWithDouble:30];
+    newUser.desiredAccuracy = [NSNumber numberWithDouble:kCLLocationAccuracyNearestTenMeters];
     newUser.locationTimeInterval = [NSNumber numberWithDouble:30];
     newUser.folderId = [PPrYvOpenUDID value];
     newUser.folderName = [[UIDevice currentDevice] name];

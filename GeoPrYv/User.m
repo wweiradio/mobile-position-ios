@@ -14,6 +14,7 @@
 @dynamic userToken;
 @dynamic locationDistanceInterval;
 @dynamic locationTimeInterval;
+@dynamic desiredAccuracy;
 @dynamic folderId;
 @dynamic folderName;
 

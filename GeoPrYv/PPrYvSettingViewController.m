@@ -131,7 +131,6 @@ enum {
     return 40;
 }
 
-// FIXME reuse tableview cells
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -169,7 +168,9 @@ enum {
          forControlEvents:UIControlEventValueChanged];
         slider.maximumValue = 5.f;
         slider.minimumValue = 0.f;
-        [slider setValue:0.f animated:NO];
+        
+        NSUInteger sliderValue = [self desiredAccuracyIndexFromLocationAccuracy:[self.currentUser.desiredAccuracy doubleValue]];
+        [slider setValue:(float)sliderValue animated:NO];
         
         self.desiredAccuracyLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0,
                                                                               260, 30)];
@@ -178,16 +179,13 @@ enum {
         self.desiredAccuracyLabel.textAlignment = UITextAlignmentRight;
         self.desiredAccuracyLabel.minimumFontSize = 8;
         self.desiredAccuracyLabel.adjustsFontSizeToFitWidth = YES;
-        self.desiredAccuracyLabel.font = [UIFont boldSystemFontOfSize:16.0f];
-        // REMOVEME
-//        self.desiredAccuracyLabel.layer.borderColor = [UIColor redColor].CGColor;
-//        self.desiredAccuracyLabel.layer.borderWidth = 1;
+        self.desiredAccuracyLabel.font = [UIFont boldSystemFontOfSize:15.0f];
         
         [cell.contentView addSubview:slider];
         [cell.contentView addSubview:self.desiredAccuracyLabel];
         
-        // TODO get a saved value from User settings
-        [self updateDesiredAccuracyWithSliderValue:0];
+        // convert from user desiredAccuracy
+        [self updateDesiredAccuracyWithSliderValue:sliderValue];
     }
     else if (indexPath.section == SectionTimeInterval && indexPath.row == 0) {
         
@@ -207,7 +205,7 @@ enum {
         
         [cell.contentView addSubview:slider];
         [cell.contentView addSubview:self.timeFilterLabel];
-
+        
         [self updateTimeFilterWithValue:[self.currentUser.locationTimeInterval doubleValue]];
     }
     else if (indexPath.section == SectionLoginInfo && indexPath.row == 0) {
@@ -253,9 +251,24 @@ enum {
     }
 }
 
+static NSArray *accuracyLabelValues = nil;
+static NSArray *accuracyValues = nil;
+
+- (NSUInteger)desiredAccuracyIndexFromLocationAccuracy:(CLLocationAccuracy)locationAccuracy
+{
+    __block NSUInteger resultIdx = 0;
+    double acceptableDelta = 0.01f;
+    [accuracyValues enumerateObjectsUsingBlock:^(id acceptableAccuracy, NSUInteger idx, BOOL *stop) {
+        if (fabs(locationAccuracy - [acceptableAccuracy doubleValue]) < acceptableDelta) {
+            resultIdx = idx;
+            *stop = YES;
+        }
+    }];
+    return resultIdx;
+}
+
 - (NSString *)desiredAccuracyTextForIndex:(NSUInteger) idx
 {
-    static NSArray *accuracyLabelValues = nil;
     
     if (accuracyLabelValues == nil) {
         accuracyLabelValues = @[
@@ -271,9 +284,8 @@ enum {
     return accuracyLabelValues[idx];
 }
 
-- (NSNumber *)desiredOccuracyValueForIndex:(NSUInteger) idx
+- (NSNumber *)desiredAccuracyValueForIndex:(NSUInteger) idx
 {
-    static NSArray* accuracyValues = nil;
     if (accuracyValues == nil) {
         accuracyValues = @[
                            @(kCLLocationAccuracyBestForNavigation),
@@ -326,7 +338,6 @@ enum {
     [[NSFileManager defaultManager] removeItemAtPath:logZipPath error:nil];
     return zipData;
 }
-
 
 #pragma mark - Table View Delegate
 
@@ -423,9 +434,15 @@ enum {
     // get int value from 0 to 5
     int idx = (int)ceilf(slider.value);
     
+    // move slider to a discrete value
+    [slider setValue:idx animated:NO];
+    
+    // save settings for later
+    self.currentUser.desiredAccuracy = [self desiredAccuracyValueForIndex:idx];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvDesiredAccuracyDidChangeNotification
                                                         object:nil
-                                                      userInfo:@{ kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey : [self desiredOccuracyValueForIndex:idx] }];
+                                                      userInfo:@{ kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey : [self desiredAccuracyValueForIndex:idx] }];
     
     [self updateDesiredAccuracyWithSliderValue:idx];
 }

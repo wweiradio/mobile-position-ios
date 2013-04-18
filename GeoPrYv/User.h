@@ -19,11 +19,12 @@
 
 @interface User : NSManagedObject
 
-@property (nonatomic, retain) NSString * userId;
-@property (nonatomic, retain) NSString * userToken;
-@property (nonatomic, retain) NSNumber * locationDistanceInterval;
-@property (nonatomic, retain) NSNumber * locationTimeInterval;
-@property (nonatomic, retain) NSString * folderId;
-@property (nonatomic, retain) NSString * folderName;
+@property (nonatomic, retain) NSString *userId;
+@property (nonatomic, retain) NSString *userToken;
+@property (nonatomic, retain) NSNumber *locationDistanceInterval;
+@property (nonatomic, retain) NSNumber *locationTimeInterval;
+@property (nonatomic, retain) NSNumber *desiredAccuracy;
+@property (nonatomic, retain) NSString *folderId;
+@property (nonatomic, retain) NSString *folderName;
 
 @end
