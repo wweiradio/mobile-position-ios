@@ -23,6 +23,7 @@
 @dynamic uploaded;
 @dynamic attachmentList;
 @dynamic duration;
+@dynamic isLastWhenRecording;
 @dynamic eventId;
 
 @end

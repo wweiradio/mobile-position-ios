@@ -207,9 +207,6 @@ enum {
         
         NSUInteger sliderValue = [self desiredAccuracyIndexFromLocationAccuracy:[self.currentUser.desiredAccuracy doubleValue]];
 
-        NSLog(@"desiredAccuracy loading: %@", self.currentUser.desiredAccuracy );
-        NSLog(@"desiredAccuracy to the slider : %d", sliderValue );
-
         [slider setValue:(float)sliderValue animated:NO];
         
         self.desiredAccuracyLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0,

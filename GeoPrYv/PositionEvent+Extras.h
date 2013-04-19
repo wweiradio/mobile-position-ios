@@ -21,4 +21,11 @@
                                           folder:(NSString *)folderId
                                        inContext:(NSManagedObjectContext *)context;
 
+
++ (void)resetLastRecordingEventsInContext:(NSManagedObjectContext *)context;
+
++ (PositionEvent *)lastPositionEventIfRecording:(NSManagedObjectContext *)context;
+
++ (void)deleteSentPositionEventsInContext:(NSManagedObjectContext *)context;
+
 @end

@@ -25,7 +25,7 @@
 // our foreground timer flag
 @property (nonatomic, assign, getter = isForegroundLocationUpdatesAllowed) BOOL foregroundLocationUpdatesAllowed;
 
-@property (nonatomic, strong) PositionEvent *lastPositionEvent;
+//@property (nonatomic, strong) PositionEvent *lastPositionEvent;
 
 // a backgroundTaskIdentifier used when connecting to the PrYv API when the application is in background
 // background taskIdentifiers allows you to have extra time to perform a task when the application is in background mode.
@@ -196,8 +196,6 @@
 
 - (void)startUpdatingLocation
 {
-    self.lastPositionEvent = nil;
-    
     self.locationManager.delegate = self;
     [self.locationManager startUpdatingLocation];
 }
@@ -206,14 +204,35 @@
 {
     [self.locationManager stopUpdatingLocation];
     self.locationManager.delegate = nil;
+    [PositionEvent resetLastRecordingEventsInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+}
+
+#pragma mark - 
+
+- (PositionEvent *)lastPositionEvent
+{
+    return [PositionEvent lastPositionEventIfRecording:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+}
+
+- (void)saveLastPositionEvent:(PositionEvent *)positionEvent
+{
+    NSManagedObjectContext *context = [[PPrYvCoreDataManager sharedInstance] managedObjectContext];
+    NSError *saveError = nil;
+    positionEvent.isLastWhenRecording = @YES;
+    [positionEvent.managedObjectContext save:nil];
+
+    if (![context save:&saveError]) {
+        NSLog(@"failed to save the isLastWhenRecording for positionEvent  %@", saveError);
+    }
 }
 
 - (BOOL)tooCloseTooPreviousEvent:(CLLocation *)location
 {
-    if (!self.lastPositionEvent)
+    PositionEvent *previousEvent = [self lastPositionEvent];
+    
+    if (!previousEvent)
         return NO;
         
-    PositionEvent *previousEvent = self.lastPositionEvent;
     User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([previousEvent.latitude doubleValue],
@@ -284,10 +303,15 @@
     if ([self tooCloseTooPreviousEvent:location]) {
         
         //send the previous event with calculated duration
-        locationEvent = self.lastPositionEvent;
+        locationEvent = [self lastPositionEvent];
         double secondsSinceLastEvent = [[NSDate date] timeIntervalSince1970] - [locationEvent.date timeIntervalSince1970];
         locationEvent.duration = [NSNumber numberWithDouble:secondsSinceLastEvent];
     } else {
+        
+        //forget last positionEvents
+        [PositionEvent resetLastRecordingEventsInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+
+        //(let the new one be the isLastWhenRecording)
         locationEvent = [PositionEvent createPositionEventInLocation:location
                                                          withMessage:nil
                                                           attachment:nil
@@ -296,7 +320,7 @@
     }
     
     // save last position event
-    self.lastPositionEvent = locationEvent;
+    [self saveLastPositionEvent:locationEvent];
     
     [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApiCompletion:nil];
     

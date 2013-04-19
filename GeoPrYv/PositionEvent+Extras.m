@@ -25,15 +25,71 @@
     positionEvent.folderId = folderId;
     positionEvent.duration = [NSNumber numberWithDouble:0];
     positionEvent.attachment = [fileURL absoluteString];
-    positionEvent.uploaded = [NSNumber numberWithBool:NO];
+    positionEvent.uploaded = @NO;
     positionEvent.date = [NSDate dateWithTimeIntervalSince1970:([[NSDate date] timeIntervalSince1970] - [PPrYvApiClient sharedClient].serverTimeInterval)];
     
     NSError *error = nil;
     if (![context save:&error]) {
-        NSLog(@"an error occured when saving a a position event: %@", error);
+        NSLog(@"an error occured when saving a position event: %@", error);
     }
 
     return positionEvent;
+}
+
++ (void)resetLastRecordingEventsInContext:(NSManagedObjectContext *)context
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PositionEvent"];
+    request.predicate = [NSPredicate predicateWithFormat:@"isLastWhenRecording == YES"];
+    
+    NSArray *lastEvents = [context executeFetchRequest:request
+                                                 error:nil];
+    if (![lastEvents count]) {
+        NSLog(@"--> no last events were found");
+        return;
+    }
+    for (PositionEvent *positionEvent in lastEvents) {
+        positionEvent.isLastWhenRecording = @NO;
+    }
+    
+    NSError *error = nil;
+    if (![context save:&error]) {
+        NSLog(@"an error occured when finishing recording state: %@", error);
+    }
+}
+
++ (PositionEvent *)lastPositionEventIfRecording:(NSManagedObjectContext *)context
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PositionEvent"];
+    request.predicate = [NSPredicate predicateWithFormat:@"isLastWhenRecording == YES"];
+    request.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:YES] ];
+    
+    NSArray *lastEvents = [context executeFetchRequest:request
+                                                 error:nil];
+    return [lastEvents lastObject];
+}
+
++ (void)deleteSentPositionEventsInContext:(NSManagedObjectContext *)context
+{
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PositionEvent"];
+    
+    request.predicate = [NSPredicate predicateWithFormat:@"uploaded == YES"];
+    [request setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+
+    NSArray *uploadedEvents = [context executeFetchRequest:request
+                                                     error:nil];
+
+    if (!uploadedEvents) {
+        //error handling goes here
+        return;
+    }
+    for (NSManagedObject *entity in uploadedEvents) {
+        [context deleteObject:entity];
+    }
+    
+    NSError *saveError = nil;
+    if (![context save:&saveError]) {
+        NSLog(@"failed to save the context %@", saveError);
+    }
 }
 
 - (NSString *)description
@@ -49,6 +105,7 @@
     [description appendFormat:@", self.horizontalAccuracy=%@", self.horizontalAccuracy];
     [description appendFormat:@", self.uploaded=%@", self.uploaded];
     [description appendFormat:@", self.duration=%@", self.duration];
+    [description appendFormat:@", self.isLastWhenRecording=%@", self.isLastWhenRecording];
     [description appendFormat:@", self.eventId=%@", self.eventId];
     [description appendFormat:@", self.date=%@", self.date];
     [description appendString:@">"];

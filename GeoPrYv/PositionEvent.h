@@ -23,6 +23,7 @@
 @property (nonatomic, retain) NSString *message;
 @property (nonatomic, retain) NSNumber *uploaded;
 @property (nonatomic, retain) NSNumber *duration;
+@property (nonatomic, retain) NSNumber *isLastWhenRecording;
 @property (nonatomic, retain) NSString *eventId;
 
 // transient array of EventAttachment 

@@ -11,6 +11,7 @@
 #import "PPrYvSettingViewController.h"
 #import "PositionEvent+Extras.h"
 #import "User+Extras.h"
+#import "PositionEvent+Extras.h"
 #import "PPrYvCoreDataManager.h"
 #import "PPrYvLocationManager.h"
 #import "PPrYvPositionEventSender.h"
@@ -107,11 +108,16 @@
                                                  name:kPrYvLocationManagerDidAcceptNewLocationNotification
                                                object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification
                                                       object:nil
                                                        queue:[NSOperationQueue mainQueue]
                                                   usingBlock:^(NSNotification *note) {
-
+                                                      
+                                                      NSManagedObjectContext *context = [[PPrYvCoreDataManager sharedInstance] managedObjectContext];
+                                                      
+                                                      if ([PositionEvent lastPositionEventIfRecording:context]) {
+                                                          [self startRecording];
+                                                      }
     }];
 }
 
@@ -245,40 +251,44 @@
 
 #pragma mark - Actions
 
+- (void)startRecording
+{
+    self.crumbs = nil;
+    self.crumbView = nil;
+    [self.mapView removeOverlays:self.mapView.overlays];
+    
+    // start tracking the user using the mainLocationManager
+    [[PPrYvLocationManager sharedInstance] startUpdatingLocation];
+    
+    // set flag
+    self.recording = YES;
+    
+    // change the button title accroding to the situation
+    [self.bRecorder setTitle:NSLocalizedString(@"bRecordStop", ) forState:UIControlStateNormal];
+    [self.bRecorder setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    
+    //Change recorder button color
+    [self.bRecorder setBackgroundImage:[UIImage imageNamed:@"bPryvitOn.png"] forState:UIControlStateNormal];
+    
+    // prompt the information
+    self.currentPeriodLabel.text = NSLocalizedString(@"currentPeriod", );
+    
+    // animate the interface for the user experience and
+    // show a status bar to inform the location recording is enabled
+    [UIView animateWithDuration:.3 animations:^{
+        
+        self.bRecorder.transform = CGAffineTransformMakeTranslation(0, 20);
+        self.bTakeNote.transform = CGAffineTransformMakeTranslation(0, 20);
+        self.bTakePicture.transform = CGAffineTransformMakeTranslation(0, 20);
+        self.statusBarRecorder.transform = CGAffineTransformMakeTranslation(0, 20);
+    }];
+}
+
 - (IBAction)startStopLocationRecording:(UIButton *)sender
 {
     // if we are not tracking the user location when the button is pressed
     if (!self.isRecording) {
-
-        self.crumbs = nil;
-        self.crumbView = nil;
-        [self.mapView removeOverlays:self.mapView.overlays];
-
-        // start tracking the user using the mainLocationManager
-        [[PPrYvLocationManager sharedInstance] startUpdatingLocation];
-        
-        // set flag
-        self.recording = YES;
-        
-        // change the button title accroding to the situation
-        [self.bRecorder setTitle:NSLocalizedString(@"bRecordStop", ) forState:UIControlStateNormal];
-        [self.bRecorder setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-
-        //Change recorder button color
-        [self.bRecorder setBackgroundImage:[UIImage imageNamed:@"bPryvitOn.png"] forState:UIControlStateNormal];
-        
-        // prompt the information
-        self.currentPeriodLabel.text = NSLocalizedString(@"currentPeriod", );
-        
-        // animate the interface for the user experience and
-        // show a status bar to inform the location recording is enabled
-        [UIView animateWithDuration:.3 animations:^{
-            
-            self.bRecorder.transform = CGAffineTransformMakeTranslation(0, 20);
-            self.bTakeNote.transform = CGAffineTransformMakeTranslation(0, 20);
-            self.bTakePicture.transform = CGAffineTransformMakeTranslation(0, 20);
-            self.statusBarRecorder.transform = CGAffineTransformMakeTranslation(0, 20);
-        }];
+        [self startRecording];
     }
     // if we were tracking the user location, we stop now.
     else {
