@@ -21,7 +21,8 @@
 @implementation PPrYvSettingViewController
 
 enum {
-    SectionDistanceFilter = 0,
+    SectionDistanceInterval = 0,
+    SectionDistanceFilter,
     SectionDesiredAccuracy,
     SectionHorizontalAccuracyThreshold,
     SectionTimeInterval,
@@ -96,8 +97,11 @@ enum {
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     switch (section) {
-        case SectionDistanceFilter:
+        case SectionDistanceInterval:
             return NSLocalizedString(@"optionSection1Title", );
+            
+        case SectionDistanceFilter:
+            return NSLocalizedString(@"optionSection10Title", );
 
         case SectionDesiredAccuracy:
             return NSLocalizedString(@"optionSection11Title", );
@@ -127,6 +131,7 @@ enum {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == SectionDistanceFilter ||
+        indexPath.section == SectionDistanceInterval ||
         indexPath.section == SectionTimeInterval ||
         indexPath.section == SectionDesiredAccuracy ||
         indexPath.section == SectionHorizontalAccuracyThreshold) {
@@ -142,16 +147,40 @@ enum {
                                                     reuseIdentifier:nil];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    if (indexPath.section == SectionDistanceFilter && indexPath.row == 0) {
+    if (indexPath.section == SectionDistanceInterval && indexPath.row == 0) {
         
         UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30,
                                                                       cell.contentView.frame.size.width-60, 30)];
         slider.maximumValue = powf(100.0f, 0.5f);
         slider.minimumValue = powf(10.0f, 0.5f);
         [slider addTarget:self
-                   action:@selector(changeLocationManagerDistanceFilter:)
+                   action:@selector(changeLocationManagerDistanceInterval:)
          forControlEvents:UIControlEventValueChanged];
         [slider setValue:powf([self.currentUser.locationDistanceInterval doubleValue], .5f)
+                animated:NO];
+        
+        self.distanceIntervalLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0,
+                                                                             80, 30)];
+        self.distanceIntervalLabel.textColor = [UIColor colorWithWhite:.3 alpha:1];
+        self.distanceIntervalLabel.backgroundColor = [UIColor clearColor];
+        self.distanceIntervalLabel.textAlignment = UITextAlignmentRight;
+        self.distanceIntervalLabel.font = [UIFont boldSystemFontOfSize:18.0f];
+        
+        [cell.contentView addSubview:slider];
+        [cell.contentView addSubview:self.distanceIntervalLabel];
+        
+        [self updateDistanceIntervalWithValue:[self.currentUser.locationDistanceInterval doubleValue]];
+    }
+    else if (indexPath.section == SectionDistanceFilter && indexPath.row == 0) {
+        
+        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30,
+                                                                      cell.contentView.frame.size.width-60, 30)];
+        slider.maximumValue = powf(3000.0f, 0.5f);
+        slider.minimumValue = powf(1.0f, 0.5f);
+        [slider addTarget:self
+                   action:@selector(changeLocationManagerDistanceFilter:)
+         forControlEvents:UIControlEventValueChanged];
+        [slider setValue:powf([self.currentUser.locationDistanceFilter doubleValue], .5f)
                 animated:NO];
         
         self.distanceFilterLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0,
@@ -164,7 +193,7 @@ enum {
         [cell.contentView addSubview:slider];
         [cell.contentView addSubview:self.distanceFilterLabel];
 
-        [self updateDistanceFilterWithValue:[self.currentUser.locationDistanceInterval doubleValue]];
+        [self updateDistanceFilterWithValue:[self.currentUser.locationDistanceFilter doubleValue]];
     }
     else if (indexPath.section == SectionDesiredAccuracy && indexPath.row == 0) {
         
@@ -265,6 +294,16 @@ enum {
 }
 
 #pragma mark - private
+
+- (void)updateDistanceIntervalWithValue:(double)distanceIntervalValue
+{
+    if ([[[NSLocale currentLocale] objectForKey:NSLocaleUsesMetricSystem] boolValue]) {
+        self.distanceIntervalLabel.text = [NSString stringWithFormat:@"%.0f m", distanceIntervalValue];
+    }
+    else {
+        self.distanceIntervalLabel.text = [NSString stringWithFormat:@"%.0f ft", distanceIntervalValue * 3.2808399f];
+    }
+}
 
 - (void)updateDistanceFilterWithValue:(double)distanceFilterValue
 {
@@ -457,18 +496,30 @@ static NSArray *s_accuracyValues = nil;
 
 #pragma mark - Settings Methods
 
-- (void)changeLocationManagerDistanceFilter:(UISlider *)distanceIntervalSlider
+- (void)changeLocationManagerDistanceFilter:(UISlider *)distanceFilterSlider
 {
-    CLLocationAccuracy distanceFilter = round(pow(distanceIntervalSlider.value, 2.0));
-    NSNumber *distanceInterval = [NSNumber numberWithDouble:distanceFilter];
-    self.currentUser.locationDistanceInterval = distanceInterval;
+    NSNumber *distanceFilter = [NSNumber numberWithDouble:round(pow(distanceFilterSlider.value, 2.0))];
+    self.currentUser.locationDistanceFilter = distanceFilter;
 
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationDistanceFilterDidChangeNotification
+                                                        object:nil
+                                                      userInfo:@{kPrYvLocationDistanceFilterDidChangeNotificationUserInfoKey : distanceFilter}];
+
+    [self updateDistanceFilterWithValue:[distanceFilter doubleValue]];
+}
+
+- (void)changeLocationManagerDistanceInterval:(UISlider *)distanceIntervalSlider
+{
+    NSNumber *distanceInterval = [NSNumber numberWithDouble:round(pow(distanceIntervalSlider.value, 2.0))];
+    self.currentUser.locationDistanceInterval = distanceInterval;
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationDistanceIntervalDidChangeNotification
                                                         object:nil
                                                       userInfo:@{kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey : distanceInterval}];
-
-    [self updateDistanceFilterWithValue:distanceFilter];
+    
+    [self updateDistanceIntervalWithValue:[distanceInterval doubleValue]];
 }
+
 
 - (void)changeLocationManagerTimeInterval:(UISlider *)timeIntervalSlider
 {

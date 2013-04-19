@@ -133,7 +133,7 @@
         // TODO test on iPad
         [self presentViewController:loginViewController animated:YES completion:nil];
     } else {
-        NSLog(@"user: %@", user);
+        NSLog(@"user: %@", user.userId);
     }
     
     self.mapView.showsUserLocation = YES;

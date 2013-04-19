@@ -7,6 +7,7 @@
 
 #define kPrYvFinishedSendingLocationNotification @"PrYvFinishedSendingLocationNotification"
 
+#define kPrYvLocationDistanceFilterDidChangeNotification @"kPrYvLocationDistanceFilterDidChangeNotification"
 #define kPrYvLocationDistanceIntervalDidChangeNotification @"PrYvLocationDistanceIntervalDidChangeNotification"
 #define kPrYvLocationTimeIntervalDidChangeNotification @"PrYvLocationTimeIntervalDidChangeNotification"
 #define kPrYvLocationManagerDidAcceptNewLocationNotification @"kPrYvLocationManagerDidAcceptNewLocationNotification"
@@ -16,6 +17,7 @@
 
 // notification keys in userInfo dictionary
 
+#define kPrYvLocationDistanceFilterDidChangeNotificationUserInfoKey @"kPrYvLocationDistanceFilterDidChangeNotificationUserInfoKey"
 #define kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey  @"PrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey"
 #define kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey @"PrYvLocationTimeIntervalDidChangeNotificationUserInfoKey"
 #define kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey @"kPrYvDesiredAccuracyDidChangeNotificationInfoKey"
@@ -25,8 +27,6 @@
 #define kPrYvApplicationChannelId @"position"
 #define kPrYvApplicationChannelName @"Position"
 
-// in meters
-#define kPrYvMinimumDistanceBetweenConsecutiveEvents 10
 
 // maximum length of the note in characters
 #define kPrYvMaximumNoteLength 4194304

@@ -41,18 +41,35 @@ Once your PPrYvApiClient has been started, you can use it to send and retrieve e
 
 You can re-synchronize your client using the method
 
-        [[PPrYvApiClient sharedClient] synchronizeTimeWithSuccessHandler:^(NSTimeInterval serverTime) {
+    [[PPrYvApiClient sharedClient] synchronizeTimeWithSuccessHandler:^(NSTimeInterval serverTime) {
         // your code here
     } errorHandler:^(NSError *error) {
         // your code here    
     }];
     
 
-The PrYvApiClient has one method to send a new event:
+The PrYvApiClient has several methods to send a new event
 
-    - (void)sendEvent:(PositionEvent *)event
-        withSuccessHandler:(void(^)(void))successHandler
-              errorHandler:(void(^)(NSError *error))errorHandler;
+Send Position Event with
+
+    - (void)sendEvent:(PositionEvent *)event 
+    completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
+
+Update Position Event duration with:
+
+    - (void)updateEvent:(PositionEvent *)event 
+      completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
+
+Send Note Event with
+
+    - (void)sendNoteEvent:(PositionEvent *)event
+        completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
+
+Send Picture event with
+
+    - (void)sendPictureEvent:(PositionEvent *)event
+           completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
+    
               
 and one method to retrieve events from a time period:
 
@@ -80,7 +97,7 @@ You then initialize a `PPrYvPositionEventSender` by passing it a position by cal
 
     - (id)initWithPositionEvent:(PositionEvent *)positionEvent;
 
-You can then send your position event by calling the method `sendToPrYvApi` on your `PPrYvPositionEventSender` object. 
+You can then send your position event by calling the method `sendToPrYvApiCompletion:` on your `PPrYvPositionEventSender` object. 
 
 `PPrYvPositionEventSender` communicate with the `PPrYvApiClient` and manage the request.
 
@@ -89,12 +106,42 @@ You can then send your position event by calling the method `sendToPrYvApi` on y
     PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:location
                                                                     withMessage:nil attachment:nil folder:user.folderId
                                                                       inContext:context
-    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApi];
+    [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApiCompletion:^{
+      // do something when event was sent or failure occured
+    }];
 
 You need to call the method `sendAllPendingEventsToPrYvApi` right after synchronization with the server to send all events that couldn't be uploaded before.
     
+// 
     [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi]
 
+
+_____
+The location system works as follow:
+
+A delegate method is called whenever a new location is retrieved by the CCLocationManager. The CLLocationManager has it’s own distanceFilter property that allows us to filter the distance before the delegate gets called. 
+
+Application ignores locations with latitude/longitude 0/0.
+ 
+Two location events are considered the same if they are close enough to each other: a distance between them is 
+smaller or equal to (horizontalAccuracy of location) + (min distance Interval between location of consecutive events)
+Minimal distance between position events is configurable in the Settings section.
+
+Location Manager's `ditstanceFilter` is also configurable in the Settings section.
+
+The manager also have a property `desiredAccuracy` to decide which kind of accuracy we want. The higher accuracy the more battery consumption. Its default value has been set to kCLLocationAccuracyNearestTenMeters. 
+`iOS Service Accuracy` can be adjusted in the Settings section.
+
+The retrieved location is then tested for its accuracy and validity, if the accuracy of location it not good enough the location is rejected (>100m: default, if this number is set lower, most location would be rejected).
+This parameter is configurable in the Settings section ("Ignore Locations With Horizontal Accuracy Bigger Than").
+
+Then if the application is operating in foreground, a timer run continuously and allows for new locations to be considered and used every x minutes. (A setting configurable in the Setings section)
+
+When the application is running in background, The timer cannot continue to operate, so the system compare the current date and time to the last one associated with the last accepted location.
+
+If the time interval is long enough the new location is taken into account. Otherwise, it is let go until a new location is returned by the delegate. 
+
+Once a location has passed all the tests it is sent to the server and added locally on the map.
 
 _____
 For more informations, you can visit the [**PrYv API**](http://dev.pryv.com/) reference website.

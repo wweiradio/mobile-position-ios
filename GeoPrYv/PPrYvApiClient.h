@@ -86,10 +86,9 @@
 
     POST /{channel-id}/events/
 
- @param event to send attachments to Api set the attachmentList propery of PositionEvent: NSArray of EventAttachment
+ @param event PositionEvent to send to Api
 
  @see PositionEvent
- @see EventAttachment
 */
 - (void)sendEvent:(PositionEvent *)event completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
 
@@ -99,7 +98,7 @@
  Update the duration of event
         PUT /{channel-id}/events/{event-id}
 
- @param event with duration and event-id set
+ @param event PositionEvent with duration and event-id set
  
  @see PositionEvent
  */
@@ -134,7 +133,6 @@
  @param event of type note:txt to send
  
  @see PositionEvent
- @see EventAttachment
  */
 - (void)sendNoteEvent:(PositionEvent *)event
     completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
@@ -144,6 +142,17 @@
 // @name Events of class picture
 // ---------------------------------------------------------------------------------------------------------------------
 
+/**
+ @discussion
+ Send an event of class picture:attached
+ 
+ POST /{channel-id}/events/
+ 
+ @param event of type picture:attached. attachmentList shouold containg at least one EventAttachment
+ 
+ @see PositionEvent
+ @see EventAttachment
+ */
 
 - (void)sendPictureEvent:(PositionEvent *)event
        completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;

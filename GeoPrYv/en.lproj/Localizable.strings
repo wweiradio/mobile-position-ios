@@ -37,6 +37,7 @@
 
 // SETTINGS
 "optionSection1Title" = "Minimal Distance Interval Between Position Events";
+"optionSection10Title" = "iOS Location Service Distance Filter";
 "optionSection11Title" = "iOS Location Service Accuracy";
 "optionSection12Title" = "Horizontal Accuracy Threshold";
 "optionSection2Title" = "Minimal Time Interval Between Position Events";

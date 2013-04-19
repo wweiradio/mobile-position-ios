@@ -12,6 +12,7 @@
 
 @dynamic userId;
 @dynamic userToken;
+@dynamic locationDistanceFilter;
 @dynamic locationDistanceInterval;
 @dynamic locationTimeInterval;
 @dynamic desiredAccuracy;

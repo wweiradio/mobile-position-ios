@@ -22,8 +22,6 @@
 // our foreground timer used when the application is in foreground to filter locations
 @property (nonatomic, strong) NSTimer *foregroundTimer;
 
-@property (nonatomic, assign) CLLocationAccuracy horizontalAccuracyThreshold;
-
 // our foreground timer flag
 @property (nonatomic, assign, getter = isForegroundLocationUpdatesAllowed) BOOL foregroundLocationUpdatesAllowed;
 
@@ -31,7 +29,7 @@
 
 // a backgroundTaskIdentifier used when connecting to the PrYv API when the application is in background
 // background taskIdentifiers allows you to have extra time to perform a task when the application is in background mode.
-@property (nonatomic, assign) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+// @property (nonatomic, assign) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 
 @end
 
@@ -56,8 +54,6 @@
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
         
-        // TODO extract the constants
-        CLLocationAccuracy defaultHorizontalAccuracyThreshold = 100;
         CLLocationDistance defaultDistanceInterval = 30;
         NSNumber *defaultUpdateTimeInterval = [NSNumber numberWithDouble:30];
 
@@ -72,14 +68,16 @@
                                                           userInfo:nil
                                                            repeats:YES];
 
-        _horizontalAccuracyThreshold = defaultHorizontalAccuracyThreshold;
-
-        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(locationDistanceIntervalDidChange:)
                                                      name:kPrYvLocationDistanceIntervalDidChangeNotification
                                                    object:nil];
 
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(locationDistanceFilterDidChange:)
+                                                     name:kPrYvLocationDistanceFilterDidChangeNotification
+                                                   object:nil];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(locationTimeIntervalDidChange:)
                                                      name:kPrYvLocationTimeIntervalDidChangeNotification
@@ -146,9 +144,17 @@
 
 - (void)locationDistanceIntervalDidChange:(NSNotification *)aNotification
 {
+}
+
+- (void)horizontalAccuracyThresholdDidChange:(NSNotification *)aNotification
+{
+}
+
+- (void)locationDistanceFilterDidChange:(NSNotification *)aNotification
+{
     NSDictionary *userInfo = aNotification.userInfo;
-    if ([userInfo objectForKey:kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey]){
-        CLLocationAccuracy distanceInterval = [[userInfo objectForKey:kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey] doubleValue];
+    if ([userInfo objectForKey:kPrYvLocationDistanceFilterDidChangeNotificationUserInfoKey]){
+        CLLocationAccuracy distanceInterval = [[userInfo objectForKey:kPrYvLocationDistanceFilterDidChangeNotificationUserInfoKey] doubleValue];
         self.locationManager.distanceFilter = distanceInterval;
     }
 }
@@ -159,15 +165,6 @@
     if ([userInfo objectForKey:kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey]){
         CLLocationAccuracy desiredAccuracy = [[userInfo objectForKey:kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey] doubleValue];
         self.locationManager.desiredAccuracy = desiredAccuracy;
-    }
-}
-
-- (void)horizontalAccuracyThresholdDidChange:(NSNotification *)aNotification
-{
-    NSDictionary *userInfo = aNotification.userInfo;
-    if ([userInfo objectForKey:kPrYvHorizontalAccuracyThresholdDidChangeNotification]){
-        CLLocationAccuracy horizontalAccuracyThreshold = [[userInfo objectForKey:kPrYvHorizontalAccuracyThresholdDidChangeNotification] doubleValue];
-        self.horizontalAccuracyThreshold = horizontalAccuracyThreshold;
     }
 }
 
@@ -189,10 +186,10 @@
 
 - (void)sendingLocationDidFinish:(NSNotification *)aNotification
 {
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        [[UIApplication sharedApplication] endBackgroundTask:[self backgroundTaskIdentifier]];
-        [self setBackgroundTaskIdentifier: UIBackgroundTaskInvalid];
-    }
+//    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+//        [[UIApplication sharedApplication] endBackgroundTask:[self backgroundTaskIdentifier]];
+//        [self setBackgroundTaskIdentifier: UIBackgroundTaskInvalid];
+//    }
 }
 
 #pragma mark - 
@@ -217,6 +214,7 @@
         return NO;
         
     PositionEvent *previousEvent = self.lastPositionEvent;
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([previousEvent.latitude doubleValue],
                                                                    [previousEvent.longitude doubleValue]);
@@ -226,7 +224,7 @@
                                                          verticalAccuracy:[previousEvent.verticalAccuracy doubleValue]
                                                                 timestamp:[NSDate date]];
     
-    return [location distanceFromLocation:previousLocation] < kPrYvMinimumDistanceBetweenConsecutiveEvents;
+    return [location distanceFromLocation:previousLocation] < location.horizontalAccuracy + [user.locationDistanceInterval doubleValue];
 }
 
 #pragma mark - Location Manager Delegate
@@ -252,7 +250,7 @@
         return;
     }
     
-    if (location.horizontalAccuracy > self.horizontalAccuracyThreshold ||
+    if (location.horizontalAccuracy > [user.horizontalAccuracyThreshold doubleValue] ||
         location.horizontalAccuracy < 0.0f) {
         return;
     }
@@ -270,10 +268,10 @@
     }
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
-            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-        }];
+//        self.backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+//            [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskIdentifier];
+//            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+//        }];
     }
     else {
         self.foregroundLocationUpdatesAllowed = NO;

@@ -37,6 +37,7 @@
 
 // SETTINGS
 "optionSection1Title" = "Distance minimale entre les positions";
+"optionSection10Title" = "iOS Location Service Distance Filter";
 "optionSection11Title" = "iOS Location Service Accuracy";
 "optionSection12Title" = "Horizontal Accuracy Threshold";
 "optionSection2Title" = "Interval de temps minimal entre les positions";

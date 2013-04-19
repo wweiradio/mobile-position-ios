@@ -16,6 +16,7 @@
 @property (strong, nonatomic) User *currentUser;
 
 @property (strong, nonatomic) UILabel *timeFilterLabel;
+@property (strong, nonatomic) UILabel *distanceIntervalLabel;
 @property (strong, nonatomic) UILabel *distanceFilterLabel;
 @property (strong, nonatomic) UILabel *desiredAccuracyLabel;
 @property (strong, nonatomic) UILabel *horizontalAccuracyThresholdLabel;

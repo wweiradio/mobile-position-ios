@@ -160,7 +160,8 @@
 
 - (void)pollURL:(NSURL *)pollURL withTimeInterval:(NSTimeInterval)pollTimeInterval
 {
-    NSLog(@"create a poll request to %@ with interval: %f", pollURL, pollTimeInterval);
+    //NSLog(@"create a poll request to %@ with interval: %f", pollURL, pollTimeInterval);
+    NSLog(@"create a poll request with interval: %f", pollTimeInterval);
     
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         NSLog(@"stop polling if app is in backround");
@@ -295,9 +296,13 @@
                                       token:token
                                   inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationDistanceIntervalDidChangeNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationDistanceFilterDidChangeNotification
                                                         object:nil
-                                                      userInfo:@{kPrYvLocationDistanceIntervalDidChangeNotificationUserInfoKey : newUser.locationDistanceInterval}];
+                                                      userInfo:@{kPrYvLocationDistanceFilterDidChangeNotificationUserInfoKey : newUser.locationDistanceFilter}];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvDesiredAccuracyDidChangeNotification
+                                                        object:nil
+                                                      userInfo:@{kPrYvDesiredAccuracyDidChangeNotification : newUser.desiredAccuracy}];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvLocationTimeIntervalDidChangeNotification
                                                         object:nil

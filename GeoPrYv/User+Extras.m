@@ -20,6 +20,7 @@
 
     newUser.userId = userIdentifier;
     newUser.userToken = token;
+    newUser.locationDistanceFilter = [NSNumber numberWithDouble:30];
     newUser.locationDistanceInterval = [NSNumber numberWithDouble:30];
     newUser.desiredAccuracy = [NSNumber numberWithDouble:kCLLocationAccuracyNearestTenMeters];
     newUser.locationTimeInterval = [NSNumber numberWithDouble:30];
