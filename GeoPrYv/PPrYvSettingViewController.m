@@ -23,6 +23,7 @@
 enum {
     SectionDistanceFilter = 0,
     SectionDesiredAccuracy,
+    SectionHorizontalAccuracyThreshold,
     SectionTimeInterval,
     SectionLoginInfo,
     SectionFolderInfo,
@@ -100,7 +101,10 @@ enum {
 
         case SectionDesiredAccuracy:
             return NSLocalizedString(@"optionSection11Title", );
-            
+
+        case SectionHorizontalAccuracyThreshold:
+            return NSLocalizedString(@"optionSection12Title", );
+
         case SectionTimeInterval:
             return NSLocalizedString(@"optionSection2Title", );
             
@@ -124,7 +128,8 @@ enum {
 {
     if (indexPath.section == SectionDistanceFilter ||
         indexPath.section == SectionTimeInterval ||
-        indexPath.section == SectionDesiredAccuracy) {
+        indexPath.section == SectionDesiredAccuracy ||
+        indexPath.section == SectionHorizontalAccuracyThreshold) {
         return 60;
     }
     
@@ -133,13 +138,14 @@ enum {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                     reuseIdentifier:nil];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     if (indexPath.section == SectionDistanceFilter && indexPath.row == 0) {
         
-        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30, cell.contentView.frame.size.width-60, 30)];
+        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30,
+                                                                      cell.contentView.frame.size.width-60, 30)];
         slider.maximumValue = powf(100.0f, 0.5f);
         slider.minimumValue = powf(10.0f, 0.5f);
         [slider addTarget:self
@@ -148,7 +154,8 @@ enum {
         [slider setValue:powf([self.currentUser.locationDistanceInterval doubleValue], .5f)
                 animated:NO];
         
-        self.distanceFilterLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0, 80, 30)];
+        self.distanceFilterLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0,
+                                                                             80, 30)];
         self.distanceFilterLabel.textColor = [UIColor colorWithWhite:.3 alpha:1];
         self.distanceFilterLabel.backgroundColor = [UIColor clearColor];
         self.distanceFilterLabel.textAlignment = UITextAlignmentRight;
@@ -166,10 +173,14 @@ enum {
         [slider addTarget:self
                    action:@selector(desiredAccuracyValueChanged:)
          forControlEvents:UIControlEventValueChanged];
-        slider.maximumValue = 5.f;
-        slider.minimumValue = 0.f;
+        slider.maximumValue = 5;
+        slider.minimumValue = 0;
         
         NSUInteger sliderValue = [self desiredAccuracyIndexFromLocationAccuracy:[self.currentUser.desiredAccuracy doubleValue]];
+
+        NSLog(@"desiredAccuracy loading: %@", self.currentUser.desiredAccuracy );
+        NSLog(@"desiredAccuracy to the slider : %d", sliderValue );
+
         [slider setValue:(float)sliderValue animated:NO];
         
         self.desiredAccuracyLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0,
@@ -184,12 +195,35 @@ enum {
         [cell.contentView addSubview:slider];
         [cell.contentView addSubview:self.desiredAccuracyLabel];
         
-        // convert from user desiredAccuracy
         [self updateDesiredAccuracyWithSliderValue:sliderValue];
+    }
+    else if (indexPath.section == SectionHorizontalAccuracyThreshold && indexPath.row == 0) {
+        
+        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30,
+                                                                      cell.contentView.frame.size.width-60, 30)];
+        [slider addTarget:self
+                   action:@selector(changeLocationManagerHorizontalAccuracyThreshold:)
+         forControlEvents:UIControlEventValueChanged];
+        slider.maximumValue = powf(6000.0f, 0.5f);
+        slider.minimumValue = powf(1.0f, 0.5f);
+        [slider setValue:powf([self.currentUser.horizontalAccuracyThreshold doubleValue], .5f) animated:NO];
+        
+        self.horizontalAccuracyThresholdLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0,
+                                                                         80, 30)];
+        self.horizontalAccuracyThresholdLabel.textColor = [UIColor colorWithWhite:.3 alpha:1];
+        self.horizontalAccuracyThresholdLabel.backgroundColor = [UIColor clearColor];
+        self.horizontalAccuracyThresholdLabel.textAlignment = UITextAlignmentRight;
+        self.horizontalAccuracyThresholdLabel.font = [UIFont boldSystemFontOfSize:18.0f];
+        
+        [cell.contentView addSubview:slider];
+        [cell.contentView addSubview:self.horizontalAccuracyThresholdLabel];
+        
+        [self updateHorizontalAccuracyThresholdWithValue:[self.currentUser.horizontalAccuracyThreshold doubleValue]];
     }
     else if (indexPath.section == SectionTimeInterval && indexPath.row == 0) {
         
-        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30, cell.contentView.frame.size.width-60, 30)];
+        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 30,
+                                                                      cell.contentView.frame.size.width-60, 30)];
         [slider addTarget:self
                    action:@selector(changeLocationManagerTimeInterval:)
          forControlEvents:UIControlEventValueChanged];
@@ -197,7 +231,8 @@ enum {
         slider.minimumValue = powf(10.0f, 0.5f);
         [slider setValue:powf([self.currentUser.locationTimeInterval doubleValue], .5f) animated:NO];
         
-        self.timeFilterLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0, 80, 30)];
+        self.timeFilterLabel = [[UILabel alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width-120, 0,
+                                                                         80, 30)];
         self.timeFilterLabel.textColor = [UIColor colorWithWhite:.3 alpha:1];
         self.timeFilterLabel.backgroundColor = [UIColor clearColor];
         self.timeFilterLabel.textAlignment = UITextAlignmentRight;
@@ -251,14 +286,54 @@ enum {
     }
 }
 
-static NSArray *accuracyLabelValues = nil;
-static NSArray *accuracyValues = nil;
+- (void)updateHorizontalAccuracyThresholdWithValue:(double)horizontalAccuracyThreshold
+{
+    if ([[[NSLocale currentLocale] objectForKey:NSLocaleUsesMetricSystem] boolValue]) {
+        self.horizontalAccuracyThresholdLabel.text = [NSString stringWithFormat:@"%.0f m", horizontalAccuracyThreshold];
+    }
+    else {
+        self.horizontalAccuracyThresholdLabel.text = [NSString stringWithFormat:@"%.0f ft", horizontalAccuracyThreshold * 3.2808399f];
+    }
+}
+
+static NSArray *s_accuracyLabelValues = nil;
+static NSArray *s_accuracyValues = nil;
+
+- (NSArray *)accuracyLabelValues
+{
+    if (!s_accuracyLabelValues) {
+        s_accuracyLabelValues = @[
+                                @"kCLLocationAccuracyBestForNavigation",
+                                @"kCLLocationAccuracyBest",
+                                @"kCLLocationAccuracyNearestTenMeters",
+                                @"kCLLocationAccuracyHundredMeters",
+                                @"kCLLocationAccuracyKilometer",
+                                @"kCLLocationAccuracyThreeKilometers"
+                                ];
+    }
+    return s_accuracyLabelValues;
+}
+
+- (NSArray *)accuracyValues
+{
+    if (!s_accuracyValues) {
+        s_accuracyValues = @[
+                           @(kCLLocationAccuracyBestForNavigation),
+                           @(kCLLocationAccuracyBest),
+                           @(kCLLocationAccuracyNearestTenMeters),
+                           @(kCLLocationAccuracyHundredMeters),
+                           @(kCLLocationAccuracyKilometer),
+                           @(kCLLocationAccuracyThreeKilometers)
+                           ];
+    }
+    return s_accuracyValues;
+}
 
 - (NSUInteger)desiredAccuracyIndexFromLocationAccuracy:(CLLocationAccuracy)locationAccuracy
 {
     __block NSUInteger resultIdx = 0;
     double acceptableDelta = 0.01f;
-    [accuracyValues enumerateObjectsUsingBlock:^(id acceptableAccuracy, NSUInteger idx, BOOL *stop) {
+    [[self accuracyValues] enumerateObjectsUsingBlock:^(id acceptableAccuracy, NSUInteger idx, BOOL *stop) {
         if (fabs(locationAccuracy - [acceptableAccuracy doubleValue]) < acceptableDelta) {
             resultIdx = idx;
             *stop = YES;
@@ -269,34 +344,12 @@ static NSArray *accuracyValues = nil;
 
 - (NSString *)desiredAccuracyTextForIndex:(NSUInteger) idx
 {
-    
-    if (accuracyLabelValues == nil) {
-        accuracyLabelValues = @[
-                           @"kCLLocationAccuracyBestForNavigation",
-                           @"kCLLocationAccuracyBest",
-                           @"kCLLocationAccuracyNearestTenMeters",
-                           @"kCLLocationAccuracyHundredMeters",
-                           @"kCLLocationAccuracyKilometer",
-                           @"kCLLocationAccuracyThreeKilometers"
-                           ];
-    }
-    
-    return accuracyLabelValues[idx];
+    return [self accuracyLabelValues][idx];
 }
 
 - (NSNumber *)desiredAccuracyValueForIndex:(NSUInteger) idx
 {
-    if (accuracyValues == nil) {
-        accuracyValues = @[
-                           @(kCLLocationAccuracyBestForNavigation),
-                           @(kCLLocationAccuracyBest),
-                           @(kCLLocationAccuracyNearestTenMeters),
-                           @(kCLLocationAccuracyHundredMeters),
-                           @(kCLLocationAccuracyKilometer),
-                           @(kCLLocationAccuracyThreeKilometers)
-                           ];
-    }
-    return accuracyValues[idx];
+    return [self accuracyValues][idx];
 }
 
 - (void)updateDesiredAccuracyWithSliderValue:(int)sliderValue
@@ -426,7 +479,7 @@ static NSArray *accuracyValues = nil;
                                                         object:nil
                                                       userInfo:@{kPrYvLocationTimeIntervalDidChangeNotificationUserInfoKey : [NSNumber numberWithDouble:timeInterval]}];
 
-    [self updateTimeFilterWithValue:[self.currentUser.locationTimeInterval doubleValue]];
+    [self updateTimeFilterWithValue:timeInterval];
 }
 
 - (void)desiredAccuracyValueChanged:(UISlider *)slider
@@ -440,11 +493,24 @@ static NSArray *accuracyValues = nil;
     // save settings for later
     self.currentUser.desiredAccuracy = [self desiredAccuracyValueForIndex:idx];
     
+    NSLog(@"desiredAccuracy = %@", self.currentUser.desiredAccuracy);
     [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvDesiredAccuracyDidChangeNotification
                                                         object:nil
                                                       userInfo:@{ kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey : [self desiredAccuracyValueForIndex:idx] }];
     
     [self updateDesiredAccuracyWithSliderValue:idx];
+}
+
+- (void)changeLocationManagerHorizontalAccuracyThreshold:(UISlider *)horizontalAccuracyThresholdSlider
+{
+    NSNumber *horizontalAccuracyThreshold = [NSNumber numberWithDouble:round(pow(horizontalAccuracyThresholdSlider.value, 2.0))];
+    self.currentUser.horizontalAccuracyThreshold = horizontalAccuracyThreshold;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kPrYvHorizontalAccuracyThresholdDidChangeNotification
+                                                        object:nil
+                                                      userInfo:@{kPrYvHorizontalAccuracyThresholdDidChangeNotificationInfoKey : horizontalAccuracyThreshold}];
+    
+    [self updateHorizontalAccuracyThresholdWithValue:[horizontalAccuracyThreshold doubleValue]];
 }
 
 #pragma mark - Navigation Bar Button Actions
@@ -458,7 +524,6 @@ static NSArray *accuracyValues = nil;
         [self.iPadHoldingPopOver dismissPopoverAnimated:YES];
     }
     else {
-        
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }

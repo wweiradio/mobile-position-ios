@@ -15,6 +15,7 @@
 @dynamic locationDistanceInterval;
 @dynamic locationTimeInterval;
 @dynamic desiredAccuracy;
+@dynamic horizontalAccuracyThreshold;
 @dynamic folderId;
 @dynamic folderName;
 

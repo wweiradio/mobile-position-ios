@@ -22,6 +22,8 @@
 // our foreground timer used when the application is in foreground to filter locations
 @property (nonatomic, strong) NSTimer *foregroundTimer;
 
+@property (nonatomic, assign) CLLocationAccuracy horizontalAccuracyThreshold;
+
 // our foreground timer flag
 @property (nonatomic, assign, getter = isForegroundLocationUpdatesAllowed) BOOL foregroundLocationUpdatesAllowed;
 
@@ -52,7 +54,10 @@
     if (self) {
 
         _locationManager = [[CLLocationManager alloc] init];
-
+        _locationManager.delegate = self;
+        
+        // TODO extract the constants
+        CLLocationAccuracy defaultHorizontalAccuracyThreshold = 100;
         CLLocationDistance defaultDistanceInterval = 30;
         NSNumber *defaultUpdateTimeInterval = [NSNumber numberWithDouble:30];
 
@@ -60,7 +65,6 @@
 
         _locationManager.distanceFilter = defaultDistanceInterval;
         _locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
-        _locationManager.delegate = self;
 
         _foregroundTimer = [NSTimer scheduledTimerWithTimeInterval:[defaultUpdateTimeInterval doubleValue]
                                                             target:self
@@ -68,6 +72,9 @@
                                                           userInfo:nil
                                                            repeats:YES];
 
+        _horizontalAccuracyThreshold = defaultHorizontalAccuracyThreshold;
+
+        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(locationDistanceIntervalDidChange:)
                                                      name:kPrYvLocationDistanceIntervalDidChangeNotification
@@ -81,6 +88,11 @@
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(desiredAccuracyDidChange:)
                                                      name:kPrYvDesiredAccuracyDidChangeNotification
+                                                   object:nil];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(horizontalAccuracyThresholdDidChange:)
+                                                     name:kPrYvHorizontalAccuracyThresholdDidChangeNotification
                                                    object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -114,7 +126,7 @@
     // switch back from NSDate to NSTimer for location updates
     self.foregroundLocationUpdatesAllowed = YES;
 
-    User * user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
+    User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
 
     NSTimeInterval timeInterval = 30;
 
@@ -147,6 +159,15 @@
     if ([userInfo objectForKey:kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey]){
         CLLocationAccuracy desiredAccuracy = [[userInfo objectForKey:kPrYvDesiredAccuracyDidChangeNotificationUserInfoKey] doubleValue];
         self.locationManager.desiredAccuracy = desiredAccuracy;
+    }
+}
+
+- (void)horizontalAccuracyThresholdDidChange:(NSNotification *)aNotification
+{
+    NSDictionary *userInfo = aNotification.userInfo;
+    if ([userInfo objectForKey:kPrYvHorizontalAccuracyThresholdDidChangeNotification]){
+        CLLocationAccuracy horizontalAccuracyThreshold = [[userInfo objectForKey:kPrYvHorizontalAccuracyThresholdDidChangeNotification] doubleValue];
+        self.horizontalAccuracyThreshold = horizontalAccuracyThreshold;
     }
 }
 
@@ -231,8 +252,8 @@
         return;
     }
     
-    // TODO extract 100.0f to the settings
-    if (location.horizontalAccuracy > 100.0f || location.horizontalAccuracy < 0.0f){
+    if (location.horizontalAccuracy > self.horizontalAccuracyThreshold ||
+        location.horizontalAccuracy < 0.0f) {
         return;
     }
 

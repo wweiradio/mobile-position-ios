@@ -24,6 +24,7 @@
 @property (nonatomic, retain) NSNumber *locationDistanceInterval;
 @property (nonatomic, retain) NSNumber *locationTimeInterval;
 @property (nonatomic, retain) NSNumber *desiredAccuracy;
+@property (nonatomic, retain) NSNumber *horizontalAccuracyThreshold;
 @property (nonatomic, retain) NSString *folderId;
 @property (nonatomic, retain) NSString *folderName;
 
