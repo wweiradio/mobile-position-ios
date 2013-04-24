@@ -106,15 +106,7 @@
                                          @"channelId" : kPrYvApplicationChannelId,
                                          @"defaultName" : kPrYvApplicationChannelName,
                                          @"level" : @"manage",
-                                       },
-                                     
-                                     // channel for note and picture events
-                                     // TODO can we check for this permissions to exist?
-                                     @{
-                                         @"channelId" : @"diary",
-                                         @"defaultName" : @"Diary",
-                                         @"level" : @"contribute"
-                                     }
+                                       }
                              ]};
 
     self.refreshBarButtonItem.enabled = NO;

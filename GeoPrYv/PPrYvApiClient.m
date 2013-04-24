@@ -134,7 +134,7 @@
               @"format" : @"txt"
            },
       @"value" : message,
-      @"folderId" : @"notes", // TODO extract
+      @"folderId" : self.folderId, // TODO extract
       @"time" : time
     };
     
@@ -158,7 +158,7 @@
               @"class" : @"picture",
               @"format" : @"attached"
            },
-      @"folderId" : @"notes", // TODO extract
+      @"folderId" : self.folderId, // TODO extract
       @"time" : time
     };
     
@@ -472,7 +472,7 @@
 }
 
 #pragma mark - 
-#define NOTE_CHANNEL_ID @"diary"
+#define NOTE_CHANNEL_ID kPrYvApplicationChannelId
 
 - (void)sendPictureEvent:(PositionEvent *)event
        completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler
