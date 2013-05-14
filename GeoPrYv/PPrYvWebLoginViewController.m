@@ -87,7 +87,7 @@
 - (void)requestLoginView
 {
     // TODO extract the url to a more meaningful place
-    NSURL *url = [NSURL URLWithString:@"https://reg.rec.la"];
+    NSURL *url = [NSURL URLWithString:@"https://access.rec.la"];
     
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:url];
     httpClient.parameterEncoding = AFJSONParameterEncoding;
