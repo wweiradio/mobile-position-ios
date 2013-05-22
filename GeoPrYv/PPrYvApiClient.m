@@ -260,10 +260,10 @@
 - (NSString *)apiBaseUrl
 {
     // production url
-    //return [NSString stringWithFormat:@"https://%@.pryv.io", self.userId];
+    return [NSString stringWithFormat:@"https://%@.pryv.io", self.userId];
 
     // development url
-    return [NSString stringWithFormat:@"https://%@.rec.la", self.userId];
+    //return [NSString stringWithFormat:@"https://%@.rec.la", self.userId];
 }
 
 - (BOOL)isReady
@@ -337,7 +337,7 @@
         return;
     }
         
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/", [self apiBaseUrl]]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/channels", [self apiBaseUrl]]];
     
     AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:url];
     [client.operationQueue setMaxConcurrentOperationCount:1];
@@ -437,8 +437,9 @@
         return;
     }
     
-    // create the RESTful url corresponding the current action    
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], self.channelId]];
+    // create the RESTful url corresponding the current action
+    NSString *surl = [NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], self.channelId];
+    NSURL *url = [NSURL URLWithString:surl];
 
     // send an event without attachments
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -448,6 +449,8 @@
     request.HTTPBody = [event dataWithJSONObject];
     [request setTimeoutInterval:kEventSendingTimout];
 
+    NSLog(@"Event: auth:%@ url:%@ %@ \ndata",self.oAuthToken, surl, [[NSString alloc] initWithData:[event pictureEventWithJSONObject]
+          encoding:NSUTF8StringEncoding]);
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         NSLog(@"successfully sent event eventId: %@", JSON[@"id"]);
 
