@@ -60,13 +60,13 @@
     PositionEvent *positionEvent = [NSEntityDescription insertNewObjectForEntityForName:@"PositionEvent"
                                                                  inManagedObjectContext:scratchManagedObjectContext];
 
-    double latitude = [[[positionEventDictionary objectForKey:@"value"] objectForKey:@"latitude"] doubleValue];
-    double longitude = [[[positionEventDictionary objectForKey:@"value"] objectForKey:@"longitude"] doubleValue];
+    double latitude = [[[positionEventDictionary objectForKey:@"content"] objectForKey:@"latitude"] doubleValue];
+    double longitude = [[[positionEventDictionary objectForKey:@"content"] objectForKey:@"longitude"] doubleValue];
     NSString *streamId = [positionEventDictionary objectForKey:@"streamId"];
     double time = [[positionEventDictionary objectForKey:@"time"] doubleValue];
     
-    if ([positionEventDictionary[@"value"] objectForKey:@"altitude"]) {
-        double elevation = [positionEventDictionary[@"value"][@"altitude"] doubleValue];
+    if ([positionEventDictionary[@"content"] objectForKey:@"altitude"]) {
+        double elevation = [positionEventDictionary[@"content"][@"altitude"] doubleValue];
         positionEvent.elevation = [NSNumber numberWithDouble:elevation];
     }
 
@@ -89,16 +89,12 @@
     NSString * message = self.message == nil ? @"" : self.message;
 
     // turn the date into server format time
-    NSNumber * time = [NSNumber numberWithDouble:[self.date timeIntervalSince1970]];
+    NSNumber * time = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
 
     NSDictionary *positionEventDictionary =
                          @{
-                                 @"type" :
-                                 @{
-                                         @"class" : @"position",
-                                         @"format" : @"wgs84"
-                                 },
-                                 @"value" :
+                                 @"type" : @"position/wgs84",
+                                 @"content" :
                                  @{
                                          @"longitude" : self.longitude,
                                          @"latitude" : self.latitude,
@@ -124,16 +120,12 @@
     NSString * message = self.message;
     
     // turn the date into server format time
-    NSNumber * time = [NSNumber numberWithDouble:[self.date timeIntervalSince1970]];
+    NSNumber * time = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
     
     NSDictionary *noteEventDictionary =
     @{
-      @"type" :
-          @{
-              @"class" : @"note",
-              @"format" : @"txt"
-           },
-      @"value" : message,
+      @"type" : @"note/txt",
+      @"content" : message,
       @"streamId" : self.streamId, // TODO extract
       @"time" : time
     };
@@ -149,15 +141,11 @@
 - (NSData *)pictureEventWithJSONObject
 {
     // turn the date into server format time
-    NSNumber * time = [NSNumber numberWithDouble:[self.date timeIntervalSince1970]];
+    NSNumber * time = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
     
     NSDictionary *noteEventDictionary =
     @{
-      @"type" :
-          @{
-              @"class" : @"picture",
-              @"format" : @"attached"
-           },
+      @"type" : @"picture/attached",
       @"streamId" : self.streamId, // TODO extract
       @"time" : time
     };
@@ -175,7 +163,7 @@
     NSDictionary *positionEventDictionary =
     @{
       @"id" : self.eventId,
-      @"value" :
+      @"content" :
           @{
               @"longitude" : self.longitude,
               @"latitude" : self.latitude,
@@ -671,7 +659,7 @@
             // TODO think how to destroy the scratchmanagedContext
             for (NSDictionary *positionEventDictionary in JSON) {
                 // only process events which are positions
-                if ([positionEventDictionary[@"type"][@"class"] isEqualToString:@"position"]) {
+                if ([positionEventDictionary[@"type"] isEqualToString:@"position/wgs84"]) {
                     PositionEvent *positionEvent = [PositionEvent positionEventFromDictionary:positionEventDictionary
                                                                              inScratchContext:scratchManagedContext];
                     // skip 0/0 coordinate
