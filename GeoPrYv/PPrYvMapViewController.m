@@ -200,7 +200,7 @@
     PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
     [apiClient startClientWithUserId:user.userId
                           oAuthToken:user.userToken
-                           channelId:kPrYvApplicationChannelId
+                           streamIdId:kPrYvApplicationstreamIdId
                       successHandler:^(NSTimeInterval serverTime) {
                           
                           [PPrYvPositionEventSender sendAllPendingEventsToPrYvApi];
@@ -210,13 +210,13 @@
                               [MBProgressHUD hideHUDForView:self.view animated:YES];
                               [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                               
-                              // ask the PrYv API for events in the last 24h with the current user channel
+                              // ask the PrYv API for events in the last 24h with the current user streamId
                               NSTimeInterval interval = -60 * 60 * 24;
                               NSDate *dateTo = [NSDate date];
                               NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
                               [apiClient getEventsFromStartDate:dateFrom
                                                       toEndDate:dateTo
-                                                     inFolderId:user.folderId
+                                                     instreamId:user.streamId
                                                  successHandler:^(NSArray *positionEventList) {
                                                      
                                                      [self didReceiveEvents:positionEventList];
@@ -392,7 +392,7 @@
         PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:messageLocation
                                                                         withMessage:message
                                                                          attachment:nil
-                                                                             folder:user.folderId
+                                                                             folder:user.streamId
                                                                           inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
         
         [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApiCompletion:nil];
@@ -443,7 +443,7 @@
 
     NSUInteger httpStatusCode = [[originError userInfo][@"AFNetworkingOperationFailingURLResponseErrorKey"] statusCode];
     if (httpStatusCode == 401 || httpStatusCode == 403 || httpStatusCode == 404) {
-        // access / permission error / folder|channel does not exist
+        // access / permission error / folder|streamId does not exist
         [self openSettingsWithLogout:YES];
         return;
     }
@@ -733,7 +733,7 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     // current folder
-    NSString * folderId = [[User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]] folderId];
+    NSString * streamId = [[User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]] streamId];
 
     // detach a thread to perform some action on the picture data
     dispatch_queue_t queue1 = dispatch_queue_create("com.PrYv.loadImage",NULL);
@@ -754,7 +754,7 @@
                                PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:self.mapView.userLocation.location
                                                                                                withMessage:nil
                                                                                                 attachment:assetURL
-                                                                                                    folder:folderId
+                                                                                                    folder:streamId
                                                                                                  inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
                                
                                [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApiCompletion:nil];
@@ -769,7 +769,7 @@
                            PositionEvent *locationEvent = [PositionEvent createPositionEventInLocation:self.mapView.userLocation.location
                                                                                            withMessage:nil
                                                                                             attachment:assetURL
-                                                                                                folder:folderId
+                                                                                                folder:streamId
                                                                                              inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
                            
                            [[[PPrYvPositionEventSender alloc] initWithPositionEvent:locationEvent] sendToPrYvApiCompletion:nil];
@@ -900,10 +900,10 @@
     NSTimeInterval interval = 60 * 60 * 24;
     NSDate *dateTo = [self.datePickerTo.date dateByAddingTimeInterval:interval];
     
-    // ask for events in the chosen time period with the current user channel
+    // ask for events in the chosen time period with the current user streamId
     [[PPrYvApiClient sharedClient] getEventsFromStartDate:self.datePickerFrom.date
                                                 toEndDate:dateTo
-                                               inFolderId:user.folderId
+                                               instreamId:user.streamId
                                            successHandler:^(NSArray *positionEventList) {
                                                
                                                [self didReceiveEvents:positionEventList];
@@ -938,16 +938,16 @@
     User *user = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
     // clean the map from all annotations
-    NSLog(@"%@", user.folderId);
+    NSLog(@"%@", user.streamId);
     
-    // ask the PrYv API for events in the last 24h with the current user channel
+    // ask the PrYv API for events in the last 24h with the current user streamId
     NSTimeInterval interval = -60 * 60 * 24;
     NSDate *dateTo = [NSDate date];
     NSDate *dateFrom = [dateTo dateByAddingTimeInterval:interval];
 
     [[PPrYvApiClient sharedClient] getEventsFromStartDate:dateFrom
                                                 toEndDate:dateTo
-                                               inFolderId:user.folderId
+                                               instreamId:user.streamId
                                            successHandler:^(NSArray *positionEventList) {
                                                
                                                [self didReceiveEvents:positionEventList];

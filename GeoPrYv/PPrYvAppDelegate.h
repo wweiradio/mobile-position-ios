@@ -12,12 +12,12 @@
  Events have all a type, value and a time parameters.
  The time parameter is either set by us or automatically by PrYv if none was set.
  Events are sent as JSON data to the PrYv API when connection is available and are stored in our data model as PositionEvent until then.
- Events should contain a folderId parameter to be stored properly on the PrYp Server.
+ Events should contain a streamId parameter to be stored properly on the PrYp Server.
  
  In this application we use a Model Object "PositionEvent" to store new events of type "position" that our locationManager gets.
  We then try to send them to the PrYv API as a new Event.
  
- To retrieve Events from the PrYv API, we specifiy a past period and a folderId. see documentation for additional
+ To retrieve Events from the PrYv API, we specifiy a past period and a streamId. see documentation for additional
  parameters that can be used to obtain more accurate requests.
  
  PrYv is a RESTful API that uses the http methods GET POST PUT DELETE to respectively 

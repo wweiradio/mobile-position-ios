@@ -13,7 +13,7 @@
 
 @dynamic attachment;
 @dynamic date;
-@dynamic folderId;
+@dynamic streamId;
 @dynamic latitude;
 @dynamic longitude;
 @dynamic elevation;

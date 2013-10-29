@@ -25,7 +25,7 @@
     newUser.desiredAccuracy = [NSNumber numberWithDouble:kCLLocationAccuracyNearestTenMeters];
     newUser.locationTimeInterval = [NSNumber numberWithDouble:30];
     newUser.horizontalAccuracyThreshold = [NSNumber numberWithDouble:100];
-    newUser.folderId = [PPrYvOpenUDID value];
+    newUser.streamId = [PPrYvOpenUDID value];
     newUser.folderName = [[UIDevice currentDevice] name];
     
     [context save:nil];

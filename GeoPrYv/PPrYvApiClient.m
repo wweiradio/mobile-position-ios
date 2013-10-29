@@ -30,7 +30,7 @@
 {
     NSDictionary *jsonDictionary = JSON;
     Folder *folder = [[Folder alloc] init];
-    folder.folderId = [jsonDictionary objectForKey:@"id"];
+    folder.streamId = [jsonDictionary objectForKey:@"id"];
     folder.name = [jsonDictionary objectForKey:@"name"];
     folder.parentId = [jsonDictionary objectForKey:@"parentId"];
     folder.hidden = [[jsonDictionary objectForKey:@"hidden"] boolValue];
@@ -62,7 +62,7 @@
 
     double latitude = [[[positionEventDictionary objectForKey:@"value"] objectForKey:@"latitude"] doubleValue];
     double longitude = [[[positionEventDictionary objectForKey:@"value"] objectForKey:@"longitude"] doubleValue];
-    NSString *folderId = [positionEventDictionary objectForKey:@"folderId"];
+    NSString *streamId = [positionEventDictionary objectForKey:@"streamId"];
     double time = [[positionEventDictionary objectForKey:@"time"] doubleValue];
     
     if ([positionEventDictionary[@"value"] objectForKey:@"altitude"]) {
@@ -72,7 +72,7 @@
 
     positionEvent.latitude = [NSNumber numberWithDouble:latitude];
     positionEvent.longitude = [NSNumber numberWithDouble:longitude];
-    positionEvent.folderId = folderId;
+    positionEvent.streamId = streamId;
     positionEvent.eventId = positionEventDictionary[@"id"];
     positionEvent.duration = [NSNumber numberWithDouble:[[positionEventDictionary objectForKey:@"duration"] doubleValue]];
     positionEvent.uploaded = @YES; // do not try to upload it
@@ -107,7 +107,7 @@
                                          @"elevation" : self.elevation
                                  },
                                  @"description" : message,
-                                 @"folderId" : self.folderId,
+                                 @"streamId" : self.streamId,
                                  @"time" : time
                          };
 
@@ -134,7 +134,7 @@
               @"format" : @"txt"
            },
       @"value" : message,
-      @"folderId" : self.folderId, // TODO extract
+      @"streamId" : self.streamId, // TODO extract
       @"time" : time
     };
     
@@ -158,7 +158,7 @@
               @"class" : @"picture",
               @"format" : @"attached"
            },
-      @"folderId" : self.folderId, // TODO extract
+      @"streamId" : self.streamId, // TODO extract
       @"time" : time
     };
     
@@ -222,7 +222,7 @@
 @synthesize serverTimeInterval = _serverTimeInterval;
 @synthesize userId = _userId;
 @synthesize oAuthToken = _oAuthToken;
-@synthesize channelId = _channelId;
+@synthesize streamIdId = _streamIdId;
 
 #pragma mark - Class methods
 
@@ -260,22 +260,22 @@
 - (NSString *)apiBaseUrl
 {
     // production url
-    return [NSString stringWithFormat:@"https://%@.pryv.io", self.userId];
+    //return [NSString stringWithFormat:@"https://%@.pryv.io", self.userId];
 
     // development url
-    //return [NSString stringWithFormat:@"https://%@.rec.la", self.userId];
+    return [NSString stringWithFormat:@"https://%@.pryv.in", self.userId];
 }
 
 - (BOOL)isReady
 {
-    // The manager must contain a user, token and a application channel
+    // The manager must contain a user, token and a application streamId
     if (self.userId == nil || self.userId.length == 0) {
         return NO;
     }
     if (self.oAuthToken == nil || self.oAuthToken.length == 0) {
         return NO;
     }
-    if (self.channelId == nil || self.channelId.length == 0) {
+    if (self.streamIdId == nil || self.streamIdId.length == 0) {
         return NO;
     }
 
@@ -293,9 +293,9 @@
             NSLog(@"oauthToken not set");
             error = [NSError errorWithDomain:@"auth token not set" code:77 userInfo:nil];
         }
-        else if (self.channelId == nil || self.channelId.length == 0) {
-            NSLog(@"channelId not set");
-            error = [NSError errorWithDomain:@"channel not set" code:777 userInfo:nil];
+        else if (self.streamIdId == nil || self.streamIdId.length == 0) {
+            NSLog(@"streamIdId not set");
+            error = [NSError errorWithDomain:@"streamId not set" code:777 userInfo:nil];
         }
         else {
             NSLog(@"unknown error");
@@ -309,17 +309,17 @@
 
 - (void)startClientWithUserId:(NSString *)userId
                    oAuthToken:(NSString *)token
-                    channelId:(NSString *)channelId
+                    streamIdId:(NSString *)streamIdId
                successHandler:(void (^)(NSTimeInterval serverTime))successHandler
                  errorHandler:(void(^)(NSError *error))errorHandler;
 {
     NSParameterAssert(userId);
     NSParameterAssert(token);
-    NSParameterAssert(channelId);
+    NSParameterAssert(streamIdId);
 
     self.userId = userId;
     self.oAuthToken = token;
-    self.channelId = channelId;
+    self.streamIdId = streamIdId;
 
     [self synchronizeTimeWithSuccessHandler:successHandler
                                errorHandler:errorHandler];
@@ -337,7 +337,7 @@
         return;
     }
         
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/channels", [self apiBaseUrl]]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@", [self apiBaseUrl]]];
     
     AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:url];
     [client.operationQueue setMaxConcurrentOperationCount:1];
@@ -374,7 +374,7 @@
     [operation start];
 }
 
-#pragma mark - PrYv API Event update (PUT /{channel-id}/events/)
+#pragma mark - PrYv API Event update (PUT /{streamId-id}/events/)
 
 // used to update the duration of position event
 
@@ -391,7 +391,7 @@
     NSString *eventId = event.eventId;
     
     // create the RESTful url corresponding the current action
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events/%@", [self apiBaseUrl], self.channelId, event.eventId]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/events/%@", [self apiBaseUrl], event.eventId]];
 
     // send an event without attachments
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -425,7 +425,7 @@
 }
 
 
-#pragma mark - PrYv API Event create (POST /{channel-id}/events/)
+#pragma mark - PrYv API Event create (POST /{streamId-id}/events/)
 
 - (void)sendEvent:(PositionEvent *)event completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler;
 {
@@ -438,7 +438,7 @@
     }
     
     // create the RESTful url corresponding the current action
-    NSString *surl = [NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], self.channelId];
+    NSString *surl = [NSString stringWithFormat:@"%@/events", [self apiBaseUrl]];
     NSURL *url = [NSURL URLWithString:surl];
 
     // send an event without attachments
@@ -475,7 +475,7 @@
 }
 
 #pragma mark - 
-#define NOTE_CHANNEL_ID kPrYvApplicationChannelId
+#define NOTE_streamId_ID kPrYvApplicationstreamIdId
 
 - (void)sendPictureEvent:(PositionEvent *)event
        completionHandler:(void(^)(NSString *eventId, NSError *error))completionHandler
@@ -525,7 +525,7 @@
     }
     
     // create the RESTful url corresponding the current action
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], NOTE_CHANNEL_ID]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/events", [self apiBaseUrl]]];
     
     // send event with attachments
     AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:url];
@@ -591,7 +591,7 @@
     }
     
     // create the RESTful url corresponding the current action
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events", [self apiBaseUrl], NOTE_CHANNEL_ID]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/events", [self apiBaseUrl]]];
 
     // send an event without attachments
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -627,11 +627,11 @@
     [operation start];
 }
 
-#pragma mark - PrYv API Event get/list (GET /{channel-id}/events/)
+#pragma mark - PrYv API Event get/list (GET /{streamId-id}/events/)
 
 - (void)getEventsFromStartDate:(NSDate *)startDate
                      toEndDate:(NSDate *)endDate
-                    inFolderId:(NSString *)folderId
+                    instreamId:(NSString *)streamId
                 successHandler:(void (^)(NSArray *positionEventList))successHandler
                   errorHandler:(void(^)(NSError *error))errorHandler
 {
@@ -651,11 +651,11 @@
         NSNumber *timeStampStart = [NSNumber numberWithDouble:[startDate timeIntervalSince1970]];
         NSNumber *timeStampEnd = [NSNumber numberWithDouble:[endDate timeIntervalSince1970]];
         
-        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events?fromTime=%@&toTime=%@&onlyFolders[]=%@&limit=1200", [self apiBaseUrl], self.channelId, timeStampStart, timeStampEnd, folderId]];
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/events?fromTime=%@&toTime=%@&onlyStreams[]=%@&limit=1200", [self apiBaseUrl], timeStampStart, timeStampEnd, streamId]];
     }
     else {
         // the user asked for the last 24h
-        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/events?onlyFolders[]=%@", [self apiBaseUrl], self.channelId, folderId]];
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/events?onlyStreams[]=%@", [self apiBaseUrl],streamId]];
     }
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -702,18 +702,18 @@
     [operation start];
 }
 
-#pragma mark - PrYv API Folder get all (GET /{channel-id}/folders/)
+#pragma mark - PrYv API Folder get all (GET /{streamId-id}/folders/)
 
 
 - (void)getFoldersWithSuccessHandler:(void (^)(NSArray *folderList))successHandler
                         errorHandler:(void (^)(NSError *error))errorHandler
 {
-    [self getFoldersInChannel:self.channelId
+    [self getFoldersInstreamId:self.streamIdId
            withSuccessHandler:successHandler
                  errorHandler:errorHandler];
 }
 
-- (void)getFoldersInChannel:(NSString *)channelId
+- (void)getFoldersInstreamId:(NSString *)streamIdId
          withSuccessHandler:(void (^)(NSArray *folderList))successHandler
                errorHandler:(void (^)(NSError *error))errorHandler
 
@@ -726,7 +726,7 @@
         return;
     }
 
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/folders/", [self apiBaseUrl], channelId]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/streams?parentId=position", [self apiBaseUrl]]];
 
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:self.oAuthToken forHTTPHeaderField:@"Authorization"];
@@ -763,11 +763,11 @@
 }
 
 
-#pragma mark - PrYv API Folder create (POST /{channel-id}/folders/)
+#pragma mark - PrYv API Folder create (POST /{streamId-id}/folders/)
 
-- (void)createFolderId:(NSString *)folderId
-              withName:(NSString *)folderName
-        successHandler:(void (^)(NSString *folderId, NSString *folderName))successHandler
+- (void)createstreamId:(NSString *)streamId
+              withName:(NSString *)name
+        successHandler:(void (^)(NSString *streamId, NSString *name))successHandler
           errorHandler:(void (^)(NSError *error))errorHandler
 {
     if (![self isReady]) {
@@ -778,29 +778,29 @@
         return;
     }
 
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/folders", [self apiBaseUrl], self.channelId]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/streams", [self apiBaseUrl]]];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request setAllHTTPHeaderFields:@{@"Authorization" : self.oAuthToken, @"Content-Type" : @"application/json"}];
     request.HTTPMethod = @"POST";
-    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:@{@"name" : folderName, @"id" : folderId}
+    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:@{@"name" : name, @"id" : streamId, @"parentId": kPrYvApplicationstreamIdId}
                                                        options:0
                                                          error:nil];
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         
-        NSLog(@"successfully created folderName: %@ folderId: %@", folderName, folderId);
+        NSLog(@"successfully created name: %@ streamId: %@", name, streamId);
 
         if (successHandler)
-            successHandler(folderId, folderName);
+            successHandler(streamId, name);
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-        NSLog(@"failed to create folderName: %@ folderId: %@ reason: %@", folderName, folderId, JSON);
+        NSLog(@"failed to create name: %@ streamId: %@ reason: %@", name, streamId, JSON);
 
         NSDictionary *userInfo = @{
                 @"connectionError": [self nonNil:error],
                 @"NSHTTPURLResponse" : [self nonNil:response],
-                @"folderName": folderName,
-                @"folderId": folderId,
+                @"name": name,
+                @"streamId": streamId,
                 @"serverError" : [self nonNilDictionary:JSON]
         };
         NSError *requestError = [NSError errorWithDomain:@"Error creating folder" code:210 userInfo:userInfo];
@@ -813,11 +813,11 @@
     [operation start];
 }
 
-#pragma mark - PrYv API Folder modify (PUT /{channel-id}/folders/{folder-id})
+#pragma mark - PrYv API Folder modify (PUT /{streamId-id}/folders/{folder-id})
 
-- (void)renameFolderId:(NSString *)folderId
-     withNewFolderName:(NSString *)newFolderName
-        successHandler:(void(^)(NSString *folderId, NSString *newFolderName))successHandler
+- (void)renamestreamId:(NSString *)streamId
+     withNewname:(NSString *)newname
+        successHandler:(void(^)(NSString *streamId, NSString *newname))successHandler
           errorHandler:(void(^)(NSError *error))errorHandler;
 {
     if (![self isReady]) {
@@ -828,27 +828,27 @@
         return;
     }
 
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/folders/%@", [self apiBaseUrl], self.channelId, folderId]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/streams", [self apiBaseUrl]]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request setAllHTTPHeaderFields:@{@"Authorization" : self.oAuthToken, @"Content-Type" : @"application/json"}];
     request.HTTPMethod = @"PUT";
-    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:@{@"name" : newFolderName} options:0 error:nil];
+    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:@{@"name" : newname} options:0 error:nil];
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        NSLog(@"successfully renamed folderId: %@ with folderName: %@", folderId, newFolderName);
+        NSLog(@"successfully renamed streamId: %@ with name: %@", streamId, newname);
 
         // custom way to store the information about the folder that the folder is available for future uploads
         if (successHandler)
-            successHandler(folderId, newFolderName);
+            successHandler(streamId, newname);
 
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-        NSLog(@"failed to rename folderId:%@ with folderName:%@ reason:%@", folderId, newFolderName, JSON);
+        NSLog(@"failed to rename streamId:%@ with name:%@ reason:%@", streamId, newname, JSON);
 
         NSDictionary *userInfo = @{
                 @"connectionError": [self nonNil:error],
                 @"NSHTTPURLResponse" : [self nonNil:response],
-                @"folderName": newFolderName,
-                @"folderId": folderId,
+                @"name": newname,
+                @"streamId": streamId,
                 @"serverError" : [self nonNilDictionary:JSON]
         };
         NSError *requestError = [NSError errorWithDomain:@"Error renaming folder" code:220 userInfo:userInfo];

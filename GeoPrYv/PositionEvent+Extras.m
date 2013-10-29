@@ -12,7 +12,7 @@
 + (PositionEvent *)createPositionEventInLocation:(CLLocation *)location
                                      withMessage:(NSString *)message
                                       attachment:(NSURL *)fileURL
-                                          folder:(NSString *)folderId
+                                          folder:(NSString *)streamId
                                        inContext:(NSManagedObjectContext *)context
 {
     PositionEvent *positionEvent = [NSEntityDescription insertNewObjectForEntityForName:@"PositionEvent" inManagedObjectContext:context];
@@ -22,7 +22,7 @@
     positionEvent.verticalAccuracy = [NSNumber numberWithDouble:location.verticalAccuracy];
     positionEvent.horizontalAccuracy = [NSNumber numberWithDouble:location.horizontalAccuracy];
     positionEvent.message = message;
-    positionEvent.folderId = folderId;
+    positionEvent.streamId = streamId;
     positionEvent.duration = [NSNumber numberWithDouble:0];
     positionEvent.attachment = [fileURL absoluteString];
     positionEvent.uploaded = @NO;
@@ -95,7 +95,7 @@
 - (NSString *)description
 {
     NSMutableString *description = [NSMutableString stringWithFormat:@"<%@: ", NSStringFromClass([self class])];
-    [description appendFormat:@", self.folderId=%@", self.folderId];
+    [description appendFormat:@", self.streamId=%@", self.streamId];
     [description appendFormat:@", self.message=%@", self.message];
     [description appendFormat:@", self.attachment=%@", self.attachment];
     [description appendFormat:@", self.latitude=%@", self.latitude];

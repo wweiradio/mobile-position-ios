@@ -315,7 +315,7 @@
         locationEvent = [PositionEvent createPositionEventInLocation:location
                                                          withMessage:nil
                                                           attachment:nil
-                                                              folder:user.folderId
+                                                              folder:user.streamId
                                                            inContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     }
     

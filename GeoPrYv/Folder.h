@@ -9,7 +9,7 @@
 
 @interface Folder : NSObject
 
-@property (nonatomic, copy) NSString *folderId;
+@property (nonatomic, copy) NSString *streamId;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *parentId;
 @property (nonatomic, assign, getter = isHidden) BOOL hidden;

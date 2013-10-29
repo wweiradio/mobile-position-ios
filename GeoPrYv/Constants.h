@@ -24,8 +24,8 @@
 #define kPrYvHorizontalAccuracyThresholdDidChangeNotificationInfoKey @"kPrYvHorizontalAccuracyThresholdDidChangeNotificationInfoKey"
 
 
-#define kPrYvApplicationChannelId @"position"
-#define kPrYvApplicationChannelName @"Position"
+#define kPrYvApplicationstreamIdId @"position"
+#define kPrYvApplicationstreamIdName @"Position"
 
 
 // maximum length of the note in characters

@@ -10,7 +10,7 @@
 @implementation Folder {
 }
 
-@synthesize folderId = _folderId;
+@synthesize streamId = _streamId;
 @synthesize name = _name;
 @synthesize parentId = _parentId;
 @synthesize hidden = _hidden;
@@ -19,7 +19,7 @@
 - (NSString *)description
 {
     NSMutableString *description = [NSMutableString stringWithFormat:@"<%@: ", NSStringFromClass([self class])];
-    [description appendFormat:@", self.id=%@", self.folderId];
+    [description appendFormat:@", self.id=%@", self.streamId];
     [description appendFormat:@", self.name=%@", self.name];
     [description appendFormat:@", self.parentId=%@", self.parentId];
     [description appendFormat:@", self.hidden=%d", self.hidden];

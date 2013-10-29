@@ -16,8 +16,8 @@
  See http://pryv.github.com/event-types.html
      http://pryv.github.com/standard-structure.html
 
- Each Application uses one Channel and can have multiple folders within this channel
- You have only one channelId per application.
+ Each Application uses one streamId and can have multiple folders within this streamId
+ You have only one streamIdId per application.
 
  Visit http://pryv.github.com/ for the complete documentation on the PrYv API
  
@@ -32,18 +32,18 @@
 
 @property (copy, nonatomic) NSString * userId;
 @property (copy, nonatomic) NSString * oAuthToken;
-@property (copy, nonatomic) NSString * channelId;
+@property (copy, nonatomic) NSString * streamIdId;
 @property (readonly, nonatomic) NSTimeInterval serverTimeInterval;
 
 
 /**
  @discussion
  Allows you to access the Pryv Api Client singleton
- You must first set the userId, oAuthToken and channelId before
+ You must first set the userId, oAuthToken and streamIdId before
  Communicating with the API
  
  # method
- +[PPrYvApiClient startClientWithUserId:oAuthToken:channelId:successHandler:errorHandler]
+ +[PPrYvApiClient startClientWithUserId:oAuthToken:streamIdId:successHandler:errorHandler]
  */
 + (PPrYvApiClient *)sharedClient;
 
@@ -59,7 +59,7 @@
  */
 - (void)startClientWithUserId:(NSString *)userId
                    oAuthToken:(NSString *)token
-                    channelId:(NSString *)channelId
+                    streamIdId:(NSString *)streamIdId
                successHandler:(void (^)(NSTimeInterval serverTime))successHandler
                  errorHandler:(void(^)(NSError *error))errorHandler;
 
@@ -84,7 +84,7 @@
  @discussion
  Send an position event with one or more attachments
 
-    POST /{channel-id}/events/
+    POST /{streamId-id}/events/
 
  @param event PositionEvent to send to Api
 
@@ -96,7 +96,7 @@
 /**
  @discussion
  Update the duration of event
-        PUT /{channel-id}/events/{event-id}
+        PUT /{streamId-id}/events/{event-id}
 
  @param event PositionEvent with duration and event-id set
  
@@ -108,14 +108,14 @@
 /**
  @discussion
  get events between two dates, pass nil to both @param startDate and @param endDate to get the last 24h 
- pass nil to @param folderId to get events from all folders in the current channel Id
+ pass nil to @param streamId to get events from all folders in the current streamId Id
 
-    GET /{channel-id}/events/
+    GET /{streamId-id}/events/
 
  */
 - (void)getEventsFromStartDate:(NSDate *)startDate
                      toEndDate:(NSDate *)endDate
-                    inFolderId:(NSString *)folderId
+                    instreamId:(NSString *)streamId
                 successHandler:(void (^)(NSArray *positionEventList))successHandler
                   errorHandler:(void(^)(NSError *error))errorHandler;
 
@@ -128,7 +128,7 @@
  @discussion
  Send an event of class note:txt
  
- POST /{channel-id}/events/
+ POST /{streamId-id}/events/
  
  @param event of type note:txt to send
  
@@ -146,7 +146,7 @@
  @discussion
  Send an event of class picture:attached
  
- POST /{channel-id}/events/
+ POST /{streamId-id}/events/
  
  @param event of type picture:attached. attachmentList shouold containg at least one EventAttachment
  
@@ -166,7 +166,7 @@
  @discussion
  Get list of all folders
 
-    GET /{channel-id}/folders/
+    GET /{streamId-id}/folders/
 
  @param successHandler A block object to be executed when the operation finishes successfully. This block has no return value and takes one argument NSArray of Folder objects
 
@@ -177,41 +177,41 @@
 
 /**
  @discussion
- Get list of folders for a channel
+ Get list of folders for a streamId
  
-    GET /{channel-id}/folders/
+    GET /{streamId-id}/folders/
  
- @param channelId of the channel to get folders from
+ @param streamIdId of the streamId to get folders from
  
  */
-- (void)getFoldersInChannel:(NSString *)channelId
+- (void)getFoldersInstreamId:(NSString *)streamIdId
          withSuccessHandler:(void (^)(NSArray *folderList))successHandler
                errorHandler:(void (^)(NSError *error))errorHandler;
 
 /**
  @discussion
- Create a new folder in the current channel Id
+ Create a new folder in the current streamId Id
  folders have one unique Id AND one unique name. Both must be unique
 
-    POST /{channel-id}/folders/
+    POST /{streamId-id}/folders/
 
  */
-- (void)createFolderId:(NSString *)folderId
+- (void)createstreamId:(NSString *)streamId
               withName:(NSString *)folderName
-        successHandler:(void (^)(NSString *createdFolderId, NSString *createdFolderName))successHandler
+        successHandler:(void (^)(NSString *createdstreamId, NSString *createdFolderName))successHandler
           errorHandler:(void (^)(NSError *error))errorHandler;
 
 
 /**
  @discussion
- Rename an existing folder Id in the current channel Id with a new name
+ Rename an existing folder Id in the current streamId Id with a new name
 
-    PUT /{channel-id}/folders/{id}
+    PUT /{streamId-id}/folders/{id}
 
  */
-- (void)renameFolderId:(NSString *)folderId
+- (void)renamestreamId:(NSString *)streamId
      withNewFolderName:(NSString *)folderName
-        successHandler:(void(^)(NSString *createdFolderId, NSString *newFolderName))successHandler
+        successHandler:(void(^)(NSString *createdstreamId, NSString *newFolderName))successHandler
           errorHandler:(void(^)(NSError *error))errorHandler;
 
 @end

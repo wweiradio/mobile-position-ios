@@ -87,7 +87,7 @@
 - (void)requestLoginView
 {
     // TODO extract the url to a more meaningful place
-    NSURL *url = [NSURL URLWithString:@"https://access.pryv.io"];
+    NSURL *url = [NSURL URLWithString:@"https://access.pryv.in"];
     
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:url];
     httpClient.parameterEncoding = AFJSONParameterEncoding;
@@ -101,10 +101,10 @@
                              @"returnURL": @"false",
                              @"languageCode" : preferredLanguageCode,
                              @"requestedPermissions": @[
-                                     // channel for position events
+                                     // streamId for position events
                                      @{
-                                         @"channelId" : kPrYvApplicationChannelId,
-                                         @"defaultName" : kPrYvApplicationChannelName,
+                                         @"streamId" : kPrYvApplicationstreamIdId,
+                                         @"defaultName" : kPrYvApplicationstreamIdName,
                                          @"level" : @"manage",
                                        }
                              ]};
@@ -304,7 +304,7 @@
     PPrYvApiClient *apiClient = [PPrYvApiClient sharedClient];
     [apiClient startClientWithUserId:newUser.userId
                           oAuthToken:newUser.userToken
-                           channelId:kPrYvApplicationChannelId
+                           streamIdId:kPrYvApplicationstreamIdId
                       successHandler:^(NSTimeInterval serverTime)
      {
          [self findExistingOrCreateNewFolderForUser];
@@ -382,11 +382,11 @@
 
     User * newUser = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];
     
-    // get list of all folders from API and if there is one with the same folderId use it
+    // get list of all folders from API and if there is one with the same streamId use it
     [[PPrYvApiClient sharedClient] getFoldersWithSuccessHandler:^(NSArray *folderList){
         BOOL foundFolder = NO;
         for (Folder *folder in folderList) {
-            if ([folder.folderId isEqualToString:newUser.folderId]) {
+            if ([folder.streamId isEqualToString:newUser.streamId]) {
                 NSLog(@"Found user's folder: %@", folder.name);
                 newUser.folderName = folder.name;
                 [[[PPrYvCoreDataManager sharedInstance] managedObjectContext] save:nil];
@@ -443,9 +443,9 @@
     }
     self.iteration++;
     
-    [[PPrYvApiClient sharedClient] createFolderId:newUser.folderId
+    [[PPrYvApiClient sharedClient] createstreamId:newUser.streamId
                                          withName:newUser.folderName
-                                   successHandler:^(NSString *folderId, NSString *folderName) {
+                                   successHandler:^(NSString *streamId, NSString *folderName) {
                                        
                                        // the folder for the current iPhone openUDID did not already exist. we created it.
                                        User *currentUser = [User currentUserInContext:[[PPrYvCoreDataManager sharedInstance] managedObjectContext]];

@@ -18,7 +18,7 @@
 + (PositionEvent *)createPositionEventInLocation:(CLLocation *)location
                                      withMessage:(NSString *)message
                                       attachment:(NSURL *)fileURL
-                                          folder:(NSString *)folderId
+                                          folder:(NSString *)streamId
                                        inContext:(NSManagedObjectContext *)context;
 
 

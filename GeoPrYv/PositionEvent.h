@@ -14,7 +14,7 @@
 
 @property (nonatomic, retain) NSString *attachment;
 @property (nonatomic, retain) NSDate   *date;
-@property (nonatomic, retain) NSString *folderId;
+@property (nonatomic, retain) NSString *streamId;
 @property (nonatomic, retain) NSNumber *latitude;
 @property (nonatomic, retain) NSNumber *longitude;
 @property (nonatomic, retain) NSNumber *elevation;

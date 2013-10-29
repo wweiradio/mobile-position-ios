@@ -17,7 +17,7 @@
 @dynamic locationTimeInterval;
 @dynamic desiredAccuracy;
 @dynamic horizontalAccuracyThreshold;
-@dynamic folderId;
+@dynamic streamId;
 @dynamic folderName;
 
 @end
