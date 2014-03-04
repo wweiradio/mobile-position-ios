@@ -18,6 +18,8 @@
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 #import "DDFileLogger.h"
+#import "TestFlight.h"
+#import "AppConstantsPrivate.h"
 
 @interface PPrYvAppDelegate()
 
@@ -45,6 +47,12 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = self.mapViewController;
     [self.window makeKeyAndVisible];
+    
+    
+   // NSString *deviceToken = [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
+   // [TestFlight setDeviceIdentifier:deviceToken];
+    [TestFlight setOptions:@{ TFOptionDisableInAppUpdates : @YES }];
+    [TestFlight takeOff:kPYAppConstantsPrivateTestFlightToken];
     
     return YES;
 }

@@ -100,7 +100,7 @@
                                          @"latitude" : self.latitude,
                                          @"verticalAccuracy" : self.horizontalAccuracy,
                                          @"horizontalAccuracy" : self.verticalAccuracy,
-                                         @"elevation" : self.elevation
+                                         @"altitude" : self.elevation
                                  },
                                  @"description" : message,
                                  @"streamId" : self.streamId,
@@ -251,7 +251,7 @@
     //return [NSString stringWithFormat:@"https://%@.pryv.io", self.userId];
 
     // development url
-    return [NSString stringWithFormat:@"https://%@.pryv.in", self.userId];
+    return [NSString stringWithFormat:@"https://%@.pryv.io", self.userId];
 }
 
 - (BOOL)isReady
@@ -434,12 +434,15 @@
     [request addValue:self.oAuthToken forHTTPHeaderField:@"Authorization"];
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
-    request.HTTPBody = [event dataWithJSONObject];
+    NSData* bodyData = [event dataWithJSONObject];
+    request.HTTPBody = bodyData;
     [request setTimeoutInterval:kEventSendingTimout];
 
-    NSLog(@"Event: auth:%@ url:%@ %@ \ndata",self.oAuthToken, surl, [[NSString alloc] initWithData:[event pictureEventWithJSONObject]
+    NSLog(@"Event: auth:%@ url:%@ %@ \ndata",self.oAuthToken, surl, [[NSString alloc] initWithData:bodyData
           encoding:NSUTF8StringEncoding]);
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id responseDict) {
+        NSDictionary* JSON = responseDict[@"event"];
+        
         NSLog(@"successfully sent event eventId: %@", JSON[@"id"]);
 
         if (completionHandler)
@@ -542,7 +545,9 @@
                                                              encoding:NSUTF8StringEncoding]);
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-    success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    success:^(NSURLRequest *request, NSHTTPURLResponse *response, id responseDict) {
+        
+        NSDictionary* JSON = responseDict[@"event"];
         NSLog(@"successfully sent event with attachment(s) eventId: %@", JSON[@"id"]);
         
         if (completionHandler)
@@ -592,7 +597,9 @@
     NSLog(@"sending note json: %@", [[NSString alloc] initWithData:[event noteEventWithJSONObject]
                                                           encoding:NSUTF8StringEncoding]);
     
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id responseDict) {
+        
+        NSDictionary* JSON = responseDict[@"event"];
         NSLog(@"successfully sent note event eventId: %@", JSON[@"id"]);
         
         if (completionHandler)
@@ -650,7 +657,8 @@
     [request setAllHTTPHeaderFields:@{@"Authorization" : self.oAuthToken}];
     request.HTTPMethod = @"GET";
     
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id responseDict) {
+        NSArray *JSON = responseDict[@"events"];
         NSLog(@"successfully received events");
 
         if (successHandler) {
@@ -719,7 +727,8 @@
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:self.oAuthToken forHTTPHeaderField:@"Authorization"];
 
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id responseDict) {
+        NSArray* JSON = responseDict[@"streams"];
         NSLog(@"successfully received folders");
 
         NSMutableArray *folderList = [[NSMutableArray alloc] init];

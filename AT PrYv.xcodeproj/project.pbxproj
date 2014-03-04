@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E6BF53C18C6428700E606E4 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E6BF53618C6428700E606E4 /* libTestFlight.a */; };
+		4E6BF53D18C6428700E606E4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4E6BF53718C6428700E606E4 /* README.md */; };
+		4E6BF53E18C6428700E606E4 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = 4E6BF53818C6428700E606E4 /* release_notes.md */; };
+		4E6BF54118C643A300E606E4 /* AppConstantsPrivate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E6BF54018C643A300E606E4 /* AppConstantsPrivate.m */; };
 		562C01E4167F8BCA00706EE3 /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 562C01D2167F8BCA00706EE3 /* AFHTTPClient.m */; };
 		562C01E5167F8BCA00706EE3 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 562C01D4167F8BCA00706EE3 /* AFHTTPRequestOperation.m */; };
 		562C01E6167F8BCA00706EE3 /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 562C01D6167F8BCA00706EE3 /* AFImageRequestOperation.m */; };
@@ -106,6 +110,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E6BF53618C6428700E606E4 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		4E6BF53718C6428700E606E4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		4E6BF53818C6428700E606E4 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
+		4E6BF53918C6428700E606E4 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
+		4E6BF53A18C6428700E606E4 /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
+		4E6BF53B18C6428700E606E4 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		4E6BF53F18C643A300E606E4 /* AppConstantsPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppConstantsPrivate.h; sourceTree = "<group>"; };
+		4E6BF54018C643A300E606E4 /* AppConstantsPrivate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppConstantsPrivate.m; sourceTree = "<group>"; };
 		562C01D1167F8BCA00706EE3 /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPClient.h; sourceTree = "<group>"; };
 		562C01D2167F8BCA00706EE3 /* AFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPClient.m; sourceTree = "<group>"; };
 		562C01D3167F8BCA00706EE3 /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -268,6 +280,7 @@
 				568243341670DAD40032489E /* MapKit.framework in Frameworks */,
 				568243131670B1200032489E /* CoreLocation.framework in Frameworks */,
 				568242E91670AAD90032489E /* UIKit.framework in Frameworks */,
+				4E6BF53C18C6428700E606E4 /* libTestFlight.a in Frameworks */,
 				568242EB1670AAD90032489E /* Foundation.framework in Frameworks */,
 				568242ED1670AAD90032489E /* CoreGraphics.framework in Frameworks */,
 				568242EF1670AAD90032489E /* CoreData.framework in Frameworks */,
@@ -277,6 +290,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E6BF53518C6428700E606E4 /* TestFlightSDK3.0.0 */ = {
+			isa = PBXGroup;
+			children = (
+				4E6BF53618C6428700E606E4 /* libTestFlight.a */,
+				4E6BF53718C6428700E606E4 /* README.md */,
+				4E6BF53818C6428700E606E4 /* release_notes.md */,
+				4E6BF53918C6428700E606E4 /* TestFlight+AsyncLogging.h */,
+				4E6BF53A18C6428700E606E4 /* TestFlight+ManualSessions.h */,
+				4E6BF53B18C6428700E606E4 /* TestFlight.h */,
+			);
+			path = TestFlightSDK3.0.0;
+			sourceTree = "<group>";
+		};
 		562C01D0167F8BCA00706EE3 /* AFNetworking */ = {
 			isa = PBXGroup;
 			children = (
@@ -307,6 +333,7 @@
 		5655187F167B67A6006FE2A2 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				4E6BF53518C6428700E606E4 /* TestFlightSDK3.0.0 */,
 				562C01D0167F8BCA00706EE3 /* AFNetworking */,
 				FB3248151716EBAC00E392FB /* Lumberjack */,
 				FB7CC4AB171B45A7008D0A42 /* MBProgressHUD */,
@@ -422,6 +449,8 @@
 				568243381670DE080032489E /* Model */,
 				56551882167B6861006FE2A2 /* Ressources */,
 				5655187F167B67A6006FE2A2 /* Vendor */,
+				4E6BF53F18C643A300E606E4 /* AppConstantsPrivate.h */,
+				4E6BF54018C643A300E606E4 /* AppConstantsPrivate.m */,
 			);
 			name = "AT PrYv";
 			path = GeoPrYv;
@@ -640,6 +669,7 @@
 				568243211670C8880032489E /* Localizable.strings in Resources */,
 				56F6655D167A464100E85921 /* PPrYvSettingViewController~ipad.xib in Resources */,
 				56F6655F167A467F00E85921 /* PPrYvSettingViewController~iphone.xib in Resources */,
+				4E6BF53E18C6428700E606E4 /* release_notes.md in Resources */,
 				56B1651516B132D700C0530D /* mapPoint.png in Resources */,
 				56B1651616B132D700C0530D /* mapPoint@2x.png in Resources */,
 				56FEF97116B2A858008A5948 /* pinPryv.png in Resources */,
@@ -673,6 +703,7 @@
 				96A8A0AE171BEF3A00A7F8E2 /* Icon.png in Resources */,
 				96A8A0B0171BEF3F00A7F8E2 /* Icon@2x.png in Resources */,
 				96A8A0B2171BEF4900A7F8E2 /* Icon-72.png in Resources */,
+				4E6BF53D18C6428700E606E4 /* README.md in Resources */,
 				96A8A0B4171BEF4C00A7F8E2 /* Icon-144.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -703,6 +734,7 @@
 				56B481411694F56D006529EB /* main.m in Sources */,
 				B0BC9F98C453AD2A9CE910CC /* PositionEvent+Extras.m in Sources */,
 				B0BC9A3D4A42964FA67D3509 /* User+Extras.m in Sources */,
+				4E6BF54118C643A300E606E4 /* AppConstantsPrivate.m in Sources */,
 				B0BC944E83AD3B9686C8D0E6 /* PPrYvCoreDataManager.m in Sources */,
 				FB5F77BF169AE2DE00585D11 /* PPrYvLocationManager.m in Sources */,
 				B0BC9D46016E06E0A57B0FFB /* PPrYvPositionEventSender.m in Sources */,
@@ -773,7 +805,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "45FCC072-C6A3-42FA-9C39-52DC9B16251F";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -788,6 +820,10 @@
 				GCC_PREFIX_HEADER = "GeoPrYv/AT PrYv-Prefix.pch";
 				INFOPLIST_FILE = "GeoPrYv/AT PrYv-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/perki/wActiv/mobile-position-ios/GeoPrYv/TestFlightSDK3.0.0",
+				);
 				PRODUCT_NAME = "At PrYv";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -820,7 +856,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				ONLY_ACTIVE_ARCH = YES;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "45FCC072-C6A3-42FA-9C39-52DC9B16251F";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -844,7 +880,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "45FCC072-C6A3-42FA-9C39-52DC9B16251F";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos6.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -859,6 +895,10 @@
 				GCC_PREFIX_HEADER = "GeoPrYv/AT PrYv-Prefix.pch";
 				INFOPLIST_FILE = "GeoPrYv/AT PrYv-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/perki/wActiv/mobile-position-ios/GeoPrYv/TestFlightSDK3.0.0",
+				);
 				PRODUCT_NAME = "At PrYv";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -874,6 +914,10 @@
 				GCC_PREFIX_HEADER = "GeoPrYv/AT PrYv-Prefix.pch";
 				INFOPLIST_FILE = "GeoPrYv/AT PrYv-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/perki/wActiv/mobile-position-ios/GeoPrYv/TestFlightSDK3.0.0",
+				);
 				PRODUCT_NAME = "At PrYv";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;

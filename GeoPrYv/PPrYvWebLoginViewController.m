@@ -87,7 +87,7 @@
 - (void)requestLoginView
 {
     // TODO extract the url to a more meaningful place
-    NSURL *url = [NSURL URLWithString:@"https://access.pryv.in"];
+    NSURL *url = [NSURL URLWithString:@"https://access.pryv.io"];
     
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:url];
     httpClient.parameterEncoding = AFJSONParameterEncoding;
