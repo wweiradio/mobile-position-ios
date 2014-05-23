@@ -88,8 +88,10 @@
     // set empty message if no message
     NSString * message = self.message == nil ? @"" : self.message;
 
+    
+    if (!self.date) { self.date = [NSDate date]; };
     // turn the date into server format time
-    NSNumber * time = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
+    NSNumber * time = [NSNumber numberWithDouble:[self.date timeIntervalSince1970]];
 
     NSDictionary *positionEventDictionary =
                          @{

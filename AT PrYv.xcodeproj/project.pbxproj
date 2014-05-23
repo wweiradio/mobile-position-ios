@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E4554D819307CD9006B9FA1 /* Icon-120.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E4554D519307CD9006B9FA1 /* Icon-120.png */; };
+		4E4554D919307CD9006B9FA1 /* Icon-80.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E4554D619307CD9006B9FA1 /* Icon-80.png */; };
+		4E4554DA19307CD9006B9FA1 /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E4554D719307CD9006B9FA1 /* Icon-72@2x.png */; };
+		4E4554DD19307DD1006B9FA1 /* Icon-76.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E4554DB19307DD1006B9FA1 /* Icon-76.png */; };
+		4E4554DE19307DD1006B9FA1 /* Icon-76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E4554DC19307DD1006B9FA1 /* Icon-76@2x.png */; };
 		4E6BF53C18C6428700E606E4 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E6BF53618C6428700E606E4 /* libTestFlight.a */; };
 		4E6BF53D18C6428700E606E4 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4E6BF53718C6428700E606E4 /* README.md */; };
 		4E6BF53E18C6428700E606E4 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = 4E6BF53818C6428700E606E4 /* release_notes.md */; };
@@ -110,6 +115,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E4554D519307CD9006B9FA1 /* Icon-120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-120.png"; sourceTree = "<group>"; };
+		4E4554D619307CD9006B9FA1 /* Icon-80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-80.png"; sourceTree = "<group>"; };
+		4E4554D719307CD9006B9FA1 /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
+		4E4554DB19307DD1006B9FA1 /* Icon-76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-76.png"; sourceTree = "<group>"; };
+		4E4554DC19307DD1006B9FA1 /* Icon-76@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-76@2x.png"; sourceTree = "<group>"; };
 		4E6BF53618C6428700E606E4 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		4E6BF53718C6428700E606E4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		4E6BF53818C6428700E606E4 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
@@ -142,7 +152,7 @@
 		5655188B167E7463006FE2A2 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		5661E075168F042000687046 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		5661E076168F042000687046 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
-		568242E41670AAD90032489E /* At PrYv.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "At PrYv.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		568242E41670AAD90032489E /* atpryv.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = atpryv.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		568242E81670AAD90032489E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		568242EA1670AAD90032489E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		568242EC1670AAD90032489E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -402,6 +412,11 @@
 		568242D91670AAD90032489E = {
 			isa = PBXGroup;
 			children = (
+				4E4554DB19307DD1006B9FA1 /* Icon-76.png */,
+				4E4554DC19307DD1006B9FA1 /* Icon-76@2x.png */,
+				4E4554D519307CD9006B9FA1 /* Icon-120.png */,
+				4E4554D619307CD9006B9FA1 /* Icon-80.png */,
+				4E4554D719307CD9006B9FA1 /* Icon-72@2x.png */,
 				96A8A0B3171BEF4C00A7F8E2 /* Icon-144.png */,
 				96A8A0B1171BEF4900A7F8E2 /* Icon-72.png */,
 				96A8A0AF171BEF3F00A7F8E2 /* Icon@2x.png */,
@@ -416,7 +431,7 @@
 		568242E51670AAD90032489E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				568242E41670AAD90032489E /* At PrYv.app */,
+				568242E41670AAD90032489E /* atpryv.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -618,7 +633,7 @@
 			);
 			name = "AT PrYv";
 			productName = GeoPrYv;
-			productReference = 568242E41670AAD90032489E /* At PrYv.app */;
+			productReference = 568242E41670AAD90032489E /* atpryv.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -628,11 +643,11 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = PPrYv;
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = PrYv;
 				TargetAttributes = {
 					568242E31670AAD90032489E = {
-						DevelopmentTeam = S78F98U43G;
+						DevelopmentTeam = GNL8PH5553;
 					};
 				};
 			};
@@ -678,13 +693,16 @@
 				FB6D93D216EF5D1B008F4D35 /* PPrYvWebLoginViewController~ipad.xib in Resources */,
 				96FBDFDE17009CD000FB817B /* bAddNote.png in Resources */,
 				96FBDFDF17009CD000FB817B /* bAddNote@2x.png in Resources */,
+				4E4554DE19307DD1006B9FA1 /* Icon-76@2x.png in Resources */,
 				96FBDFE017009CD000FB817B /* bAddPhoto.png in Resources */,
 				96FBDFE117009CD000FB817B /* bAddPhoto@2x.png in Resources */,
 				96FBDFE217009CD000FB817B /* bPryvitOff.png in Resources */,
 				96FBDFE317009CD000FB817B /* bPryvitOff@2x.png in Resources */,
+				4E4554D819307CD9006B9FA1 /* Icon-120.png in Resources */,
 				96FBDFE417009CD000FB817B /* bPryvitOn.png in Resources */,
 				96FBDFE517009CD000FB817B /* bPryvitOn@2x.png in Resources */,
 				96522CC71717F5AA00BA0E10 /* bCancel.png in Resources */,
+				4E4554DA19307CD9006B9FA1 /* Icon-72@2x.png in Resources */,
 				96522CC81717F5AA00BA0E10 /* bCancel@2x.png in Resources */,
 				96522CC91717F5AA00BA0E10 /* bDate.png in Resources */,
 				96522CCA1717F5AA00BA0E10 /* bDate@2x.png in Resources */,
@@ -699,9 +717,11 @@
 				96522CD31717F5AA00BA0E10 /* bSettings.png in Resources */,
 				96522CD41717F5AA00BA0E10 /* bSettings@2x.png in Resources */,
 				96522CD51717F5AA00BA0E10 /* bTimePeriod.png in Resources */,
+				4E4554D919307CD9006B9FA1 /* Icon-80.png in Resources */,
 				96522CD61717F5AA00BA0E10 /* bTimePeriod@2x.png in Resources */,
 				96A8A0AE171BEF3A00A7F8E2 /* Icon.png in Resources */,
 				96A8A0B0171BEF3F00A7F8E2 /* Icon@2x.png in Resources */,
+				4E4554DD19307DD1006B9FA1 /* Icon-76.png in Resources */,
 				96A8A0B2171BEF4900A7F8E2 /* Icon-72.png in Resources */,
 				4E6BF53D18C6428700E606E4 /* README.md in Resources */,
 				96A8A0B4171BEF4C00A7F8E2 /* Icon-144.png in Resources */,
@@ -796,7 +816,6 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: PrYv sa";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -804,8 +823,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "45FCC072-C6A3-42FA-9C39-52DC9B16251F";
-				SDKROOT = iphoneos6.1;
+				PROVISIONING_PROFILE = "E6D7CF3C-F4F7-4FB3-B28D-939FBCDAFFD7";
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -814,18 +833,15 @@
 		4E7BEDAF1741563D00D52A8C /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GeoPrYv/AT PrYv-Prefix.pch";
 				INFOPLIST_FILE = "GeoPrYv/AT PrYv-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/perki/wActiv/mobile-position-ios/GeoPrYv/TestFlightSDK3.0.0",
 				);
-				PRODUCT_NAME = "At PrYv";
-				PROVISIONING_PROFILE = "";
+				PRODUCT_NAME = atpryv;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Distribution;
@@ -840,7 +856,6 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: PrYv sa";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -855,8 +870,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				ONLY_ACTIVE_ARCH = YES;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "45FCC072-C6A3-42FA-9C39-52DC9B16251F";
-				SDKROOT = iphoneos6.1;
+				PROVISIONING_PROFILE = "E6D7CF3C-F4F7-4FB3-B28D-939FBCDAFFD7";
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -871,7 +886,6 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: PrYv sa";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -879,8 +893,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "45FCC072-C6A3-42FA-9C39-52DC9B16251F";
-				SDKROOT = iphoneos6.1;
+				PROVISIONING_PROFILE = "E6D7CF3C-F4F7-4FB3-B28D-939FBCDAFFD7";
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -889,18 +903,15 @@
 		568243081670AAD90032489E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GeoPrYv/AT PrYv-Prefix.pch";
 				INFOPLIST_FILE = "GeoPrYv/AT PrYv-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/perki/wActiv/mobile-position-ios/GeoPrYv/TestFlightSDK3.0.0",
 				);
-				PRODUCT_NAME = "At PrYv";
-				PROVISIONING_PROFILE = "";
+				PRODUCT_NAME = atpryv;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -908,18 +919,15 @@
 		568243091670AAD90032489E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GeoPrYv/AT PrYv-Prefix.pch";
 				INFOPLIST_FILE = "GeoPrYv/AT PrYv-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Users/perki/wActiv/mobile-position-ios/GeoPrYv/TestFlightSDK3.0.0",
 				);
-				PRODUCT_NAME = "At PrYv";
-				PROVISIONING_PROFILE = "";
+				PRODUCT_NAME = atpryv;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
