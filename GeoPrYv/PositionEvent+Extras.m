@@ -26,7 +26,8 @@
     positionEvent.duration = [NSNumber numberWithDouble:0];
     positionEvent.attachment = [fileURL absoluteString];
     positionEvent.uploaded = @NO;
-    positionEvent.date = [NSDate dateWithTimeIntervalSince1970:([[NSDate date] timeIntervalSince1970] - [PPrYvApiClient sharedClient].serverTimeInterval)];
+    NSDate* date = [NSDate date];
+    positionEvent.date = date;
     
     NSError *error = nil;
     if (![context save:&error]) {

@@ -91,6 +91,7 @@
     
     if (!self.date) { self.date = [NSDate date]; };
     // turn the date into server format time
+   NSDate* date = self.date;
     NSNumber * time = [NSNumber numberWithDouble:[self.date timeIntervalSince1970]];
 
     NSDictionary *positionEventDictionary =
